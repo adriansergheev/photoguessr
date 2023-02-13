@@ -1,4 +1,5 @@
 import Foundation
+import Dependencies
 @_exported import ApiClient
 
 /*
@@ -12,8 +13,10 @@ import Foundation
  
  */
 
-public extension ApiClient {
-	static func live() -> Self {
+extension ApiClient: DependencyKey {
+	public static var liveValue: ApiClient { Self.live() }
+	
+	public static func live() -> Self {
 		Self(
 			apiRequest: { apiEndpoint in
 				return try await Self.apiRequest(apiEndpoint: apiEndpoint)

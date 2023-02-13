@@ -6,8 +6,8 @@ import PackageDescription
 let package = Package(
 	name: "photoguesser-modules",
 	platforms: [
-		.iOS(.v15),
-		.macOS(.v12),
+		.iOS(.v16),
+		.macOS(.v13),
 	],
 	products: [
 		.library(name: "ApiClient", targets: ["ApiClient"]),
@@ -17,20 +17,23 @@ let package = Package(
 	],
 	dependencies: [
 		.package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "0.50.2"),
+		.package(url: "https://github.com/pointfreeco/swift-dependencies", from: "0.1.4"),
 		.package(url: "https://github.com/kean/Nuke", .upToNextMajor(from: "11.6.2"))
 	],
 	targets: [
 		.target(
 			name: "ApiClient",
 			dependencies: [
-				"SharedModels"
+				"SharedModels",
+				.product(name: "Dependencies", package: "swift-dependencies")
 			]
 		),
 		.target(
 			name: "ApiClientLive",
 			dependencies: [
 				"ApiClient",
-				"SharedModels"
+				"SharedModels",
+				.product(name: "Dependencies", package: "swift-dependencies")
 			]
 		),
 		.target(
@@ -39,7 +42,8 @@ let package = Package(
 				"ApiClient",
 				"ApiClientLive",
 				"SharedModels",
-				.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+				.product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+				.product(name: "NukeUI", package: "Nuke")
 			],
 			resources: [.process("Resources/")]
 		),

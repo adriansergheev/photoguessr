@@ -1,91 +1,88 @@
 import SwiftUI
 import ApiClientLive
 import SharedModels
+import Nuke
+import NukeUI
 import ComposableArchitecture
 
-struct GAlert: Identifiable {
-	var id: String { content }
-	let content: String
-}
-
+@MainActor
 public struct GameView: View {
 	
-	@State private var alertData: GAlert?
-	@State private var guess: Double = 1899
-	@State private var score: Int = 0
-	@State var nearestPhotos: NearestPhotosResponse?
+	public let store: StoreOf<Game>
 	
-	public init() { }
+	private let pipeline = ImagePipeline {
+		$0.dataLoader = {
+			let config = URLSessionConfiguration.default
+			config.urlCache = nil
+			return Nuke.DataLoader(configuration: config)
+		}()
+	}
+	
+	public init(store: StoreOf<Game>) {
+		self.store = store
+	}
 	
 	public var body: some View {
-		VStack {
-			VStack(alignment: .trailing) {
-				HStack {
-					Text("Daily Challenge")
-						.bold()
-					Spacer()
-					Text("Score: \(score)")
-						.bold()
+		WithViewStore(self.store) { viewStore in
+			VStack {
+				VStack(alignment: .trailing) {
+					HStack {
+						Text("Daily Challenge")
+							.bold()
+						Spacer()
+						Text("Score: \(viewStore.score)")
+							.bold()
+					}
 				}
-			}
-			Image(
-				uiImage: UIImage(named: "demo", in: Bundle.module, with: nil)!
-			)
-			.resizable()
-			.aspectRatio(contentMode: .fill)
-			.foregroundColor(.accentColor)
-			
-			Spacer()
-			Text("\(String(Int(self.guess)))")
-			Slider(value: self.$guess, in: 1800...2000, step: 1)
-				.tint(Color.black)
-			Button {
-				
-				let range = 1900...1910
-				let guess = Int(guess)
-				//
-				switch guess {
-				case let guess where range.contains(guess):
-					self.alertData = GAlert(content: "You nailed it!")
-					self.score += 10
-				case let guess where guess > 1910:
-					self.alertData = GAlert(content: "Try lower!")
-				case let guess where guess 	< 1910:
-					self.alertData = GAlert(content: "Try higher!")
-				default: break
+
+				if let currentPhotoFile = viewStore.currentGamePhoto?.file {
+					let baseURL = "https://pastvu.com/_p/d/"
+					makeImage(url: URL(string: baseURL.appending(currentPhotoFile))!)
+						.aspectRatio(contentMode: .fill)
+				} else {
+					ProgressView()
 				}
+
 				
-				
-			} label: {
-				Text("Submit")
+				Spacer()
+//				if let guess = viewStore.guess {
+//
+//				}
+				Text("\(String(Int(viewStore.sliderValue)))")
+				Slider(value: viewStore.binding(get: \.sliderValue, send: Game.Action.sliderValueChanged), in: viewStore.range, step: 1)
 					.tint(Color.black)
+				Button {
+					viewStore.send(.submitTapped)
+				} label: {
+					Text("Submit")
+						.tint(Color.black)
+				}
 			}
-		}
-		.padding()
-		.alert(item: $alertData) { data in
-			Alert(
-				title: Text("Points"),
-				message: Text(data.content),
-				dismissButton: .cancel()
+			.padding()
+			.alert(
+				self.store.scope(state: \.alert),
+				dismiss: .alertDismissed
 			)
+			.onAppear { viewStore.send(.startGame) }
 		}
-		.task {
-			do {
-				let client = ApiClient.live()
-				let nearestPhotos = try await client.giveNearestPhotos(.init())
-				self.nearestPhotos = nearestPhotos
-				print(nearestPhotos)
-			} catch let error {
-				print(error)
-			}
-		}
+	}
+	
+	func makeImage(url: URL) -> some View {
+		LazyImage(url: url)
+			.animation(.default)
+			.pipeline(pipeline)
 	}
 }
 
 #if DEBUG
 struct ContentView_Previews: PreviewProvider {
 	static var previews: some View {
-		GameView()
+		GameView(
+			store: .init(
+				initialState: Game.State(),
+				reducer: Game()._printChanges()
+			)
+		)
 	}
 }
 #endif

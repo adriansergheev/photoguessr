@@ -5,7 +5,9 @@ import GameFeature
 struct PhotoGuesser: App {
 	var body: some Scene {
 		WindowGroup {
-			GameView()
+			GameView(
+				store: .init(initialState: Game.State(), reducer: Game())
+			)
 		}
 	}
 }
