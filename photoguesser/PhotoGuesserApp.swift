@@ -1,7 +1,8 @@
 import SwiftUI
+import GameFeature
 
 @main
-struct photoguesserApp: App {
+struct PhotoGuesser: App {
 	var body: some Scene {
 		WindowGroup {
 			GameView()

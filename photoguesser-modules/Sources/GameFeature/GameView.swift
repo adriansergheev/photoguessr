@@ -1,18 +1,19 @@
 import SwiftUI
 
-
 struct GAlert: Identifiable {
 	var id: String { content }
 	let content: String
 }
 
-struct GameView: View {
+public struct GameView: View {
 	
 	@State private var alertData: GAlert?
 	@State private var guess: Double = 1899
 	@State private var score: Int = 0
 	
-	var body: some View {
+	public init() { }
+	
+	public var body: some View {
 		VStack {
 			VStack(alignment: .trailing) {
 				HStack {
@@ -23,7 +24,9 @@ struct GameView: View {
 						.bold()
 				}
 			}
-			Image("demo")
+			Image(
+				uiImage: UIImage(named: "demo", in: Bundle.module, with: nil)!
+			)
 				.resizable()
 				.aspectRatio(contentMode: .fill)
 				.foregroundColor(.accentColor)

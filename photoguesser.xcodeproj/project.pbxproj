@@ -7,16 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		04BF02AA29980FA000109E06 /* photoguesserApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BF02A929980FA000109E06 /* photoguesserApp.swift */; };
-		04BF02AC29980FA000109E06 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BF02AB29980FA000109E06 /* GameView.swift */; };
-		04BF02AE29980FA100109E06 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04BF02AD29980FA100109E06 /* Assets.xcassets */; };
+		04AB9CF12999694D00B6C43E /* GameFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 04AB9CF02999694D00B6C43E /* GameFeature */; };
+		04AB9CF22999734B00B6C43E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04BF02AD29980FA100109E06 /* Assets.xcassets */; };
+		04BF02AA29980FA000109E06 /* PhotoGuesserApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BF02A929980FA000109E06 /* PhotoGuesserApp.swift */; };
 		04BF02B129980FA100109E06 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04BF02B029980FA100109E06 /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		04AB9CEE2999683900B6C43E /* photoguesser-modules */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = "photoguesser-modules"; sourceTree = "<group>"; };
 		04BF02A629980FA000109E06 /* photoguesser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = photoguesser.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		04BF02A929980FA000109E06 /* photoguesserApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = photoguesserApp.swift; sourceTree = "<group>"; };
-		04BF02AB29980FA000109E06 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		04BF02A929980FA000109E06 /* PhotoGuesserApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoGuesserApp.swift; sourceTree = "<group>"; };
 		04BF02AD29980FA100109E06 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		04BF02B029980FA100109E06 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -26,17 +26,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04AB9CF12999694D00B6C43E /* GameFeature in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		04AB9CEF2999694D00B6C43E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		04BF029D29980FA000109E06 = {
 			isa = PBXGroup;
 			children = (
+				04AB9CEE2999683900B6C43E /* photoguesser-modules */,
 				04BF02A829980FA000109E06 /* photoguesser */,
 				04BF02A729980FA000109E06 /* Products */,
+				04AB9CEF2999694D00B6C43E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -51,8 +61,7 @@
 		04BF02A829980FA000109E06 /* photoguesser */ = {
 			isa = PBXGroup;
 			children = (
-				04BF02A929980FA000109E06 /* photoguesserApp.swift */,
-				04BF02AB29980FA000109E06 /* GameView.swift */,
+				04BF02A929980FA000109E06 /* PhotoGuesserApp.swift */,
 				04BF02AD29980FA100109E06 /* Assets.xcassets */,
 				04BF02AF29980FA100109E06 /* Preview Content */,
 			);
@@ -83,6 +92,9 @@
 			dependencies = (
 			);
 			name = photoguesser;
+			packageProductDependencies = (
+				04AB9CF02999694D00B6C43E /* GameFeature */,
+			);
 			productName = photoguesser;
 			productReference = 04BF02A629980FA000109E06 /* photoguesser.app */;
 			productType = "com.apple.product-type.application";
@@ -125,8 +137,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04AB9CF22999734B00B6C43E /* Assets.xcassets in Resources */,
 				04BF02B129980FA100109E06 /* Preview Assets.xcassets in Resources */,
-				04BF02AE29980FA100109E06 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,8 +149,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				04BF02AC29980FA000109E06 /* GameView.swift in Sources */,
-				04BF02AA29980FA000109E06 /* photoguesserApp.swift in Sources */,
+				04BF02AA29980FA000109E06 /* PhotoGuesserApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -347,6 +358,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		04AB9CF02999694D00B6C43E /* GameFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GameFeature;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 04BF029E29980FA000109E06 /* Project object */;
 }
