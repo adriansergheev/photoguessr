@@ -1,4 +1,7 @@
 import SwiftUI
+import ApiClientLive
+import SharedModels
+import ComposableArchitecture
 
 struct GAlert: Identifiable {
 	var id: String { content }
@@ -10,6 +13,7 @@ public struct GameView: View {
 	@State private var alertData: GAlert?
 	@State private var guess: Double = 1899
 	@State private var score: Int = 0
+	@State var nearestPhotos: NearestPhotosResponse?
 	
 	public init() { }
 	
@@ -27,10 +31,10 @@ public struct GameView: View {
 			Image(
 				uiImage: UIImage(named: "demo", in: Bundle.module, with: nil)!
 			)
-				.resizable()
-				.aspectRatio(contentMode: .fill)
-				.foregroundColor(.accentColor)
-
+			.resizable()
+			.aspectRatio(contentMode: .fill)
+			.foregroundColor(.accentColor)
+			
 			Spacer()
 			Text("\(String(Int(self.guess)))")
 			Slider(value: self.$guess, in: 1800...2000, step: 1)
@@ -58,13 +62,23 @@ public struct GameView: View {
 			}
 		}
 		.padding()
-			.alert(item: $alertData) { data in
-				Alert(
-					title: Text("Points"),
-					message: Text(data.content),
-					dismissButton: .cancel()
-				)
+		.alert(item: $alertData) { data in
+			Alert(
+				title: Text("Points"),
+				message: Text(data.content),
+				dismissButton: .cancel()
+			)
+		}
+		.task {
+			do {
+				let client = ApiClient.live()
+				let nearestPhotos = try await client.giveNearestPhotos(.init())
+				self.nearestPhotos = nearestPhotos
+				print(nearestPhotos)
+			} catch let error {
+				print(error)
 			}
+		}
 	}
 }
 
