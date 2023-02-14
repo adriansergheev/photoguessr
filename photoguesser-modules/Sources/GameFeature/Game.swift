@@ -16,11 +16,12 @@ extension Photo {
 	}
 	
 	public var specificYear: Year {
-		if let yearUpperBound = yearUpperBound {
-			return .range(lowerBound: self.year, upperBound: yearUpperBound)
-		} else {
-			return .year(self.year)
+		if let yearUpperBound {
+			if yearUpperBound != self.year {
+				return .range(lowerBound: self.year, upperBound: yearUpperBound)
+			}
 		}
+		return .year(self.year)
 	}
 }
 
@@ -40,7 +41,7 @@ public struct Game: ReducerProtocol {
 		
 		var sliderValue: Double {
 			get {
-				if let guess = guess {
+				if let guess {
 					return Double(guess)
 				} else {
 					return Double((range.upperBound + range.lowerBound) / 2)
@@ -63,7 +64,7 @@ public struct Game: ReducerProtocol {
 		case gamePhotosResponse(TaskResult<State.GamePhotos>)
 	}
 	
-	@Dependency(\.continuousClock) var clock
+//	@Dependency(\.continuousClock) var clock
 	@Dependency(\.apiClient) var apiClient
 	
 	public init() {}
@@ -72,6 +73,9 @@ public struct Game: ReducerProtocol {
 		Reduce { state, action in
 			switch action {
 			case .submitTapped:
+				
+				defer { print("🌶️ \(String(describing: state.gamePhotos?.result.photos.count))") }
+				
 				guard let guess = state.guess, let photoInPlay = state.currentInGamePhoto else { return .none }
 				
 				defer {
@@ -102,13 +106,25 @@ public struct Game: ReducerProtocol {
 						let score = max(0, 50 - distance * 2)
 						
 						state.score += score
-						state.alert = AlertState { TextState ("You were \(distance) years away from \(targetYear).\n You receive \(score) points") }
+						state.alert = AlertState { TextState ("You were \(distance) years away from \(targetYear).\n You received \(score) points") }
 					}
 					
 				case let .range(lowerBound: lowerBound, upperBound: upperBound):
-					fatalError()
+					let targetRange = lowerBound...upperBound
+					let isContained = targetRange ~= guess
+					
+					if isContained {
+						state.score += 40
+						state.alert = AlertState { TextState ("You guessed the range! \(40) points!" ) }
+					} else {
+						let targetYear = (lowerBound + upperBound) / 2
+						let distance = abs(targetYear - guess)
+						let score = max(0, 40 - distance * 2)
+						
+						state.score += score
+						state.alert = AlertState { TextState ("The pic was taken between \(lowerBound) and \(upperBound) \n You received \(score) points") }
+					}
 				}
-				
 				return .none
 			case .startGame:
 				state.score = 0

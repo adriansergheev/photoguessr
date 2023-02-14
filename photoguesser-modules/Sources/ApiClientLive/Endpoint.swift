@@ -18,9 +18,10 @@ extension PastvuEndpoint: APIEndpoint {
 		"/api2/"
 	}
 	
+	// Stockholm
 	public var queryItems: [URLQueryItem]? {
 		let mockParams = """
-{"geo":[37.82,-122.469322],"limit":100,"except":228481}
+{"geo":[59.32938,18.06871],"limit":100,"except":228481}
 """
 		return [
 			.init(name: "method", value: "photo.giveNearestPhotos"),
