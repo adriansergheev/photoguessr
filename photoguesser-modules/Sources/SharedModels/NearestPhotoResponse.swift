@@ -1,6 +1,5 @@
 import Foundation
 
-// MARK: - NearestPhotosResponse
 public struct NearestPhotosResponse: Codable, Equatable {
 	public let result: Result
 	public let rid: String
@@ -11,7 +10,6 @@ public struct NearestPhotosResponse: Codable, Equatable {
 	}
 }
 
-// MARK: - Result
 public struct Result: Codable, Equatable {
 	public let photos: [Photo]
 	
@@ -20,32 +18,50 @@ public struct Result: Codable, Equatable {
 	}
 }
 
-// MARK: - Photo
 public struct Photo: Codable, Equatable {
 	public let s, cid: Int
 	public let file, title: String
-	public let dir: String?
+	public let direction: String?
 	public let geo: [Double]
+	
+	//TODO: move year tuple in a enum
 	public let year: Int
+	public let yearUpperBound: Int?
+	
 	public let ccount: Int?
 	
-	init(
+	public init(
 		s: Int,
 		cid: Int,
 		file: String,
 		title: String,
-		dir: String?,
+		direction: String?,
 		geo: [Double],
 		year: Int,
+		yearUpperBound: Int?,
 		ccount: Int?
 	) {
 		self.s = s
 		self.cid = cid
 		self.file = file
 		self.title = title
-		self.dir = dir
+		self.direction = direction
 		self.geo = geo
 		self.year = year
+		self.yearUpperBound = yearUpperBound
 		self.ccount = ccount
 	}
+	
+	enum CodingKeys: String, CodingKey {
+		case s
+		case cid
+		case file
+		case title
+		case direction = "dir"
+		case geo
+		case year = "year"
+		case yearUpperBound = "year2"
+		case ccount
+	}
 }
+

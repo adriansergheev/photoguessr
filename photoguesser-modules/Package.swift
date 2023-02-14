@@ -18,6 +18,7 @@ let package = Package(
 	dependencies: [
 		.package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "0.50.2"),
 		.package(url: "https://github.com/pointfreeco/swift-dependencies", from: "0.1.4"),
+		.package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "0.8.2"),
 		.package(url: "https://github.com/kean/Nuke", .upToNextMajor(from: "11.6.2"))
 	],
 	targets: [
@@ -25,7 +26,8 @@ let package = Package(
 			name: "ApiClient",
 			dependencies: [
 				"SharedModels",
-				.product(name: "Dependencies", package: "swift-dependencies")
+				.product(name: "Dependencies", package: "swift-dependencies"),
+				.product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay")
 			]
 		),
 		.target(

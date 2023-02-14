@@ -9,7 +9,8 @@ extension DependencyValues {
 }
 
 extension ApiClient: TestDependencyKey {
-	public static let previewValue: ApiClient = Self.noop
+	//	public static let previewValue: ApiClient = Self.mock()
+	public static let previewValue: ApiClient = Self.mock()
 	public static var testValue: ApiClient {
 		Self(
 			apiRequest: XCTUnimplemented("\(Self.self).apiRequest"),

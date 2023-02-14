@@ -27,7 +27,7 @@ public struct GameView: View {
 			VStack {
 				VStack(alignment: .trailing) {
 					HStack {
-						Text("Daily Challenge")
+						Text("Photo Guesser")
 							.bold()
 						Spacer()
 						Text("Score: \(viewStore.score)")
@@ -35,21 +35,18 @@ public struct GameView: View {
 					}
 				}
 
-				if let currentPhotoFile = viewStore.currentGamePhoto?.file {
-					let baseURL = "https://pastvu.com/_p/d/"
-					makeImage(url: URL(string: baseURL.appending(currentPhotoFile))!)
+				if let imageUrl = viewStore.currentInGamePhoto?.imageUrl {
+					makeImage(url: imageUrl)
 						.aspectRatio(contentMode: .fill)
 				} else {
+					Spacer()
 					ProgressView()
 				}
-
 				
 				Spacer()
-//				if let guess = viewStore.guess {
-//
-//				}
+				
 				Text("\(String(Int(viewStore.sliderValue)))")
-				Slider(value: viewStore.binding(get: \.sliderValue, send: Game.Action.sliderValueChanged), in: viewStore.range, step: 1)
+				Slider(value: viewStore.binding(get: \.sliderValue, send: Game.Action.sliderValueChanged), in: viewStore.sliderRange, step: 1)
 					.tint(Color.black)
 				Button {
 					viewStore.send(.submitTapped)
@@ -57,6 +54,7 @@ public struct GameView: View {
 					Text("Submit")
 						.tint(Color.black)
 				}
+				.disabled(viewStore.guess == nil)
 			}
 			.padding()
 			.alert(
@@ -80,7 +78,7 @@ struct ContentView_Previews: PreviewProvider {
 		GameView(
 			store: .init(
 				initialState: Game.State(),
-				reducer: Game()._printChanges()
+				reducer: Game()
 			)
 		)
 	}

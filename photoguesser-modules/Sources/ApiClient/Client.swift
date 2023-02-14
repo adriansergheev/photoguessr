@@ -1,4 +1,5 @@
 import Foundation
+import XCTestDynamicOverlay
 import SharedModels
 
 public enum HTTPMethod: String {
@@ -88,11 +89,11 @@ extension ApiClient {
 		
 		guard let url = urlComponents.url else {
 #if DEBUG
-		print(
+			print(
  """
  URL Components is malformed. Check \(String(describing: urlComponents.scheme)), \(urlComponents.path)
  """
-		)
+			)
 #endif
 			return nil
 		}
@@ -111,12 +112,28 @@ extension ApiClient {
 extension ApiClient {
 	public static func mock() -> Self {
 		Self(
-			apiRequest: { _ in
-				fatalError()
-			},
+			apiRequest: XCTUnimplemented("\(Self.self).apiRequest"),
 			giveNearestPhotos: { _ in
-				//TODO: add mock
-					.init(result: .init(photos: []), rid: "0")
+					.init(
+						result: .init(
+							photos: [
+								Photo(
+									s: 5,
+									cid: 449470,
+									file: "7/b/i/7bi9g0kfwouz0oho3b.jpeg",
+									title: "Golden Gate Bridge construction",
+									direction: "s",
+									geo: [
+										37.825334,
+										-122.479094
+									],
+									year: 1935,
+									yearUpperBound: nil,
+									ccount: nil
+								)
+							]
+						), rid: "cl1z1mcnjt"
+					)
 			}
 		)
 	}
