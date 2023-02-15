@@ -24,44 +24,53 @@ public struct GameView: View {
 	
 	public var body: some View {
 		WithViewStore(self.store) { viewStore in
+			
 			VStack {
-				VStack(alignment: .trailing) {
-					HStack {
-						Text("Photo Guesser")
-							.bold()
+				GameNavView()
+				GeometryReader { proxy in
+					VStack {
+						VStack(alignment: .trailing) {
+							HStack {
+								Text("\(viewStore.score)")
+									.bold()
+								Spacer()
+								Text("♾️")
+									.bold()
+							}
+						}
+						if let imageUrl = viewStore.currentInGamePhoto?.imageUrl {
+							makeImage(url: imageUrl)
+								.aspectRatio(contentMode: .fill)
+								.frame(width: proxy.size.width - 32)
+						} else {
+							Spacer()
+							ProgressView()
+						}
+						
 						Spacer()
-						Text("Score: \(viewStore.score)")
-							.bold()
-					}
-				}
-
-				if let imageUrl = viewStore.currentInGamePhoto?.imageUrl {
-					makeImage(url: imageUrl)
-						.aspectRatio(contentMode: .fill)
-				} else {
-					Spacer()
-					ProgressView()
-				}
-				
-				Spacer()
-				
-				Text("\(String(Int(viewStore.sliderValue)))")
-				Slider(value: viewStore.binding(get: \.sliderValue, send: Game.Action.sliderValueChanged), in: viewStore.sliderRange, step: 1)
-					.tint(Color.black)
-				Button {
-					viewStore.send(.submitTapped)
-				} label: {
-					Text("Submit")
+						
+						Text("\(String(Int(viewStore.sliderValue)))")
+						Slider(
+							value: viewStore.binding(get: \.sliderValue, send: Game.Action.sliderValueChanged),
+							in: viewStore.sliderRange, step: 1
+						)
 						.tint(Color.black)
+						//					Button {
+						//						viewStore.send(.submitTapped)
+						//					} label: {
+						//						Text("Submit")
+						//							.tint(Color.black)
+						//					}
+						//					.disabled(viewStore.guess == nil)
+					}
+					.padding()
+					.alert(
+						self.store.scope(state: \.alert),
+						dismiss: .alertDismissed
+					)
+					.onAppear { viewStore.send(.startGame) }
 				}
-				.disabled(viewStore.guess == nil)
 			}
-			.padding()
-			.alert(
-				self.store.scope(state: \.alert),
-				dismiss: .alertDismissed
-			)
-			.onAppear { viewStore.send(.startGame) }
 		}
 	}
 	
