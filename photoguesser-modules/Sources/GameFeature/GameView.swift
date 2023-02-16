@@ -126,6 +126,9 @@ public struct GameView: View {
 					.onAppear {
 						viewStore.send(.startGame)
 					}
+					.onDisappear {
+						viewStore.send(.onDisappear)
+					}
 				}
 			}
 		}
