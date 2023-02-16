@@ -61,7 +61,10 @@ public struct CustomSliderView: View {
 				}
 			}
 			.frame(height: .grid(48))
-			.background(Color.gray.opacity(0.5))
+			.background(
+				.ultraThinMaterial,
+				in: RoundedRectangle(cornerRadius: 0, style: .continuous)
+			)
 		}
 	}
 }

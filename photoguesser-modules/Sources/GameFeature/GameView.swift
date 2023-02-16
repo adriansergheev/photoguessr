@@ -35,7 +35,6 @@ public struct GameView: View {
 									.bold()
 									.frame(width: 60)
 								Spacer()
-
 								if let guess = viewStore.guess {
 									Text(verbatim: "\(guess)")
 										.font(.system(size: 24))
@@ -61,7 +60,7 @@ public struct GameView: View {
 										),
 										then: { store in
 											GameNotificationView(store: store)
-												.padding(.top, .grid(4))
+												.padding(.grid(2))
 										}
 									)
 									Spacer()
@@ -70,26 +69,29 @@ public struct GameView: View {
 
 								VStack(alignment: .leading) {
 									Spacer()
-									HStack(alignment: .bottom) {
-										// TODO: Improve legibility
-										Text(photo.title)
-											.bold()
-											.foregroundColor(.adaptiveWhite)
-										Spacer()
-
-										VStack(spacing: .grid(3)) {
+									VStack(spacing: .grid(2)) {
+										HStack {
+											Spacer()
 											Button {
 												viewStore.send(.submitTapped)
 											} label: {
 												Image(systemName: "hand.thumbsup.circle")
 													.resizable()
-													.frame(width: 48, height: 48)
+													.frame(width: .grid(18), height: .grid(18))
 													.foregroundColor(.photoGuesserGold)
 													.padding(.trailing, .grid(2))
 											}
 											.disabled(viewStore.guess == nil)
 											.opacity(viewStore.guess == nil ? 0.5 : 1.0)
+										}
 
+										HStack(alignment: .bottom) {
+											Text(photo.title)
+												.padding(.grid(2))
+												.bold()
+												.foregroundColor(.white)
+												.background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+											Spacer()
 											Button {
 												viewStore.send(.toggleSlider, animation: .easeIn)
 											} label: {
@@ -97,16 +99,14 @@ public struct GameView: View {
 												Image(systemName: viewStore.slider == nil ? "arrow.up.circle" : "arrow.down.circle")
 													.resizable()
 													.frame(width: 48, height: 48)
-													.foregroundColor(.black)
-//													.background(Color.gray.opacity(0.5))
-//													.cornerRadius(36)
+													.foregroundColor(.gray)
 													.padding(.trailing, .grid(2))
 											}
-										}
 
+										}
+										.padding(.bottom, .grid(16))
+										.padding(.leading, .grid(3))
 									}
-									.padding(.bottom, .grid(16))
-									.padding(.leading, .grid(3))
 
 									IfLetStore(
 										self.store.scope(
