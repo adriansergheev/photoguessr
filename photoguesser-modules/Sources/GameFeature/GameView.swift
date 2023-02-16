@@ -5,9 +5,9 @@ import Nuke
 import NukeUI
 import Sliders
 import Styleguide
+import GameNotification
 import ComposableArchitecture
 
-@MainActor
 public struct GameView: View {
 	public let store: StoreOf<Game>
 
@@ -30,13 +30,22 @@ public struct GameView: View {
 				GeometryReader { proxy in
 					VStack {
 						VStack(alignment: .trailing) {
-							HStack {
+							HStack(alignment: .center) {
 								Text("\(viewStore.score)")
 									.bold()
+									.frame(width: 60)
 								Spacer()
-//								Text("♾️")
-//									.bold()
+
+								if let guess = viewStore.guess {
+									Text(verbatim: "\(guess)")
+										.font(.system(size: 24))
+										.bold()
+								}
+								Spacer()
+								//								Text("♾️")
+								//									.bold()
 								Text("1/10")
+									.frame(width: 60)
 									.bold()
 							}
 						}
@@ -44,12 +53,28 @@ public struct GameView: View {
 						if let photo = viewStore.currentInGamePhoto,
 							 let imageUrl = photo.imageUrl {
 							ZStack {
+								VStack {
+									IfLetStore(
+										self.store.scope(
+											state: \.gameNotification,
+											action: Game.Action.gameNotification
+										),
+										then: { store in
+											GameNotificationView(store: store)
+												.padding(.top, .grid(4))
+										}
+									)
+									Spacer()
+								}
+								.zIndex(1)
+
 								VStack(alignment: .leading) {
 									Spacer()
 									HStack(alignment: .bottom) {
+										// TODO: Improve legibility
 										Text(photo.title)
 											.bold()
-											.foregroundColor(.white)
+											.foregroundColor(.adaptiveWhite)
 										Spacer()
 
 										VStack(spacing: .grid(3)) {
@@ -59,7 +84,7 @@ public struct GameView: View {
 												Image(systemName: "hand.thumbsup.circle")
 													.resizable()
 													.frame(width: 48, height: 48)
-													.foregroundColor(.white)
+													.foregroundColor(.photoGuesserGold)
 													.padding(.trailing, .grid(2))
 											}
 											.disabled(viewStore.guess == nil)
@@ -68,17 +93,20 @@ public struct GameView: View {
 											Button {
 												viewStore.send(.toggleSlider, animation: .easeIn)
 											} label: {
+												// TODO: Improve legibility
 												Image(systemName: viewStore.slider == nil ? "arrow.up.circle" : "arrow.down.circle")
 													.resizable()
 													.frame(width: 48, height: 48)
-													.foregroundColor(.white)
+													.foregroundColor(.black)
+//													.background(Color.gray.opacity(0.5))
+//													.cornerRadius(36)
 													.padding(.trailing, .grid(2))
 											}
 										}
 
 									}
-									.padding(.bottom, .grid(4))
-									.padding(.leading, .grid(2))
+									.padding(.bottom, .grid(16))
+									.padding(.leading, .grid(3))
 
 									IfLetStore(
 										self.store.scope(
@@ -90,25 +118,19 @@ public struct GameView: View {
 										}
 									)
 								}
-								.padding([.bottom], .grid(4))
 								.zIndex(1)
 
 								makeImage(url: imageUrl)
 									.aspectRatio(contentMode: .fill)
 									.frame(width: proxy.size.width - 32)
 							}
-							.edgesIgnoringSafeArea([.bottom])
+							.edgesIgnoringSafeArea(.bottom)
 						} else {
 							Spacer()
 							ProgressView()
 							Spacer()
 						}
 					}
-					.padding([.leading, .trailing], .grid(2))
-					.alert(
-						self.store.scope(state: \.alert),
-						dismiss: .alertDismissed
-					)
 					.onAppear {
 						viewStore.send(.startGame)
 					}
@@ -117,6 +139,7 @@ public struct GameView: View {
 		}
 	}
 
+	@MainActor
 	func makeImage(url: URL) -> some View {
 		LazyImage(url: url)
 			.animation(.default)
@@ -129,7 +152,7 @@ struct ContentView_Previews: PreviewProvider {
 	static var previews: some View {
 		GameView(
 			store: .init(
-				initialState: Game.State(),
+				initialState: Game.State(score: 0, gameNotification: .init(text: "You nailed it! \(50) points!")),
 				reducer: Game()
 			)
 		)

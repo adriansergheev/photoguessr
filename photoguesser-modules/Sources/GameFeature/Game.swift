@@ -1,5 +1,6 @@
 import SharedModels
 import Foundation
+import GameNotification
 import ComposableArchitecture
 
 extension Photo {
@@ -32,8 +33,8 @@ public struct Game: ReducerProtocol {
 		var score: Int = 0
 		var gamePhotos: GamePhotos?
 		var currentInGamePhoto: Photo?
-		var alert: AlertState<Action>?
 
+		var gameNotification: GameNotification.State?
 		var slider: CustomSlider.State?
 
 		var guess: Int? {
@@ -46,16 +47,25 @@ public struct Game: ReducerProtocol {
 			}
 			set { if let newValue { slider?.sliderValue = Double(newValue) } }
 		}
-		public init() {}
+		public init(
+			score: Int = 0,
+			gameNotification: GameNotification.State? = nil,
+			slider: CustomSlider.State? = nil
+		) {
+			self.score = score
+			self.gameNotification = gameNotification
+			self.slider = slider
+		}
 	}
 
 	public enum Action: Equatable {
 		case startGame
 		case submitTapped
-		case alertDismissed
 		case gamePhotosResponse(TaskResult<State.GamePhotos>)
 		case toggleSlider
+
 		case slider(CustomSlider.Action)
+		case gameNotification(GameNotification.Action)
 	}
 
 	@Dependency(\.apiClient) var apiClient
@@ -89,13 +99,13 @@ public struct Game: ReducerProtocol {
 					switch guess {
 					case targetYear:
 						state.score += 50
-						state.alert = AlertState { TextState("You nailed it! \(50) points!" ) }
+						state.gameNotification = .init(text: "You nailed it! \(50) points!")
 					default:
 						let distance = abs(targetYear - guess)
 						let score = max(0, 50 - distance * 2)
 
 						state.score += score
-						state.alert = AlertState { TextState("Photo was taken in \(targetYear) which is \(distance) away.\n You received \(score) points") }
+						state.gameNotification = .init(text: "Photo was taken in \(targetYear) which is \(distance) years  away.\nYou received \(score) points")
 					}
 
 				case let .range(lowerBound: lowerBound, upperBound: upperBound):
@@ -104,14 +114,14 @@ public struct Game: ReducerProtocol {
 
 					if isContained {
 						state.score += 40
-						state.alert = AlertState { TextState("Your guess is within the range! \(40) points!" ) }
+						state.gameNotification = .init(text: "Your guess is within the range! \(40) points!")
 					} else {
 						let targetYear = (lowerBound + upperBound) / 2
 						let distance = abs(targetYear - guess)
 						let score = max(0, 40 - distance * 2)
 
 						state.score += score
-						state.alert = AlertState { TextState("Photo was taken between \(lowerBound) and \(upperBound) \n You received \(score) points") }
+						state.gameNotification = .init(text: "Photo was taken between \(lowerBound) and \(upperBound)\n You received \(score) points")
 					}
 				}
 				return .none
@@ -141,18 +151,23 @@ public struct Game: ReducerProtocol {
 				return .none
 			case .gamePhotosResponse(.failure):
 				return .none
-			case .alertDismissed:
-				state.alert = nil
-				return .none
 			case .toggleSlider:
 				state.slider = state.slider == nil ? CustomSlider.State(sliderValue: 1913, range: 1826...2000) : nil
 				return .none
 			case .slider:
 				return .none
+			case .gameNotification(.onAppear):
+				return .none
+			case .gameNotification(.didExpire):
+				state.gameNotification = nil
+				return .none
 			}
 		}
 		.ifLet(\.slider, action: /Action.slider) {
 			CustomSlider()
+		}
+		.ifLet(\.gameNotification, action: /Action.gameNotification) {
+			GameNotification()
 		}
 	}
 }

@@ -5,7 +5,7 @@ struct GameNavView: View {
 	init() { }
 
 	var body: some View {
-		HStack(alignment: .center, spacing: 8) {
+		HStack(alignment: .center, spacing: .grid(2)) {
 			Text("PhotoGuesser")
 				.bold()
 			Spacer()
@@ -23,7 +23,7 @@ struct GameNavView: View {
 		}
 		.fixedSize(horizontal: false, vertical: true)
 		.padding([.leading, .trailing])
-		.padding([.top, .bottom], 8)
+		.padding([.top, .bottom], .grid(2))
 	}
 }
 

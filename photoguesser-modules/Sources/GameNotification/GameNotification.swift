@@ -4,12 +4,12 @@ import ComposableArchitecture
 
 public struct GameNotification: ReducerProtocol {
 	public struct State: Equatable {
-		var pointsGained: Int
+		var text: String
 		var timerIsActive: Bool = false
 		var didExpire: Bool = false
 
-		public init(pointsGained: Int) {
-			self.pointsGained = pointsGained
+		public init(text: String) {
+			self.text = text
 		}
 	}
 
@@ -21,7 +21,7 @@ public struct GameNotification: ReducerProtocol {
 	@Dependency(\.continuousClock) var clock
 	private enum TimerID {}
 
-	init() {}
+	public init() {}
 
 	public func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
 		switch action {
@@ -51,23 +51,25 @@ public struct GameNotificationView: View {
 	public var body: some View {
 		WithViewStore(self.store) { viewStore in
 			VStack(alignment: .leading) {
-				VStack(alignment: .leading) {
-					HStack(spacing: .grid(4)) {
-						//						if viewStore.didExpire {
-						//						}
-						Image(systemName: "crown")
-							.foregroundColor(Color.white)
-						Text("You received \(viewStore.pointsGained)")
-							.font(.system(size: 16))
-							.foregroundColor(Color.white)
-					}
+				HStack(spacing: .grid(4)) {
+					Image(systemName: "crown")
+						.foregroundColor(.adaptiveBlack)
+					Text(viewStore.text)
+						.font(.system(size: 17))
+						.foregroundColor(.adaptiveBlack)
+						.bold()
+					Image(systemName: "crown")
+						.foregroundColor(.adaptiveBlack)
 				}
-				.padding([.top, .bottom], .grid(3))
-				.padding([.leading, .trailing], .grid(4))
-				.frame(maxWidth: .infinity, alignment: .leading)
-				.background(Color.photoGuesserCream.opacity(0.7))
-				.padding([.leading, .trailing], .grid(4))
 			}
+			.padding(.grid(2))
+			.background(Color.photoGuesserGold.opacity(0.7))
+			.cornerRadius(4)
+			.overlay {
+				RoundedRectangle(cornerRadius: 10)
+					.stroke(Color.adaptiveBlack, lineWidth: 0.5)
+			}
+			.clipped()
 			.onAppear {
 				viewStore.send(.onAppear)
 			}
@@ -80,7 +82,7 @@ struct GameNotification_Previews: PreviewProvider {
 	static var previews: some View {
 		GameNotificationView(
 			store: .init(
-				initialState: .init(pointsGained: 42),
+				initialState: .init(text: "You nailed it!"),
 				reducer: GameNotification()
 			)
 		)
