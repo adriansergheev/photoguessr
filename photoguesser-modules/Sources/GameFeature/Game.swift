@@ -29,50 +29,35 @@ public struct Game: ReducerProtocol {
 	public struct State: Equatable {
 		public typealias GamePhotos = NearestPhotosResponse
 
-		var guess: Int?
 		var score: Int = 0
 		var gamePhotos: GamePhotos?
 		var currentInGamePhoto: Photo?
 		var alert: AlertState<Action>?
 
-		var showSubmitGuide: Bool = false
-		var timerSecondsElapsed: Int = 0
-		var timerInterval: Int = 5
-		var isTimerActive: Bool = false
+		var slider: CustomSlider.State?
 
-		fileprivate var range: ClosedRange<Int> = 1826...2000
-
-		// TODO: Move slider range, slider value to its own view
-		var sliderValue: Double {
+		var guess: Int? {
 			get {
-				if let guess {
-					return Double(guess)
+				if let sliderValue = slider?.sliderValue {
+					return Int(sliderValue)
 				} else {
-					return Double((range.upperBound + range.lowerBound) / 2)
+					return nil
 				}
 			}
-			set {
-				self.guess = Int(newValue)
-			}
-		}
-		var sliderRange: ClosedRange<Double> {
-			Double(self.range.lowerBound)...Double(self.range.upperBound)
+			set { if let newValue { slider?.sliderValue = Double(newValue) } }
 		}
 		public init() {}
 	}
 
 	public enum Action: Equatable {
 		case startGame
-		case onDisappear
-		case timerTicked
 		case submitTapped
 		case alertDismissed
-		case sliderValueChanged(Double)
 		case gamePhotosResponse(TaskResult<State.GamePhotos>)
+		case toggleSlider
+		case slider(CustomSlider.Action)
 	}
 
-	private enum TimerID {}
-	@Dependency(\.continuousClock) var clock
 	@Dependency(\.apiClient) var apiClient
 
 	public init() {}
@@ -82,7 +67,6 @@ public struct Game: ReducerProtocol {
 			switch action {
 			case .submitTapped:
 				guard let guess = state.guess, let photoInPlay = state.currentInGamePhoto else { return .none }
-
 				defer {
 					if var gamePhotos = state.gamePhotos?.result.photos,
 						 let rid = state.gamePhotos?.rid,
@@ -92,8 +76,6 @@ public struct Game: ReducerProtocol {
 							let value = gamePhotos.remove(at: index)
 							state.currentInGamePhoto = value
 							state.gamePhotos = NearestPhotosResponse(result: .init(photos: gamePhotos), rid: rid)
-							state.timerSecondsElapsed = 0
-							state.isTimerActive = false
 						}
 					} else {
 #if DEBUG
@@ -137,22 +119,18 @@ public struct Game: ReducerProtocol {
 				state.score = 0
 				state.gamePhotos = nil
 				state.currentInGamePhoto = nil
-				state.guess = nil
 
-				let req = NearestPhotoRequest()
+				// Stockholm
+				let req = NearestPhotoRequest(
+					geo: [59.32938, 18.06871],
+					limit: 100,
+					except: 228481
+				)
 				return .task { [req] in
 					await .gamePhotosResponse(
 						TaskResult { try await self.apiClient.giveNearestPhotos(req) }
 					)
 				}
-			case .onDisappear:
-				return .cancel(id: TimerID.self)
-			case .timerTicked:
-				state.timerSecondsElapsed += 1
-				if state.timerSecondsElapsed.isMultiple(of: 5) {
-					state.showSubmitGuide.toggle()
-				}
-				return .none
 			case let .gamePhotosResponse(.success(gamePhotos)):
 				var array = gamePhotos.result.photos
 				if let index = array.indices.randomElement() {
@@ -163,21 +141,18 @@ public struct Game: ReducerProtocol {
 				return .none
 			case .gamePhotosResponse(.failure):
 				return .none
-			case let .sliderValueChanged(value):
-				state.sliderValue = value
-				state.isTimerActive = true
-				state.timerSecondsElapsed = 0
-				return .run { [isTimerActive = state.isTimerActive] send in
-					guard isTimerActive else { return }
-					for await _ in self.clock.timer(interval: .seconds(1)) {
-						await send(.timerTicked, animation: .default)
-					}
-				}
-				.cancellable(id: TimerID.self, cancelInFlight: true)
 			case .alertDismissed:
 				state.alert = nil
 				return .none
+			case .toggleSlider:
+				state.slider = state.slider == nil ? CustomSlider.State(sliderValue: 1913, range: 1826...2000) : nil
+				return .none
+			case .slider:
+				return .none
 			}
+		}
+		.ifLet(\.slider, action: /Action.slider) {
+			CustomSlider()
 		}
 	}
 }

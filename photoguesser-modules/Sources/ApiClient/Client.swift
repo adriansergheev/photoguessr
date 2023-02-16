@@ -43,7 +43,8 @@ public struct ApiClient {
 	}
 }
 
-let jsonDecoder = JSONDecoder()
+public let jsonDecoder = JSONDecoder()
+public let jsonEncoder = JSONEncoder()
 
 extension ApiClient {
 	public static func apiRequest(
@@ -131,7 +132,8 @@ extension ApiClient {
 									ccount: nil
 								)
 							]
-						), rid: "cl1z1mcnjt"
+						),
+						rid: "cl1z1mcnjt"
 					)
 			}
 		)

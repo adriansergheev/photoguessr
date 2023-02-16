@@ -13,7 +13,9 @@ let package = Package(
 		.library(name: "ApiClient", targets: ["ApiClient"]),
 		.library(name: "ApiClientLive", targets: ["ApiClientLive"]),
 		.library(name: "GameFeature", targets: ["GameFeature"]),
-		.library(name: "SharedModels", targets: ["SharedModels"])
+		.library(name: "GameNotification", targets: ["GameNotification"]),
+		.library(name: "SharedModels", targets: ["SharedModels"]),
+		.library(name: "Styleguide", targets: ["Styleguide"])
 	],
 	dependencies: [
 		.package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "0.50.2"),
@@ -44,6 +46,7 @@ let package = Package(
 			dependencies: [
 				"ApiClient",
 				"ApiClientLive",
+				"GameNotification",
 				"SharedModels",
 				.product(name: "Sliders", package: "swiftui-sliders"),
 				.product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
@@ -51,12 +54,22 @@ let package = Package(
 			],
 			resources: [.process("Resources/")]
 		),
+		.target(
+			name: "GameNotification",
+			dependencies: [
+				"Styleguide",
+				.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+			]
+		),
 		.testTarget(
 			name: "GameFeatureTests",
 			dependencies: ["GameFeature"]
 		),
 		.target(
 			name: "SharedModels"
+		),
+		.target(
+			name: "Styleguide"
 		)
 	]
 )

@@ -18,15 +18,17 @@ extension PastvuEndpoint: APIEndpoint {
 		"/api2/"
 	}
 
-	// Stockholm
 	public var queryItems: [URLQueryItem]? {
-		let mockParams = """
-{"geo":[59.32938,18.06871],"limit":100,"except":228481}
-"""
-		return [
-			.init(name: "method", value: "photo.giveNearestPhotos"),
-			.init(name: "params", value: mockParams)
-		]
+		switch self {
+		case let .giveNearestPhotos(request):
+			let jsonData = try! jsonEncoder.encode(request)
+			let jsonString = String(data: jsonData, encoding: .utf8)!
+
+			return [
+				.init(name: "method", value: "photo.giveNearestPhotos"),
+				.init(name: "params", value: jsonString)
+			]
+		}
 	}
 
 	public var httpBody: Data? {

@@ -4,13 +4,11 @@ import SharedModels
 import Nuke
 import NukeUI
 import Sliders
+import Styleguide
 import ComposableArchitecture
 
 @MainActor
 public struct GameView: View {
-
-	@State private var translation: CGSize = .zero
-
 	public let store: StoreOf<Game>
 
 	private let pipeline = ImagePipeline {
@@ -36,7 +34,9 @@ public struct GameView: View {
 								Text("\(viewStore.score)")
 									.bold()
 								Spacer()
-								Text("♾️")
+//								Text("♾️")
+//									.bold()
+								Text("1/10")
 									.bold()
 							}
 						}
@@ -46,88 +46,71 @@ public struct GameView: View {
 							ZStack {
 								VStack(alignment: .leading) {
 									Spacer()
-									HStack {
+									HStack(alignment: .bottom) {
 										Text(photo.title)
 											.bold()
 											.foregroundColor(.white)
 										Spacer()
+
+										VStack(spacing: .grid(3)) {
+											Button {
+												viewStore.send(.submitTapped)
+											} label: {
+												Image(systemName: "hand.thumbsup.circle")
+													.resizable()
+													.frame(width: 48, height: 48)
+													.foregroundColor(.white)
+													.padding(.trailing, .grid(2))
+											}
+											.disabled(viewStore.guess == nil)
+											.opacity(viewStore.guess == nil ? 0.5 : 1.0)
+
+											Button {
+												viewStore.send(.toggleSlider, animation: .easeIn)
+											} label: {
+												Image(systemName: viewStore.slider == nil ? "arrow.up.circle" : "arrow.down.circle")
+													.resizable()
+													.frame(width: 48, height: 48)
+													.foregroundColor(.white)
+													.padding(.trailing, .grid(2))
+											}
+										}
+
 									}
+									.padding(.bottom, .grid(4))
+									.padding(.leading, .grid(2))
+
+									IfLetStore(
+										self.store.scope(
+											state: \.slider,
+											action: Game.Action.slider
+										),
+										then: { store in
+											CustomSliderView(store: store)
+										}
+									)
 								}
-								.padding([.bottom], 16)
+								.padding([.bottom], .grid(4))
 								.zIndex(1)
+
 								makeImage(url: imageUrl)
 									.aspectRatio(contentMode: .fill)
 									.frame(width: proxy.size.width - 32)
 							}
-							.offset(x: self.translation.width, y: 0)
-							.rotationEffect(
-								.degrees(Double(self.translation.width / proxy.size.width) * 25),
-								anchor: .bottom
-							)
-							.gesture(
-								DragGesture()
-									.onChanged { value in
-										if viewStore.guess != nil {
-											self.translation = value.translation
-										}
-									}
-									.onEnded { _ in
-										withAnimation(.easeInOut) {
-											if translation.width > 150 {
-												self.translation = .zero
-												viewStore.send(.submitTapped)
-											} else if translation.width < -150 {
-												//
-												self.translation = .zero
-											} else {
-												self.translation = .zero
-											}
-										}
-									}
-							)
+							.edgesIgnoringSafeArea([.bottom])
 						} else {
 							Spacer()
 							ProgressView()
+							Spacer()
 						}
-
-						Spacer()
-
-						if viewStore.showSubmitGuide {
-							Text("Swipe picture to submit")
-						} else if let guess = viewStore.guess {
-							Text("\(String(guess))")
-						} else {
-							Text("Slide to play")
-						}
-
-						VStack {
-							ValueSlider(
-								value: viewStore.binding(get: \.sliderValue, send: Game.Action.sliderValueChanged),
-								in: viewStore.sliderRange,
-								step: 1
-							)
-							.valueSliderStyle(
-								HorizontalValueSliderStyle(
-									track: Color.black
-										.frame(height: 6).cornerRadius(3),
-									thumbSize: CGSize(width: 48, height: 16),
-									options: .interactiveTrack
-								)
-							)
-						}
-						.frame(height: 36)
 					}
-					.padding([.leading, .trailing], 8)
-					.padding([.bottom], 16)
+					.padding([.leading, .trailing], .grid(2))
 					.alert(
 						self.store.scope(state: \.alert),
 						dismiss: .alertDismissed
 					)
 					.onAppear {
 						viewStore.send(.startGame)
-					}
-					.onDisappear {
-						viewStore.send(.onDisappear)
 					}
 				}
 			}
