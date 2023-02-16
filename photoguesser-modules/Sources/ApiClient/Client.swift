@@ -17,7 +17,7 @@ public protocol APIEndpoint {
 public struct ApiClient {
 	public var apiRequest: (any APIEndpoint) async throws -> (data: Data, response: URLResponse)
 	public var giveNearestPhotos: @Sendable (NearestPhotoRequest) async throws -> NearestPhotosResponse
-	
+
 	public init(
 		apiRequest: @escaping (any APIEndpoint) async throws -> (data: Data, response: URLResponse),
 		giveNearestPhotos: @escaping @Sendable (NearestPhotoRequest) async throws -> NearestPhotosResponse
@@ -25,7 +25,7 @@ public struct ApiClient {
 		self.apiRequest = apiRequest
 		self.giveNearestPhotos = giveNearestPhotos
 	}
-	
+
 	public func apiRequest<T: Decodable>(
 		_ apiEndpoint: any APIEndpoint,
 		as: T.Type
@@ -35,7 +35,7 @@ public struct ApiClient {
 			return try Self.apiDecode(data: data, as: T.self)
 		}
 	}
-	
+
 	public static func apiDecode<T: Decodable>(data: Data, as: T.Type) throws -> T {
 		do {
 			return try jsonDecoder.decode(T.self, from: data)
@@ -54,8 +54,7 @@ extension ApiClient {
 		}
 		return try await apiRequest(request)
 	}
-	
-	
+
 	public static func apiRequest(
 		_ request: URLRequest
 	) async throws -> (data: Data, response: URLResponse) {
@@ -71,7 +70,7 @@ extension ApiClient {
 #endif
 		return (data, response)
 	}
-	
+
 	public static func makeRequest(
 		for apiEndpoint: any APIEndpoint
 	) -> URLRequest? {
@@ -79,14 +78,14 @@ extension ApiClient {
 		addHeaders(to: &request)
 		return request
 	}
-	
+
 	private static func request(for apiEndpoint: any APIEndpoint) -> URLRequest? {
 		var urlComponents = URLComponents()
 		urlComponents.scheme = "https"
 		urlComponents.host = "pastvu.com"
 		urlComponents.path = apiEndpoint.path
 		urlComponents.queryItems = apiEndpoint.queryItems
-		
+
 		guard let url = urlComponents.url else {
 #if DEBUG
 			print(
@@ -102,7 +101,7 @@ extension ApiClient {
 		request.httpBody = apiEndpoint.httpBody
 		return request
 	}
-	
+
 	private static func addHeaders(to request: inout URLRequest) {
 		//
 	}

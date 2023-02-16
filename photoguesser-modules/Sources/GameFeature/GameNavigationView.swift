@@ -1,9 +1,9 @@
 import SwiftUI
 
 struct GameNavView: View {
-	
+
 	init() { }
-	
+
 	var body: some View {
 		HStack(alignment: .center, spacing: 8) {
 			Text("PhotoGuesser")
@@ -26,7 +26,6 @@ struct GameNavView: View {
 		.padding([.top, .bottom], 8)
 	}
 }
-
 
 #if DEBUG
 struct GameNavView_Previews: PreviewProvider {

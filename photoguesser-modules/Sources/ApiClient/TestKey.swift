@@ -25,4 +25,3 @@ extension ApiClient {
 		giveNearestPhotos: { _ in try await Task.never()}
 	)
 }
-

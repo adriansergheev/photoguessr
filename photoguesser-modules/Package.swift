@@ -7,7 +7,7 @@ let package = Package(
 	name: "photoguesser-modules",
 	platforms: [
 		.iOS(.v16),
-		.macOS(.v13),
+		.macOS(.v13)
 	],
 	products: [
 		.library(name: "ApiClient", targets: ["ApiClient"]),
@@ -19,7 +19,8 @@ let package = Package(
 		.package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "0.50.2"),
 		.package(url: "https://github.com/pointfreeco/swift-dependencies", from: "0.1.4"),
 		.package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "0.8.2"),
-		.package(url: "https://github.com/kean/Nuke", .upToNextMajor(from: "11.6.2"))
+		.package(url: "https://github.com/kean/Nuke", .upToNextMajor(from: "11.6.2")),
+		.package(url: "https://github.com/spacenation/swiftui-sliders", .upToNextMajor(from: "2.1.0"))
 	],
 	targets: [
 		.target(
@@ -44,6 +45,7 @@ let package = Package(
 				"ApiClient",
 				"ApiClientLive",
 				"SharedModels",
+				.product(name: "Sliders", package: "swiftui-sliders"),
 				.product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
 				.product(name: "NukeUI", package: "Nuke")
 			],

@@ -5,7 +5,7 @@ public struct ApiError: Codable, Error, Equatable, LocalizedError {
 	public let file: String
 	public let line: UInt
 	public let message: String
-	
+
 	public init(
 		error: Error,
 		file: StaticString = #fileID,
@@ -18,7 +18,7 @@ public struct ApiError: Codable, Error, Equatable, LocalizedError {
 		self.line = line
 		self.message = error.localizedDescription
 	}
-	
+
 	public var errorDescription: String? {
 		self.message
 	}

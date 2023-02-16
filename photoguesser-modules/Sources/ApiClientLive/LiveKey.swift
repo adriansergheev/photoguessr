@@ -4,7 +4,7 @@ import Dependencies
 
 extension ApiClient: DependencyKey {
 	public static var liveValue: ApiClient { Self.live() }
-	
+
 	public static func live() -> Self {
 		Self(
 			apiRequest: { apiEndpoint in

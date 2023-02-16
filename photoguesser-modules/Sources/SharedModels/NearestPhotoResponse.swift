@@ -3,7 +3,7 @@ import Foundation
 public struct NearestPhotosResponse: Codable, Equatable {
 	public let result: Result
 	public let rid: String
-	
+
 	public init(result: Result, rid: String) {
 		self.result = result
 		self.rid = rid
@@ -12,7 +12,7 @@ public struct NearestPhotosResponse: Codable, Equatable {
 
 public struct Result: Codable, Equatable {
 	public let photos: [Photo]
-	
+
 	public init(photos: [Photo]) {
 		self.photos = photos
 	}
@@ -23,13 +23,13 @@ public struct Photo: Codable, Equatable {
 	public let file, title: String
 	public let direction: String?
 	public let geo: [Double]
-	
-	//TODO: move year tuple in a enum
+
+	// TODO: move year tuple in a enum
 	public let year: Int
 	public let yearUpperBound: Int?
-	
+
 	public let ccount: Int?
-	
+
 	public init(
 		s: Int,
 		cid: Int,
@@ -51,7 +51,7 @@ public struct Photo: Codable, Equatable {
 		self.yearUpperBound = yearUpperBound
 		self.ccount = ccount
 	}
-	
+
 	enum CodingKeys: String, CodingKey {
 		case s
 		case cid
@@ -64,4 +64,3 @@ public struct Photo: Codable, Equatable {
 		case ccount
 	}
 }
-
