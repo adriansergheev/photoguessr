@@ -104,12 +104,9 @@ public struct GameView: View {
 													.padding(.trailing, .grid(2))
 											}
 											.transaction { $0.animation = nil }
-
 										}
 										.padding(.leading, .grid(3))
-										.if(viewStore.slider == nil) {
-											$0.padding(.bottom, .grid(16))
-										}
+										.padding(.bottom, viewStore.slider == nil ? .grid(16) : 0)
 									}
 
 									IfLetStore(

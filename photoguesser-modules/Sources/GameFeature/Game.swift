@@ -84,6 +84,7 @@ public struct Game: ReducerProtocol {
 
 						if let index = gamePhotos.indices.randomElement() {
 							let value = gamePhotos.remove(at: index)
+							// TODO: Execute this at a later time, so a delay effect is observed.
 							state.currentInGamePhoto = value
 							state.gamePhotos = NearestPhotosResponse(result: .init(photos: gamePhotos), rid: rid)
 						}
