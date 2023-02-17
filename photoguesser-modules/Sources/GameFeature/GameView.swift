@@ -89,23 +89,27 @@ public struct GameView: View {
 											Text(photo.title)
 												.padding(.grid(2))
 												.bold()
-												.foregroundColor(.white)
-												.background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+												.foregroundColor(Color.adaptiveBlack)
+												.background(.ultraThinMaterial.opacity(0.7), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
 											Spacer()
 											Button {
 												viewStore.send(.toggleSlider, animation: .easeIn)
 											} label: {
-												// TODO: Improve legibility
 												Image(systemName: viewStore.slider == nil ? "arrow.up.circle" : "arrow.down.circle")
 													.resizable()
 													.frame(width: 48, height: 48)
-													.foregroundColor(.gray)
+													.foregroundColor(.black)
+													.background(.ultraThinMaterial.opacity(0.5), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+													.clipShape(Circle())
 													.padding(.trailing, .grid(2))
 											}
+											.transaction { $0.animation = nil }
 
 										}
-										.padding(.bottom, .grid(16))
 										.padding(.leading, .grid(3))
+										.if(viewStore.slider == nil) {
+											$0.padding(.bottom, .grid(16))
+										}
 									}
 
 									IfLetStore(

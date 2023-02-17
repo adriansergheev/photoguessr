@@ -62,7 +62,7 @@ public struct CustomSliderView: View {
 			}
 			.frame(height: .grid(48))
 			.background(
-				.ultraThinMaterial,
+				.ultraThinMaterial.opacity(0.7),
 				in: RoundedRectangle(cornerRadius: 0, style: .continuous)
 			)
 		}
