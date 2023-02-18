@@ -70,30 +70,28 @@ public struct GameView: View {
 								VStack(alignment: .leading) {
 									Spacer()
 									VStack(spacing: .grid(2)) {
-										HStack(alignment: .bottom) {
+										HStack(alignment: .center) {
 											Text(photo.title)
 												.padding(.grid(2))
 												.bold()
-												.foregroundColor(Color.adaptiveBlack)
-												.background(.ultraThinMaterial.opacity(0.7), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+												.foregroundColor(Color.black)
+												.background(.ultraThinMaterial.opacity(0.9), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
 											Spacer()
 											Button {
 												viewStore.send(.toggleSlider, animation: .easeIn)
 											} label: {
-												Image(systemName: viewStore.slider == nil ? "arrow.up.circle" : "arrow.down.circle")
-													.resizable()
-													.frame(width: 48, height: 48)
+												Image(systemName: "chevron.up")
+													.rotationEffect(.degrees(viewStore.slider != nil ? 180 : 0))
 													.foregroundColor(.black)
-													.background(.ultraThinMaterial.opacity(0.5), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-													.clipShape(Circle())
-													.padding(.trailing, .grid(2))
+													.padding(.grid(2))
+													.background(.ultraThinMaterial.opacity(0.9), in: RoundedRectangle(cornerRadius: 36, style: .continuous))
+													.padding(.trailing, .grid(4))
 											}
 											.transaction { $0.animation = nil }
 										}
 										.padding(.leading, .grid(3))
 										.padding(.bottom, viewStore.slider == nil ? .grid(16) : 0)
 									}
-
 									IfLetStore(
 										self.store.scope(
 											state: \.slider,
