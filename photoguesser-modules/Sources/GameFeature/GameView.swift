@@ -76,6 +76,9 @@ public struct GameView: View {
 												.bold()
 												.foregroundColor(Color.black)
 												.background(.ultraThinMaterial.opacity(0.9), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+												.onTapGesture {
+													viewStore.send(.toggleSlider, animation: .easeIn)
+												}
 											Spacer()
 											Button {
 												viewStore.send(.toggleSlider, animation: .easeIn)
