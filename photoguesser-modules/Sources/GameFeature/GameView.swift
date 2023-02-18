@@ -70,21 +70,6 @@ public struct GameView: View {
 								VStack(alignment: .leading) {
 									Spacer()
 									VStack(spacing: .grid(2)) {
-										HStack {
-											Spacer()
-											Button {
-												viewStore.send(.submitTapped)
-											} label: {
-												Image(systemName: "hand.thumbsup.circle")
-													.resizable()
-													.frame(width: .grid(18), height: .grid(18))
-													.foregroundColor(.photoGuesserGold)
-													.padding(.trailing, .grid(2))
-											}
-											.disabled(viewStore.guess == nil)
-											.opacity(viewStore.guess == nil ? 0.5 : 1.0)
-										}
-
 										HStack(alignment: .bottom) {
 											Text(photo.title)
 												.padding(.grid(2))

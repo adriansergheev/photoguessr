@@ -60,7 +60,6 @@ public struct Game: ReducerProtocol {
 
 	public enum Action: Equatable {
 		case startGame
-		case submitTapped
 		case gamePhotosResponse(TaskResult<State.GamePhotos>)
 		case toggleSlider
 
@@ -75,7 +74,36 @@ public struct Game: ReducerProtocol {
 	public var body: some ReducerProtocol<State, Action> {
 		Reduce { state, action in
 			switch action {
-			case .submitTapped:
+			case .startGame:
+				state.score = 0
+				state.gamePhotos = nil
+				state.currentInGamePhoto = nil
+
+				// Stockholm
+				let req = NearestPhotoRequest(
+					geo: [59.32938, 18.06871],
+					limit: 100,
+					except: 228481
+				)
+				return .task { [req] in
+					await .gamePhotosResponse(
+						TaskResult { try await self.apiClient.giveNearestPhotos(req) }
+					)
+				}
+			case let .gamePhotosResponse(.success(gamePhotos)):
+				var array = gamePhotos.result.photos
+				if let index = array.indices.randomElement() {
+					let value = array.remove(at: index)
+					state.currentInGamePhoto = value
+				}
+				state.gamePhotos = NearestPhotosResponse(result: .init(photos: array), rid: gamePhotos.rid)
+				return .none
+			case .gamePhotosResponse(.failure):
+				return .none
+			case .toggleSlider:
+				state.slider = state.slider == nil ? CustomSlider.State(sliderValue: 1913, range: 1826...2000) : nil
+				return .none
+			case .slider(.submitTapped):
 				guard let guess = state.guess, let photoInPlay = state.currentInGamePhoto else { return .none }
 				defer {
 					if var gamePhotos = state.gamePhotos?.result.photos,
@@ -125,35 +153,6 @@ public struct Game: ReducerProtocol {
 						state.gameNotification = .init(text: "Photo was taken between \(lowerBound) and \(upperBound)\n You received \(score) points")
 					}
 				}
-				return .none
-			case .startGame:
-				state.score = 0
-				state.gamePhotos = nil
-				state.currentInGamePhoto = nil
-
-				// Stockholm
-				let req = NearestPhotoRequest(
-					geo: [59.32938, 18.06871],
-					limit: 100,
-					except: 228481
-				)
-				return .task { [req] in
-					await .gamePhotosResponse(
-						TaskResult { try await self.apiClient.giveNearestPhotos(req) }
-					)
-				}
-			case let .gamePhotosResponse(.success(gamePhotos)):
-				var array = gamePhotos.result.photos
-				if let index = array.indices.randomElement() {
-					let value = array.remove(at: index)
-					state.currentInGamePhoto = value
-				}
-				state.gamePhotos = NearestPhotosResponse(result: .init(photos: array), rid: gamePhotos.rid)
-				return .none
-			case .gamePhotosResponse(.failure):
-				return .none
-			case .toggleSlider:
-				state.slider = state.slider == nil ? CustomSlider.State(sliderValue: 1913, range: 1826...2000) : nil
 				return .none
 			case .slider:
 				return .none
