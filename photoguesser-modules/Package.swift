@@ -14,6 +14,7 @@ let package = Package(
 		.library(name: "ApiClientLive", targets: ["ApiClientLive"]),
 		.library(name: "GameFeature", targets: ["GameFeature"]),
 		.library(name: "GameNotification", targets: ["GameNotification"]),
+		.library(name: "HomeFeature", targets: ["HomeFeature"]),
 		.library(name: "SharedModels", targets: ["SharedModels"]),
 		.library(name: "Styleguide", targets: ["Styleguide"])
 	],
@@ -54,6 +55,10 @@ let package = Package(
 			],
 			resources: [.process("Resources/")]
 		),
+		.testTarget(
+			name: "GameFeatureTests",
+			dependencies: ["GameFeature"]
+		),
 		.target(
 			name: "GameNotification",
 			dependencies: [
@@ -61,10 +66,7 @@ let package = Package(
 				.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
 			]
 		),
-		.testTarget(
-			name: "GameFeatureTests",
-			dependencies: ["GameFeature"]
-		),
+		.target(name: "HomeFeature"),
 		.target(
 			name: "SharedModels"
 		),
