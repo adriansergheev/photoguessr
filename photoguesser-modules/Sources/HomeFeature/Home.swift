@@ -4,24 +4,24 @@ import ComposableArchitecture
 import Styleguide
 
 public struct Home: ReducerProtocol {
-	
+
 	public struct State: Equatable {
 		public var gameInstance: Game.State?
-		
+
 		public init(gameInstance: Game.State? = nil) {
 			self.gameInstance = gameInstance
 		}
 	}
-	
+
 	public enum Action: Equatable {
 		case onPlayUnlimitedTap
 		case onPlayLimitedTap
-		
+
 		case game(Game.Action)
 	}
-	
+
 	public init() {}
-	
+
 	public var body: some ReducerProtocol<State, Action> {
 		return Reduce { state, action in
 			switch action {
@@ -30,7 +30,7 @@ public struct Home: ReducerProtocol {
 				return .none
 			case .onPlayLimitedTap:
 				return .none
-			case .game(.onSettingsTap):
+			case .game(.gameNavigationBar(.onSettingsTap)):
 				state.gameInstance = nil
 				return .none
 			case .game:
@@ -45,11 +45,11 @@ public struct Home: ReducerProtocol {
 
 public struct HomeView: View {
 	let store: StoreOf<Home>
-	
+
 	public init(store: StoreOf<Home>) {
 		self.store = store
 	}
-	
+
 	public var body: some View {
 		WithViewStore(self.store) { viewStore in
 			VStack(alignment: .center) {

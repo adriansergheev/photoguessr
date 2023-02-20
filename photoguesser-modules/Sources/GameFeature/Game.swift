@@ -1,5 +1,6 @@
-import SharedModels
+import Haptics
 import Foundation
+import SharedModels
 import GameNotification
 import ComposableArchitecture
 
@@ -34,6 +35,7 @@ public struct Game: ReducerProtocol {
 		var gamePhotos: GamePhotos?
 		var currentInGamePhoto: Photo?
 
+		var navigationBar = GameNavigationBar.State()
 		var gameNotification: GameNotification.State?
 		var slider: CustomSlider.State?
 
@@ -62,10 +64,10 @@ public struct Game: ReducerProtocol {
 		case startGame
 		case gamePhotosResponse(TaskResult<State.GamePhotos>)
 		case toggleSlider
-		case onSettingsTap
 
 		case slider(CustomSlider.Action)
 		case gameNotification(GameNotification.Action)
+		case gameNavigationBar(GameNavigationBar.Action)
 	}
 
 	@Dependency(\.apiClient) var apiClient
@@ -73,6 +75,9 @@ public struct Game: ReducerProtocol {
 	public init() {}
 
 	public var body: some ReducerProtocol<State, Action> {
+		Scope(state: \.navigationBar, action: /Action.gameNavigationBar) {
+			GameNavigationBar()
+		}
 		Reduce { state, action in
 			switch action {
 			case .startGame:
@@ -82,7 +87,8 @@ public struct Game: ReducerProtocol {
 
 				// Stockholm
 				let req = NearestPhotoRequest(
-					geo: [59.32938, 18.06871],
+//					geo: [59.32938, 18.06871] // stockholm
+					geo: [47.003670, 28.907089], // chisinau
 					limit: 100,
 					except: 228481
 				)
@@ -162,8 +168,7 @@ public struct Game: ReducerProtocol {
 			case .gameNotification(.didExpire):
 				state.gameNotification = nil
 				return .none
-			case .onSettingsTap:
-				//TODO: Fix
+			case .gameNavigationBar:
 				return .none
 			}
 		}
@@ -173,5 +178,7 @@ public struct Game: ReducerProtocol {
 		.ifLet(\.gameNotification, action: /Action.gameNotification) {
 			GameNotification()
 		}
+		.haptics(isEnabled: { _ in true }, triggerOnChangeOf: \.guess)
+		.haptics(isEnabled: { _ in true }, triggerOnChangeOf: \.score)
 	}
 }

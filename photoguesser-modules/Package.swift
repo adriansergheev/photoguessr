@@ -14,6 +14,7 @@ let package = Package(
 		.library(name: "ApiClientLive", targets: ["ApiClientLive"]),
 		.library(name: "GameFeature", targets: ["GameFeature"]),
 		.library(name: "GameNotification", targets: ["GameNotification"]),
+		.library(name: "Haptics", targets: ["Haptics"]),
 		.library(name: "HomeFeature", targets: ["HomeFeature"]),
 		.library(name: "SharedModels", targets: ["SharedModels"]),
 		.library(name: "Styleguide", targets: ["Styleguide"])
@@ -43,11 +44,20 @@ let package = Package(
 			]
 		),
 		.target(
+			name: "Haptics",
+			dependencies: [
+				.product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+				.product(name: "Dependencies", package: "swift-dependencies"),
+				.product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay")
+			]
+		),
+		.target(
 			name: "GameFeature",
 			dependencies: [
 				"ApiClient",
 				"ApiClientLive",
 				"GameNotification",
+				"Haptics",
 				"SharedModels",
 				.product(name: "Sliders", package: "swiftui-sliders"),
 				.product(name: "ComposableArchitecture", package: "swift-composable-architecture"),

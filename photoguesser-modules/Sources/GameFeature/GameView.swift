@@ -26,7 +26,12 @@ public struct GameView: View {
 	public var body: some View {
 		WithViewStore(self.store) { viewStore in
 			VStack {
-				GameNavView()
+				GameNavigationBarView(
+					store: self.store.scope(
+						state: \.navigationBar,
+						action: Game.Action.gameNavigationBar
+					)
+				)
 				GeometryReader { proxy in
 					VStack {
 						VStack(alignment: .trailing) {
@@ -74,7 +79,7 @@ public struct GameView: View {
 											Text(photo.title)
 												.padding(.grid(2))
 												.bold()
-												.foregroundColor(Color.black)
+												.foregroundColor(Color.adaptiveBlack)
 												.background(.ultraThinMaterial.opacity(0.9), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
 												.onTapGesture {
 													viewStore.send(.toggleSlider, animation: .easeIn)
@@ -85,7 +90,7 @@ public struct GameView: View {
 											} label: {
 												Image(systemName: "chevron.up")
 													.rotationEffect(.degrees(viewStore.slider != nil ? 180 : 0))
-													.foregroundColor(.black)
+													.foregroundColor(.adaptiveBlack)
 													.padding(.grid(2))
 													.background(.ultraThinMaterial.opacity(0.9), in: RoundedRectangle(cornerRadius: 36, style: .continuous))
 													.padding(.trailing, .grid(4))
