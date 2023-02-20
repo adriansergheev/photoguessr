@@ -93,7 +93,8 @@ public struct GameView: View {
 													.foregroundColor(.adaptiveBlack)
 													.padding(.grid(2))
 													.background(.ultraThinMaterial.opacity(0.9), in: RoundedRectangle(cornerRadius: 36, style: .continuous))
-													.padding(.trailing, .grid(4))
+													.padding(.grid(2))
+													.padding(.trailing, .grid(2))
 											}
 											.transaction { $0.animation = nil }
 										}
