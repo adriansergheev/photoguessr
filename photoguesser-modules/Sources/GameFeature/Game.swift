@@ -62,6 +62,7 @@ public struct Game: ReducerProtocol {
 		case startGame
 		case gamePhotosResponse(TaskResult<State.GamePhotos>)
 		case toggleSlider
+		case onSettingsTap
 
 		case slider(CustomSlider.Action)
 		case gameNotification(GameNotification.Action)
@@ -160,6 +161,9 @@ public struct Game: ReducerProtocol {
 				return .none
 			case .gameNotification(.didExpire):
 				state.gameNotification = nil
+				return .none
+			case .onSettingsTap:
+				//TODO: Fix
 				return .none
 			}
 		}

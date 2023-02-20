@@ -7,13 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		04AB9CF12999694D00B6C43E /* GameFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 04AB9CF02999694D00B6C43E /* GameFeature */; };
+		0431EB0529A3FFD100BCABA4 /* HomeFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 0431EB0429A3FFD100BCABA4 /* HomeFeature */; };
+		043F958029A2387B00C983C7 /* HomePreviewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043F957F29A2387B00C983C7 /* HomePreviewApp.swift */; };
+		043F958C29A2396C00C983C7 /* HomeFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 043F958B29A2396C00C983C7 /* HomeFeature */; };
 		04AB9CF22999734B00B6C43E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04BF02AD29980FA100109E06 /* Assets.xcassets */; };
 		04BF02AA29980FA000109E06 /* PhotoGuesserApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BF02A929980FA000109E06 /* PhotoGuesserApp.swift */; };
 		04BF02B129980FA100109E06 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04BF02B029980FA100109E06 /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		043F957D29A2387B00C983C7 /* HomePreview.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HomePreview.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		043F957F29A2387B00C983C7 /* HomePreviewApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomePreviewApp.swift; sourceTree = "<group>"; };
 		04AB9CEE2999683900B6C43E /* photoguesser-modules */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = "photoguesser-modules"; sourceTree = "<group>"; };
 		04BF02A629980FA000109E06 /* photoguesser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = photoguesser.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		04BF02A929980FA000109E06 /* PhotoGuesserApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoGuesserApp.swift; sourceTree = "<group>"; };
@@ -22,17 +26,33 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		043F957A29A2387B00C983C7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				043F958C29A2396C00C983C7 /* HomeFeature in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		04BF02A329980FA000109E06 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				04AB9CF12999694D00B6C43E /* GameFeature in Frameworks */,
+				0431EB0529A3FFD100BCABA4 /* HomeFeature in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		043F957E29A2387B00C983C7 /* HomePreview */ = {
+			isa = PBXGroup;
+			children = (
+				043F957F29A2387B00C983C7 /* HomePreviewApp.swift */,
+			);
+			path = HomePreview;
+			sourceTree = "<group>";
+		};
 		04AB9CEF2999694D00B6C43E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -45,6 +65,7 @@
 			children = (
 				04AB9CEE2999683900B6C43E /* photoguesser-modules */,
 				04BF02A829980FA000109E06 /* photoguesser */,
+				043F957E29A2387B00C983C7 /* HomePreview */,
 				04BF02A729980FA000109E06 /* Products */,
 				04AB9CEF2999694D00B6C43E /* Frameworks */,
 			);
@@ -54,6 +75,7 @@
 			isa = PBXGroup;
 			children = (
 				04BF02A629980FA000109E06 /* photoguesser.app */,
+				043F957D29A2387B00C983C7 /* HomePreview.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -79,6 +101,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		043F957C29A2387B00C983C7 /* HomePreview */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 043F958A29A2387C00C983C7 /* Build configuration list for PBXNativeTarget "HomePreview" */;
+			buildPhases = (
+				043F957929A2387B00C983C7 /* Sources */,
+				043F957A29A2387B00C983C7 /* Frameworks */,
+				043F957B29A2387B00C983C7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HomePreview;
+			packageProductDependencies = (
+				043F958B29A2396C00C983C7 /* HomeFeature */,
+			);
+			productName = HomePreview;
+			productReference = 043F957D29A2387B00C983C7 /* HomePreview.app */;
+			productType = "com.apple.product-type.application";
+		};
 		04BF02A529980FA000109E06 /* photoguesser */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 04BF02B429980FA100109E06 /* Build configuration list for PBXNativeTarget "photoguesser" */;
@@ -93,7 +135,7 @@
 			);
 			name = photoguesser;
 			packageProductDependencies = (
-				04AB9CF02999694D00B6C43E /* GameFeature */,
+				0431EB0429A3FFD100BCABA4 /* HomeFeature */,
 			);
 			productName = photoguesser;
 			productReference = 04BF02A629980FA000109E06 /* photoguesser.app */;
@@ -109,6 +151,9 @@
 				LastSwiftUpdateCheck = 1420;
 				LastUpgradeCheck = 1420;
 				TargetAttributes = {
+					043F957C29A2387B00C983C7 = {
+						CreatedOnToolsVersion = 14.2;
+					};
 					04BF02A529980FA000109E06 = {
 						CreatedOnToolsVersion = 14.2;
 					};
@@ -128,11 +173,19 @@
 			projectRoot = "";
 			targets = (
 				04BF02A529980FA000109E06 /* photoguesser */,
+				043F957C29A2387B00C983C7 /* HomePreview */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		043F957B29A2387B00C983C7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		04BF02A429980FA000109E06 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -145,6 +198,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		043F957929A2387B00C983C7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				043F958029A2387B00C983C7 /* HomePreviewApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		04BF02A229980FA000109E06 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -156,6 +217,60 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		043F958829A2387C00C983C7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "green-black.photoguesser.HomePreview";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		043F958929A2387C00C983C7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "green-black.photoguesser.HomePreview";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		04BF02B229980FA100109E06 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -339,6 +454,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		043F958A29A2387C00C983C7 /* Build configuration list for PBXNativeTarget "HomePreview" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				043F958829A2387C00C983C7 /* Debug */,
+				043F958929A2387C00C983C7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		04BF02A129980FA000109E06 /* Build configuration list for PBXProject "photoguesser" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -360,9 +484,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		04AB9CF02999694D00B6C43E /* GameFeature */ = {
+		0431EB0429A3FFD100BCABA4 /* HomeFeature */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = GameFeature;
+			productName = HomeFeature;
+		};
+		043F958B29A2396C00C983C7 /* HomeFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = HomeFeature;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -1,14 +1,14 @@
 import SwiftUI
-import GameFeature
+import HomeFeature
 
 @main
 struct PhotoGuesser: App {
 	var body: some Scene {
 		WindowGroup {
-			GameView(
+			HomeView(
 				store: .init(
-					initialState: Game.State(),
-					reducer: Game()._printChanges()
+					initialState: .init(),
+					reducer: Home()._printChanges()
 				)
 			)
 		}

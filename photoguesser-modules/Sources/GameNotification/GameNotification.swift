@@ -6,7 +6,6 @@ public struct GameNotification: ReducerProtocol {
 	public struct State: Equatable {
 		var text: String
 		var timerIsActive: Bool = false
-		var didExpire: Bool = false
 
 		public init(text: String) {
 			self.text = text
@@ -35,7 +34,7 @@ public struct GameNotification: ReducerProtocol {
 			}
 			.cancellable(id: TimerID.self, cancelInFlight: true)
 		case .didExpire:
-			state.didExpire = true
+			state.timerIsActive = false
 			return .cancel(id: TimerID.self)
 		}
 	}
@@ -69,7 +68,6 @@ public struct GameNotificationView: View {
 				RoundedRectangle(cornerRadius: 10)
 					.stroke(Color.adaptiveBlack, lineWidth: 0.5)
 			}
-			.clipped()
 			.onAppear {
 				viewStore.send(.onAppear)
 			}

@@ -66,7 +66,12 @@ let package = Package(
 				.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
 			]
 		),
-		.target(name: "HomeFeature"),
+		.target(
+			name: "HomeFeature",
+			dependencies: [
+				"GameFeature"
+			]
+		),
 		.target(
 			name: "SharedModels"
 		),
