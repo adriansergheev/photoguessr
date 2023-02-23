@@ -38,7 +38,7 @@ public struct GameView: View {
 							HStack(alignment: .center) {
 								Text("\(viewStore.score)")
 									.bold()
-									.frame(width: 60)
+									.padding(.leading, .grid(4))
 								Spacer()
 								if let guess = viewStore.guess {
 									Text(verbatim: "\(guess)")
@@ -46,11 +46,18 @@ public struct GameView: View {
 										.bold()
 								}
 								Spacer()
-								//								Text("♾️")
-								//									.bold()
-								Text("1/10")
-									.frame(width: 60)
-									.bold()
+
+								switch viewStore.mode {
+								case .unlimited:
+									Text("♾️")
+										.foregroundColor(.adaptiveBlack)
+										.bold()
+										.padding(.trailing, .grid(4))
+								case let .limited(max: limit, current: current):
+									Text("\(current)/\(limit)")
+										.bold()
+										.padding(.trailing, .grid(4))
+								}
 							}
 						}
 
@@ -120,9 +127,15 @@ public struct GameView: View {
 							.edgesIgnoringSafeArea(.bottom)
 						} else {
 							Spacer()
-							ProgressView()
+							if viewStore.isInEmptyState {
+								Text("Could not find any pics for this location ;(")
+									.foregroundColor(.adaptiveBlack)
+							} else {
+								ProgressView()
+							}
 							Spacer()
 						}
+
 					}
 					.onAppear {
 						viewStore.send(.startGame)

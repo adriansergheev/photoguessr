@@ -28,10 +28,17 @@ extension Photo {
 }
 
 public struct Game: ReducerProtocol {
+
 	public struct State: Equatable {
 		public typealias GamePhotos = NearestPhotosResponse
 
+		public enum GameMode: Equatable {
+			case unlimited
+			case limited(max: Int, current: Int)
+		}
+
 		var score: Int = 0
+		var mode: State.GameMode = .unlimited
 		var gamePhotos: GamePhotos?
 		var currentInGamePhoto: Photo?
 
@@ -49,12 +56,19 @@ public struct Game: ReducerProtocol {
 			}
 			set { if let newValue { slider?.sliderValue = Double(newValue) } }
 		}
+
+		var isInEmptyState: Bool {
+			gamePhotos?.result.photos.isEmpty ?? false
+		}
+
 		public init(
 			score: Int = 0,
+			mode: GameMode = .unlimited,
 			gameNotification: GameNotification.State? = nil,
 			slider: CustomSlider.State? = nil
 		) {
 			self.score = score
+			self.mode = mode
 			self.gameNotification = gameNotification
 			self.slider = slider
 		}
@@ -87,8 +101,9 @@ public struct Game: ReducerProtocol {
 
 				// Stockholm
 				let req = NearestPhotoRequest(
-//					geo: [59.32938, 18.06871] // stockholm
-					geo: [47.003670, 28.907089], // chisinau
+					//					geo: [59.32938, 18.06871] // stockholm
+					//					geo: [47.003670, 28.907089], // chisinau
+					geo: [55.67594, 12.56553], // copenhagen
 					limit: 100,
 					except: 228481
 				)
@@ -119,10 +134,21 @@ public struct Game: ReducerProtocol {
 
 						if let index = gamePhotos.indices.randomElement() {
 							let value = gamePhotos.remove(at: index)
-							// TODO: Execute this at a later time, so a delay effect is observed.
 							state.currentInGamePhoto = value
 							state.gamePhotos = NearestPhotosResponse(result: .init(photos: gamePhotos), rid: rid)
 						}
+
+						if case let .limited(max, current) = state.mode {
+							if current + 1 >= 10 {
+#if DEBUG
+								print("Finish the game")
+								state.mode = .unlimited // fix
+#endif
+							} else {
+								state.mode = .limited(max: max, current: current + 1)
+							}
+						}
+
 					} else {
 #if DEBUG
 						print("🤠 finished pics")
