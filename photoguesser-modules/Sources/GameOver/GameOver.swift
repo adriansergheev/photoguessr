@@ -5,11 +5,10 @@ import ComposableArchitecture
 public struct GameOver: ReducerProtocol {
 
 	public struct State: Equatable {
-//		var score: Int
-//		public init(score: Int = 0) {
-//			self.score = score
-//		}
-		public init() {}
+		var score: Int
+		public init(score: Int = 0) {
+			self.score = score
+		}
 	}
 
 	public enum Action: Equatable {
@@ -50,7 +49,7 @@ public struct GameOverView: View {
 					.font(.system(size: 24))
 					.padding()
 
-					Text("🔫")
+					Text("Score: 🔫 \(viewStore.score)🔫 ")
 						.font(.system(size: 30))
 						.multilineTextAlignment(.center)
 				}

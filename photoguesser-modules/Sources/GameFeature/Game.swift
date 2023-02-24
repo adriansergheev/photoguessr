@@ -143,7 +143,7 @@ public struct Game: ReducerProtocol {
 
 						if case let .limited(max, current) = state.mode {
 							if current + 1 >= 10 {
-								state.gameOver = .init()
+								state.gameOver = .init(score: state.score)
 								state.score = 0
 								state.mode = .limited(max: max, current: 0)
 							} else {
