@@ -82,6 +82,15 @@
       }
     },
     {
+      "identity" : "swift-nonempty",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/adriansergheev/swift-nonempty",
+      "state" : {
+        "branch" : "sendable-support",
+        "revision" : "eac65ef7c9367a4aa743e00c4dddb89a3bf68a32"
+      }
+    },
+    {
       "identity" : "swiftui-navigation",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swiftui-navigation",

@@ -24,7 +24,8 @@ let package = Package(
 		.package(url: "https://github.com/pointfreeco/swift-dependencies", from: "0.1.4"),
 		.package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "0.8.2"),
 		.package(url: "https://github.com/kean/Nuke", .upToNextMajor(from: "11.6.2")),
-		.package(url: "https://github.com/spacenation/swiftui-sliders", .upToNextMajor(from: "2.1.0"))
+		.package(url: "https://github.com/spacenation/swiftui-sliders", .upToNextMajor(from: "2.1.0")),
+		.package(url: "https://github.com/adriansergheev/swift-nonempty", branch: "sendable-support")
 	],
 	targets: [
 		.target(
@@ -83,7 +84,10 @@ let package = Package(
 			]
 		),
 		.target(
-			name: "SharedModels"
+			name: "SharedModels",
+			dependencies: [
+				.product(name: "NonEmpty", package: "swift-nonempty")
+			]
 		),
 		.target(
 			name: "Styleguide"

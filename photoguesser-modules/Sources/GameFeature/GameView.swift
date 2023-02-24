@@ -34,30 +34,28 @@ public struct GameView: View {
 				)
 				GeometryReader { proxy in
 					VStack {
-						VStack(alignment: .trailing) {
-							HStack(alignment: .center) {
-								Text("\(viewStore.score)")
+						HStack {
+							Text("\(viewStore.score)")
+								.bold()
+								.padding(.leading, .grid(4))
+							Spacer()
+							if let guess = viewStore.guess {
+								Text(verbatim: "\(guess)")
+									.font(.system(size: 24))
 									.bold()
-									.padding(.leading, .grid(4))
-								Spacer()
-								if let guess = viewStore.guess {
-									Text(verbatim: "\(guess)")
-										.font(.system(size: 24))
-										.bold()
-								}
-								Spacer()
+							}
+							Spacer()
 
-								switch viewStore.mode {
-								case .unlimited:
-									Text("♾️")
-										.foregroundColor(.adaptiveBlack)
-										.bold()
-										.padding(.trailing, .grid(4))
-								case let .limited(max: limit, current: current):
-									Text("\(current)/\(limit)")
-										.bold()
-										.padding(.trailing, .grid(4))
-								}
+							switch viewStore.mode {
+							case .unlimited:
+								Text("♾️")
+									.foregroundColor(.adaptiveBlack)
+									.bold()
+									.padding(.trailing, .grid(4))
+							case let .limited(max: limit, current: current):
+								Text("\(current)/\(limit)")
+									.bold()
+									.padding(.trailing, .grid(4))
 							}
 						}
 
