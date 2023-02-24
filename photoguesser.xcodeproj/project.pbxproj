@@ -10,6 +10,8 @@
 		0431EB0529A3FFD100BCABA4 /* HomeFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 0431EB0429A3FFD100BCABA4 /* HomeFeature */; };
 		043F958029A2387B00C983C7 /* HomePreviewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043F957F29A2387B00C983C7 /* HomePreviewApp.swift */; };
 		043F958C29A2396C00C983C7 /* HomeFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 043F958B29A2396C00C983C7 /* HomeFeature */; };
+		045A189029A924E500D6B55D /* GameOverPreviewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045A188F29A924E500D6B55D /* GameOverPreviewApp.swift */; };
+		045A189C29A9252700D6B55D /* GameOver in Frameworks */ = {isa = PBXBuildFile; productRef = 045A189B29A9252700D6B55D /* GameOver */; };
 		04AB9CF22999734B00B6C43E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04BF02AD29980FA100109E06 /* Assets.xcassets */; };
 		04BF02AA29980FA000109E06 /* PhotoGuesserApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BF02A929980FA000109E06 /* PhotoGuesserApp.swift */; };
 		04BF02B129980FA100109E06 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04BF02B029980FA100109E06 /* Preview Assets.xcassets */; };
@@ -18,6 +20,8 @@
 /* Begin PBXFileReference section */
 		043F957D29A2387B00C983C7 /* HomePreview.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HomePreview.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		043F957F29A2387B00C983C7 /* HomePreviewApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomePreviewApp.swift; sourceTree = "<group>"; };
+		045A188D29A924E500D6B55D /* GameOverPreview.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GameOverPreview.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		045A188F29A924E500D6B55D /* GameOverPreviewApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverPreviewApp.swift; sourceTree = "<group>"; };
 		04AB9CEE2999683900B6C43E /* photoguesser-modules */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = "photoguesser-modules"; sourceTree = "<group>"; };
 		04BF02A629980FA000109E06 /* photoguesser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = photoguesser.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		04BF02A929980FA000109E06 /* PhotoGuesserApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoGuesserApp.swift; sourceTree = "<group>"; };
@@ -31,6 +35,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				043F958C29A2396C00C983C7 /* HomeFeature in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		045A188A29A924E500D6B55D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				045A189C29A9252700D6B55D /* GameOver in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,6 +65,14 @@
 			path = HomePreview;
 			sourceTree = "<group>";
 		};
+		045A188E29A924E500D6B55D /* GameOverPreview */ = {
+			isa = PBXGroup;
+			children = (
+				045A188F29A924E500D6B55D /* GameOverPreviewApp.swift */,
+			);
+			path = GameOverPreview;
+			sourceTree = "<group>";
+		};
 		04AB9CEF2999694D00B6C43E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -66,6 +86,7 @@
 				04AB9CEE2999683900B6C43E /* photoguesser-modules */,
 				04BF02A829980FA000109E06 /* photoguesser */,
 				043F957E29A2387B00C983C7 /* HomePreview */,
+				045A188E29A924E500D6B55D /* GameOverPreview */,
 				04BF02A729980FA000109E06 /* Products */,
 				04AB9CEF2999694D00B6C43E /* Frameworks */,
 			);
@@ -76,6 +97,7 @@
 			children = (
 				04BF02A629980FA000109E06 /* photoguesser.app */,
 				043F957D29A2387B00C983C7 /* HomePreview.app */,
+				045A188D29A924E500D6B55D /* GameOverPreview.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -121,6 +143,26 @@
 			productReference = 043F957D29A2387B00C983C7 /* HomePreview.app */;
 			productType = "com.apple.product-type.application";
 		};
+		045A188C29A924E500D6B55D /* GameOverPreview */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 045A189829A924E600D6B55D /* Build configuration list for PBXNativeTarget "GameOverPreview" */;
+			buildPhases = (
+				045A188929A924E500D6B55D /* Sources */,
+				045A188A29A924E500D6B55D /* Frameworks */,
+				045A188B29A924E500D6B55D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GameOverPreview;
+			packageProductDependencies = (
+				045A189B29A9252700D6B55D /* GameOver */,
+			);
+			productName = GameOverPreview;
+			productReference = 045A188D29A924E500D6B55D /* GameOverPreview.app */;
+			productType = "com.apple.product-type.application";
+		};
 		04BF02A529980FA000109E06 /* photoguesser */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 04BF02B429980FA100109E06 /* Build configuration list for PBXNativeTarget "photoguesser" */;
@@ -154,6 +196,9 @@
 					043F957C29A2387B00C983C7 = {
 						CreatedOnToolsVersion = 14.2;
 					};
+					045A188C29A924E500D6B55D = {
+						CreatedOnToolsVersion = 14.2;
+					};
 					04BF02A529980FA000109E06 = {
 						CreatedOnToolsVersion = 14.2;
 					};
@@ -174,12 +219,20 @@
 			targets = (
 				04BF02A529980FA000109E06 /* photoguesser */,
 				043F957C29A2387B00C983C7 /* HomePreview */,
+				045A188C29A924E500D6B55D /* GameOverPreview */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		043F957B29A2387B00C983C7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		045A188B29A924E500D6B55D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -203,6 +256,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				043F958029A2387B00C983C7 /* HomePreviewApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		045A188929A924E500D6B55D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				045A189029A924E500D6B55D /* GameOverPreviewApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -264,6 +325,64 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "green-black.photoguesser.HomePreview";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		045A189929A924E600D6B55D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "green-black.GameOverPreview";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		045A189A29A924E600D6B55D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "green-black.GameOverPreview";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -463,6 +582,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		045A189829A924E600D6B55D /* Build configuration list for PBXNativeTarget "GameOverPreview" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				045A189929A924E600D6B55D /* Debug */,
+				045A189A29A924E600D6B55D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		04BF02A129980FA000109E06 /* Build configuration list for PBXProject "photoguesser" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -491,6 +619,10 @@
 		043F958B29A2396C00C983C7 /* HomeFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = HomeFeature;
+		};
+		045A189B29A9252700D6B55D /* GameOver */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GameOver;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -1,4 +1,5 @@
 import Haptics
+import GameOver
 import Foundation
 import SharedModels
 import GameNotification
@@ -45,6 +46,7 @@ public struct Game: ReducerProtocol {
 		var navigationBar = GameNavigationBar.State()
 		var gameNotification: GameNotification.State?
 		var slider: CustomSlider.State?
+		var gameOver: GameOver.State?
 
 		var guess: Int? {
 			get {
@@ -82,6 +84,7 @@ public struct Game: ReducerProtocol {
 		case slider(CustomSlider.Action)
 		case gameNotification(GameNotification.Action)
 		case gameNavigationBar(GameNavigationBar.Action)
+		case gameOver(GameOver.Action)
 	}
 
 	@Dependency(\.apiClient) var apiClient
@@ -140,10 +143,9 @@ public struct Game: ReducerProtocol {
 
 						if case let .limited(max, current) = state.mode {
 							if current + 1 >= 10 {
-#if DEBUG
-								print("Finish the game")
-								state.mode = .unlimited // fix
-#endif
+								state.gameOver = .init()
+								state.score = 0
+								state.mode = .limited(max: max, current: 0)
 							} else {
 								state.mode = .limited(max: max, current: current + 1)
 							}
@@ -195,6 +197,9 @@ public struct Game: ReducerProtocol {
 				state.gameNotification = nil
 				return .none
 			case .gameNavigationBar:
+				return .none
+			case .gameOver(.onCloseButtonTapped):
+				state.gameOver = nil
 				return .none
 			}
 		}

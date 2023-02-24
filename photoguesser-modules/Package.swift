@@ -14,6 +14,7 @@ let package = Package(
 		.library(name: "ApiClientLive", targets: ["ApiClientLive"]),
 		.library(name: "GameFeature", targets: ["GameFeature"]),
 		.library(name: "GameNotification", targets: ["GameNotification"]),
+		.library(name: "GameOver", targets: ["GameOver"]),
 		.library(name: "Haptics", targets: ["Haptics"]),
 		.library(name: "HomeFeature", targets: ["HomeFeature"]),
 		.library(name: "SharedModels", targets: ["SharedModels"]),
@@ -25,6 +26,7 @@ let package = Package(
 		.package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "0.8.2"),
 		.package(url: "https://github.com/kean/Nuke", .upToNextMajor(from: "11.6.2")),
 		.package(url: "https://github.com/spacenation/swiftui-sliders", .upToNextMajor(from: "2.1.0")),
+		// FIXME: move to pointfreeco version
 		.package(url: "https://github.com/adriansergheev/swift-nonempty", branch: "sendable-support")
 	],
 	targets: [
@@ -58,6 +60,7 @@ let package = Package(
 				"ApiClient",
 				"ApiClientLive",
 				"GameNotification",
+				"GameOver",
 				"Haptics",
 				"SharedModels",
 				.product(name: "Sliders", package: "swiftui-sliders"),
@@ -72,6 +75,13 @@ let package = Package(
 		),
 		.target(
 			name: "GameNotification",
+			dependencies: [
+				"Styleguide",
+				.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+			]
+		),
+		.target(
+			name: "GameOver",
 			dependencies: [
 				"Styleguide",
 				.product(name: "ComposableArchitecture", package: "swift-composable-architecture")

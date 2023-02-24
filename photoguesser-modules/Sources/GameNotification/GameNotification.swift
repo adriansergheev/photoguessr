@@ -22,20 +22,21 @@ public struct GameNotification: ReducerProtocol {
 
 	public init() {}
 
-	public func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
-		switch action {
-		case .onAppear:
-			state.timerIsActive = true
-
-			return .run { send in
-				for await _ in self.clock.timer(interval: .seconds(5)) {
-					await send(.didExpire, animation: .default)
+	public var body: some ReducerProtocol<State, Action> {
+		Reduce { state, action in
+			switch action {
+			case .onAppear:
+				state.timerIsActive = true
+				return .run { send in
+					for await _ in self.clock.timer(interval: .seconds(5)) {
+						await send(.didExpire, animation: .default)
+					}
 				}
+				.cancellable(id: TimerID.self, cancelInFlight: true)
+			case .didExpire:
+				state.timerIsActive = false
+				return .cancel(id: TimerID.self)
 			}
-			.cancellable(id: TimerID.self, cancelInFlight: true)
-		case .didExpire:
-			state.timerIsActive = false
-			return .cancel(id: TimerID.self)
 		}
 	}
 }
