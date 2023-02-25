@@ -59,6 +59,7 @@ public struct GameOverView: View {
 
 					Text("Final Score: \(viewStore.score) 🔫 ")
 						.font(.system(size: 30))
+						.foregroundColor(.adaptiveBlack)
 						.multilineTextAlignment(.center)
 				}
 				.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -70,6 +71,7 @@ public struct GameOverView: View {
 
 					Text("Enjoying\nthe game?")
 						.font(.system(size: 30))
+						.foregroundColor(.adaptiveBlack)
 						.multilineTextAlignment(.center)
 
 					Button(action: {
