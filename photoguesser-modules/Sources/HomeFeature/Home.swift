@@ -11,7 +11,7 @@ public struct Home: ReducerProtocol {
 		public init(gameInstance: Game.State? = nil) {
 			self.gameInstance = gameInstance
 		}
-	}g
+	}
 	
 	public enum Action: Equatable {
 		case onPlayUnlimitedTap
