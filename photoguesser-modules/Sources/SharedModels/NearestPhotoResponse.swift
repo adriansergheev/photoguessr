@@ -64,3 +64,26 @@ public struct Photo: Codable, Equatable {
 		case ccount
 	}
 }
+
+extension Photo {
+	public var imageUrl: URL? {
+		let base = "https://pastvu.com/_p/d/"
+		return URL(string: base.appending(self.file))
+	}
+}
+
+extension Photo {
+	public enum Year {
+		case year(Int)
+		case range(lowerBound: Int, upperBound: Int)
+	}
+
+	public var specificYear: Year {
+		if let yearUpperBound {
+			if yearUpperBound != self.year {
+				return .range(lowerBound: self.year, upperBound: yearUpperBound)
+			}
+		}
+		return .year(self.year)
+	}
+}

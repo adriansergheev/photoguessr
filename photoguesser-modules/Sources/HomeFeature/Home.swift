@@ -4,24 +4,24 @@ import ComposableArchitecture
 import Styleguide
 
 public struct Home: ReducerProtocol {
-	
+
 	public struct State: Equatable {
 		public var gameInstance: Game.State?
-		
+
 		public init(gameInstance: Game.State? = nil) {
 			self.gameInstance = gameInstance
 		}
 	}
-	
+
 	public enum Action: Equatable {
 		case onPlayUnlimitedTap
 		case onPlayLimitedTap
-		
+
 		case game(Game.Action)
 	}
-	
+
 	public init() {}
-	
+
 	public var body: some ReducerProtocol<State, Action> {
 		return Reduce { state, action in
 			switch action {
@@ -48,74 +48,116 @@ public struct HomeView: View {
 	@Environment(\.colorScheme) var colorScheme
 	let store: StoreOf<Home>
 	@ObservedObject var viewStore: ViewStore<Home.State, Home.Action>
-	
+
 	public init(store: StoreOf<Home>) {
 		self.store = store
 		self.viewStore = ViewStore(self.store)
 	}
-	
+
 	public var body: some View {
 		VStack(alignment: .center) {
 			IfLetStore(self.store.scope(state: \.gameInstance, action: Home.Action.game)) { store in
 				GameView(store: store)
 			} else: {
 				VStack {
-					
-					Button {
-						viewStore.send(.onPlayLimitedTap)
-					} label: {
-						VStack(alignment: .center) {
-							Text("Play Out of 10")
-								.padding(.all, .grid(3))
-								.font(.system(size: 16))
-								.foregroundColor(.adaptiveWhite)
-						}
-					}
-					.buttonStyle(
-						HomeButtonStyle(
-							backgroundColor: self.colorScheme == .dark ? .photoGuesserCream : .black,
-							foregroundColor: self.colorScheme == .dark ? .black : .photoGuesserCream
-						)
+					HomeButton(
+						buttonAction: {
+							viewStore.send(.onPlayLimitedTap)
+						},
+						label:
+							Text("Play")
+							.padding(.all, .grid(3))
+							.font(.system(size: 16))
+							.foregroundColor(.adaptiveWhite)
+							.multilineTextAlignment(.center)
 					)
+
 					HStack {
-						Button {
-							viewStore.send(.onPlayUnlimitedTap)
-						} label: {
-							VStack(alignment: .center) {
+						HomeButton(
+							buttonAction: {
+								viewStore.send(.onPlayUnlimitedTap)
+							},
+							label:
 								Image(systemName: "infinity.circle")
+								.padding(.all, .grid(3))
+								.foregroundColor(.adaptiveWhite)
+						)
+
+						VStack {
+							HomeButton(
+								buttonAction: {
+									//
+								},
+								label:
+									Image(systemName: "star.leadinghalf.filled")
 									.padding(.all, .grid(3))
 									.foregroundColor(.adaptiveWhite)
-							}
-						}
-						.buttonStyle(
-							HomeButtonStyle(
-								backgroundColor: self.colorScheme == .dark ? .photoGuesserCream : .black,
-								foregroundColor: self.colorScheme == .dark ? .black : .photoGuesserCream
 							)
-						)
-						VStack {
-							Rectangle()
-								.border(.red)
-							Rectangle()
-								.border(.red)
+							HomeButton(
+								buttonAction: {
+									//
+								},
+								label:
+									Image(systemName: "gearshape")
+									.padding(.all, .grid(3))
+									.foregroundColor(.adaptiveWhite)
+							)
 						}
 					}
 				}
-				.padding(.grid(16))
+				.padding(.grid(20))
 				.foregroundColor(self.colorScheme == .dark ? .photoGuesserCream : .black)
 				.background(
-					(self.colorScheme == .dark ? .black : Color.photoGuesserCream)
+					(self.colorScheme == .dark ? .black : Color.photoGuesserCream).opacity(0.7)
 						.ignoresSafeArea()
+						.background(
+							demoImage
+								.resizable()
+								.ignoresSafeArea())
 				)
 			}
 		}
 	}
 }
 
+let demoImage = Image(uiImage: UIImage(named: "demo", in: Bundle.module, with: nil)!)
+
+struct HomeButton<Label: View>: View {
+	@Environment(\.colorScheme) var colorScheme
+
+	var buttonAction: (() -> Void)?
+	var label: Label
+
+	init(
+		buttonAction: (() -> Void)? = nil,
+		label: Label
+	) {
+		self.buttonAction = buttonAction
+		self.label = label
+	}
+
+	var body: some View {
+		Button {
+			self.buttonAction?()
+		} label: {
+			VStack(alignment: .center) {
+				label
+			}
+		}
+		.buttonStyle(
+			HomeButtonStyle(
+				backgroundColor: self.colorScheme == .dark ? .photoGuesserCream : .black,
+				foregroundColor: self.colorScheme == .dark ? .black : .photoGuesserCream
+			)
+		)
+		.opacity(0.9)
+	}
+}
+
 struct HomeButtonStyle: ButtonStyle {
 	let backgroundColor: Color
 	let foregroundColor: Color
-	
+
 	init(
 		backgroundColor: Color,
 		foregroundColor: Color
@@ -123,7 +165,7 @@ struct HomeButtonStyle: ButtonStyle {
 		self.backgroundColor = backgroundColor
 		self.foregroundColor = foregroundColor
 	}
-	
+
 	func makeBody(configuration: Configuration) -> some View {
 		return configuration.label
 			.foregroundColor(

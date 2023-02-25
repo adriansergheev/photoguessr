@@ -66,8 +66,7 @@ let package = Package(
 				.product(name: "Sliders", package: "swiftui-sliders"),
 				.product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
 				.product(name: "NukeUI", package: "Nuke")
-			],
-			resources: [.process("Resources/")]
+			]
 		),
 		.testTarget(
 			name: "GameFeatureTests",
@@ -91,7 +90,8 @@ let package = Package(
 			name: "HomeFeature",
 			dependencies: [
 				"GameFeature"
-			]
+			],
+			resources: [.process("Resources/")]
 		),
 		.target(
 			name: "SharedModels",
