@@ -13,6 +13,11 @@ public struct GameOver: ReducerProtocol {
 
 	public enum Action: Equatable {
 		case onCloseButtonTapped
+		case delegate(DelegateAction)
+	}
+
+	public enum DelegateAction {
+		case close
 	}
 
 	public init() {}
@@ -21,6 +26,8 @@ public struct GameOver: ReducerProtocol {
 		Reduce { _, action in
 			switch action {
 			case .onCloseButtonTapped:
+				return .send(.delegate(.close))
+			case .delegate(.close):
 				return .none
 			}
 		}
@@ -30,6 +37,7 @@ public struct GameOver: ReducerProtocol {
 public struct GameOverView: View {
 	@Environment(\.colorScheme) var colorScheme
 	@Environment(\.adaptiveSize) var adaptiveSize
+	@State var isSharePresented = false
 	public let store: StoreOf<GameOver>
 
 	public init(store: StoreOf<GameOver>) {
@@ -49,7 +57,7 @@ public struct GameOverView: View {
 					.font(.system(size: 24))
 					.padding()
 
-					Text("Score: 🔫 \(viewStore.score)🔫 ")
+					Text("Final Score: \(viewStore.score) 🔫 ")
 						.font(.system(size: 30))
 						.multilineTextAlignment(.center)
 				}
@@ -65,7 +73,7 @@ public struct GameOverView: View {
 						.multilineTextAlignment(.center)
 
 					Button(action: {
-						//
+						self.isSharePresented.toggle()
 					}) {
 						Text("Share with a friend")
 					}
@@ -84,6 +92,10 @@ public struct GameOverView: View {
 				(self.colorScheme == .dark ? .black : Color.photoGuesserCream)
 					.ignoresSafeArea()
 			)
+			.sheet(isPresented: self.$isSharePresented) {
+				ActivityView(activityItems: [URL(string: "https://www.photoguessr.com")!])
+					.ignoresSafeArea()
+			}
 		}
 	}
 }

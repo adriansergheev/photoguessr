@@ -198,8 +198,10 @@ public struct Game: ReducerProtocol {
 				return .none
 			case .gameNavigationBar:
 				return .none
-			case .gameOver(.onCloseButtonTapped):
+			case .gameOver(.delegate(.close)):
 				state.gameOver = nil
+				return .none
+			case .gameOver:
 				return .none
 			}
 		}
@@ -208,6 +210,9 @@ public struct Game: ReducerProtocol {
 		}
 		.ifLet(\.gameNotification, action: /Action.gameNotification) {
 			GameNotification()
+		}
+		.ifLet(\.gameOver, action: /Action.gameOver) {
+			GameOver()
 		}
 		.haptics(isEnabled: { _ in true }, triggerOnChangeOf: \.guess)
 		.haptics(isEnabled: { _ in true }, triggerOnChangeOf: \.score)
