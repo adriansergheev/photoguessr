@@ -105,7 +105,7 @@ public struct HomeView: View {
 						}
 					}
 				}
-				.padding(.grid(20))
+				.padding(.grid(16))
 				.foregroundColor(self.colorScheme == .dark ? .photoGuesserCream : .black)
 				.background(
 					(self.colorScheme == .dark ? .black : Color.photoGuesserCream).opacity(0.7)

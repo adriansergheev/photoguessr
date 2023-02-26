@@ -13,14 +13,6 @@ public struct GameView: View {
 	public let store: StoreOf<Game>
 	@ObservedObject public var viewStore: ViewStore<Game.State, Game.Action>
 
-	private let pipeline = ImagePipeline {
-		$0.dataLoader = {
-			let config = URLSessionConfiguration.default
-			config.urlCache = nil
-			return Nuke.DataLoader(configuration: config)
-		}()
-	}
-
 	public init(store: StoreOf<Game>) {
 		self.store = store
 		self.viewStore = ViewStore(self.store)
@@ -124,9 +116,12 @@ public struct GameView: View {
 								}
 								.zIndex(1)
 
-								makeImage(url: imageUrl)
-									.aspectRatio(contentMode: .fill)
-									.frame(width: proxy.size.width - 32)
+								LazyImage(url: imageUrl, transaction: .init(animation: .default)) {
+									$0.image
+										.aspectRatio(contentMode: .fill)
+										.frame(width: proxy.size.width - 32)
+								}
+
 							}
 							.edgesIgnoringSafeArea(.bottom)
 						} else {
@@ -159,13 +154,6 @@ public struct GameView: View {
 			)
 			.zIndex(1)
 		}
-	}
-
-	@MainActor
-	func makeImage(url: URL) -> some View {
-		LazyImage(url: url)
-			.animation(.default)
-			.pipeline(pipeline)
 	}
 }
 extension AnyTransition {
