@@ -192,8 +192,8 @@ public struct Game: ReducerProtocol {
 			.ifLet(\.gameOver, action: /Action.gameOver) {
 				GameOver()
 			}
-			.haptics(isEnabled: { _ in true }, triggerOnChangeOf: \.guess)
-			.haptics(isEnabled: { _ in true }, triggerOnChangeOf: \.score)
+			.haptics(triggerOnChangeOf: \.guess)
+			.haptics(triggerOnChangeOf: \.score)
 		}
 	}
 }

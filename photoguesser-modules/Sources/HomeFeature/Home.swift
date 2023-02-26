@@ -31,7 +31,6 @@ public struct Home: ReducerProtocol {
 
 	public var body: some ReducerProtocol<State, Action> {
 		CombineReducers {
-
 			Scope(state: \State.menuBackground, action: /Action.menuBackground) {
 				MenuBackground()
 #if DEBUG

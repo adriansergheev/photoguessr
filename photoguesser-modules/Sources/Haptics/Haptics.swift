@@ -2,7 +2,7 @@ import ComposableArchitecture
 
 extension ReducerProtocol {
 	public func haptics<Trigger: Equatable>(
-		isEnabled: @escaping (State) -> Bool,
+		isEnabled: @escaping (State) -> Bool = { _ in true },
 		triggerOnChangeOf trigger: @escaping (State) -> Trigger
 	) -> some ReducerProtocol<State, Action> {
 		Haptics(base: self, isEnabled: isEnabled, trigger: trigger)
