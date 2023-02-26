@@ -27,8 +27,7 @@ let package = Package(
 		.package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "0.8.2"),
 		.package(url: "https://github.com/kean/Nuke", branch: "nuke-12"),
 		.package(url: "https://github.com/spacenation/swiftui-sliders", .upToNextMajor(from: "2.1.0")),
-		// FIXME: move to pointfreeco version
-		.package(url: "https://github.com/adriansergheev/swift-nonempty", branch: "sendable-support")
+		.package(url: "https://github.com/pointfreeco/swift-nonempty", branch: "main")
 	],
 	targets: [
 		.target(

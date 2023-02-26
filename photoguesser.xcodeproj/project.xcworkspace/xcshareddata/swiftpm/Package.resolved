@@ -84,10 +84,10 @@
     {
       "identity" : "swift-nonempty",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/adriansergheev/swift-nonempty",
+      "location" : "https://github.com/pointfreeco/swift-nonempty",
       "state" : {
-        "branch" : "sendable-support",
-        "revision" : "eac65ef7c9367a4aa743e00c4dddb89a3bf68a32"
+        "branch" : "main",
+        "revision" : "1fd3f067ebc3900d200aa7e977fdb614cc5533bc"
       }
     },
     {
