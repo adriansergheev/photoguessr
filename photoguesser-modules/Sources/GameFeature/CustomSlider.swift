@@ -4,7 +4,6 @@ import Sliders
 import ComposableArchitecture
 
 public struct CustomSlider: ReducerProtocol {
-
 	public struct State: Equatable {
 		var sliderValue: Double
 		var range: ClosedRange<Int>
@@ -12,7 +11,7 @@ public struct CustomSlider: ReducerProtocol {
 			Double(self.range.lowerBound)...Double(self.range.upperBound)
 		}
 
-		init(sliderValue: Double, range: ClosedRange<Int> = 1826...2000) {
+		public init(sliderValue: Double, range: ClosedRange<Int> = 1826...2000) {
 			self.sliderValue = sliderValue
 			self.range = range
 		}

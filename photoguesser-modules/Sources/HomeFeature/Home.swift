@@ -1,15 +1,21 @@
 import SwiftUI
-import GameFeature
-import ComposableArchitecture
 import Styleguide
+import GameFeature
+import MenuBackground
+import ComposableArchitecture
 
 public struct Home: ReducerProtocol {
 
 	public struct State: Equatable {
 		public var gameInstance: Game.State?
+		public var menuBackground = MenuBackground.State()
 
-		public init(gameInstance: Game.State? = nil) {
+		public init(
+			gameInstance: Game.State? = nil,
+			menuBackground: MenuBackground.State = MenuBackground.State()
+		) {
 			self.gameInstance = gameInstance
+			self.menuBackground = menuBackground
 		}
 	}
 
@@ -18,28 +24,40 @@ public struct Home: ReducerProtocol {
 		case onPlayLimitedTap
 
 		case game(Game.Action)
+		case menuBackground(MenuBackground.Action)
 	}
 
 	public init() {}
 
 	public var body: some ReducerProtocol<State, Action> {
-		return Reduce { state, action in
-			switch action {
-			case .onPlayUnlimitedTap:
-				state.gameInstance = .init(mode: .unlimited)
-				return .none
-			case .onPlayLimitedTap:
-				state.gameInstance = .init(mode: .limited(max: 10, current: 0))
-				return .none
-			case .game(.gameNavigationBar(.onSettingsTap)):
-				state.gameInstance = nil
-				return .none
-			case .game:
-				return .none
+		CombineReducers {
+
+			Scope(state: \State.menuBackground, action: /Action.menuBackground) {
+				MenuBackground()
+#if DEBUG
+					._printChanges()
+#endif
 			}
-		}
-		.ifLet(\.gameInstance, action: /Action.game) {
-			Game()
+			Reduce { state, action in
+				switch action {
+				case .onPlayUnlimitedTap:
+					state.gameInstance = .init(mode: .unlimited)
+					return .none
+				case .onPlayLimitedTap:
+					state.gameInstance = .init(mode: .limited(max: 10, current: 0))
+					return .none
+				case .game(.gameNavigationBar(.onSettingsTap)):
+					state.gameInstance = nil
+					return .none
+				case .game:
+					return .none
+				case .menuBackground:
+					return .none
+				}
+			}
+			.ifLet(\.gameInstance, action: /Action.game) {
+				Game()
+			}
 		}
 	}
 }
@@ -111,16 +129,18 @@ public struct HomeView: View {
 					(self.colorScheme == .dark ? .black : Color.photoGuesserCream).opacity(0.7)
 						.ignoresSafeArea()
 						.background(
-							demoImage
-								.resizable()
-								.ignoresSafeArea())
+							MenuBackgroundView(
+								store: self.store.scope(
+									state: \.menuBackground,
+									action: Home.Action.menuBackground
+								)
+							)
+						)
 				)
 			}
 		}
 	}
 }
-
-let demoImage = Image(uiImage: UIImage(named: "demo", in: Bundle.module, with: nil)!)
 
 struct HomeButton<Label: View>: View {
 	@Environment(\.colorScheme) var colorScheme

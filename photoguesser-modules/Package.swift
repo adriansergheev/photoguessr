@@ -17,6 +17,7 @@ let package = Package(
 		.library(name: "GameOver", targets: ["GameOver"]),
 		.library(name: "Haptics", targets: ["Haptics"]),
 		.library(name: "HomeFeature", targets: ["HomeFeature"]),
+		.library(name: "MenuBackground", targets: ["MenuBackground"]),
 		.library(name: "SharedModels", targets: ["SharedModels"]),
 		.library(name: "Styleguide", targets: ["Styleguide"])
 	],
@@ -24,7 +25,7 @@ let package = Package(
 		.package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "0.50.2"),
 		.package(url: "https://github.com/pointfreeco/swift-dependencies", from: "0.1.4"),
 		.package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "0.8.2"),
-		.package(url: "https://github.com/kean/Nuke", revision: "2f989e0"),
+		.package(url: "https://github.com/kean/Nuke", branch: "nuke-12"),
 		.package(url: "https://github.com/spacenation/swiftui-sliders", .upToNextMajor(from: "2.1.0")),
 		// FIXME: move to pointfreeco version
 		.package(url: "https://github.com/adriansergheev/swift-nonempty", branch: "sendable-support")
@@ -89,7 +90,18 @@ let package = Package(
 		.target(
 			name: "HomeFeature",
 			dependencies: [
+				"MenuBackground",
 				"GameFeature"
+			]
+		),
+		.target(
+			name: "MenuBackground",
+			dependencies: [
+				"ApiClient",
+				"ApiClientLive",
+				"Styleguide",
+				.product(name: "NukeUI", package: "Nuke"),
+				.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
 			],
 			resources: [.process("Resources/")]
 		),
