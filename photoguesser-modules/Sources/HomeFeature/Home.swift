@@ -5,7 +5,6 @@ import MenuBackground
 import ComposableArchitecture
 
 public struct Home: ReducerProtocol {
-
 	public struct State: Equatable {
 		public var gameInstance: Game.State?
 		public var menuBackground = MenuBackground.State()
@@ -77,55 +76,118 @@ public struct HomeView: View {
 				GameView(store: store)
 			} else: {
 				VStack {
-					HomeButton(
-						buttonAction: {
-							viewStore.send(.onPlayLimitedTap)
-						},
-						label:
-							Text("Play")
-							.padding(.all, .grid(3))
-							.font(.system(size: 16))
-							.foregroundColor(.adaptiveWhite)
-							.multilineTextAlignment(.center)
-					)
-
-					HStack {
-						HomeButton(
-							buttonAction: {
-								viewStore.send(.onPlayUnlimitedTap)
-							},
-							label:
-								Image(systemName: "infinity.circle")
-								.padding(.all, .grid(3))
+					Text("Photoguesser")
+						.font(.system(.largeTitle))
+						.bold()
+					HomeButton {
+						viewStore.send(.onPlayLimitedTap)
+					} content: {
+						ZStack {
+							Image(systemName: "photo.stack.fill")
+								.resizable()
+								.aspectRatio(contentMode: .fit)
+								.padding(.all, .grid(14))
 								.foregroundColor(.adaptiveWhite)
-						)
+							VStack {
+								Spacer()
+								Text("Play")
+									.font(.callout)
+									.bold()
+									.padding([.top, .bottom], .grid(1))
+									.frame(maxWidth: .infinity)
+									.foregroundColor(self.colorScheme == .light ? .black : .photoGuesserCream)
+									.background(self.colorScheme == .light ? Color.photoGuesserCream : .black)
+									.clipShape(
+										RoundedRectangle(cornerRadius: 13, style: .continuous)
+												.inset(by: 2)
+									)
+							}
+						}
+					}
+					HomeButton {
+						viewStore.send(.onPlayUnlimitedTap)
+					} content: {
+						ZStack {
+							Image(systemName: "infinity")
+								.resizable()
+								.aspectRatio(contentMode: .fit)
+								.padding(.all, .grid(20))
+								.foregroundColor(.adaptiveWhite)
+							VStack {
+								Spacer()
+								Text("Play Unlimited")
+									.font(.callout)
+									.bold()
+									.padding([.top, .bottom], .grid(1))
+									.frame(maxWidth: .infinity)
+									.foregroundColor(self.colorScheme == .light ? .black : .photoGuesserCream)
+									.background(self.colorScheme == .light ? Color.photoGuesserCream : .black)
+									.clipShape(
+										RoundedRectangle(cornerRadius: 13, style: .continuous)
+												.inset(by: 2)
+									)
+							}
+						}
 
-						VStack {
-							HomeButton(
-								buttonAction: {
-									//
-								},
-								label:
-									Image(systemName: "star.leadinghalf.filled")
-									.padding(.all, .grid(3))
+					}
+					HStack {
+						HomeButton {
+							//
+						} content: {
+							ZStack {
+								Image(systemName: "star.leadinghalf.filled")
+									.resizable()
+									.aspectRatio(contentMode: .fit)
+									.padding(.all, .grid(10))
 									.foregroundColor(.adaptiveWhite)
-							)
-							HomeButton(
-								buttonAction: {
-									//
-								},
-								label:
-									Image(systemName: "gearshape")
-									.padding(.all, .grid(3))
+								VStack {
+									Spacer()
+									Text("Leaderboards")
+										.font(.callout)
+										.bold()
+										.padding([.top, .bottom], .grid(1))
+										.frame(maxWidth: .infinity)
+										.foregroundColor(self.colorScheme == .light ? .black : .photoGuesserCream)
+										.background(self.colorScheme == .light ? Color.photoGuesserCream : .black)
+										.clipShape(
+											RoundedRectangle(cornerRadius: 13, style: .continuous)
+													.inset(by: 2)
+										)
+								}
+							}
+						}
+
+						HomeButton {
+							//
+						} content: {
+							ZStack {
+								Image(systemName: "gearshape")
+									.resizable()
+									.aspectRatio(contentMode: .fit)
+									.padding(.all, .grid(9))
 									.foregroundColor(.adaptiveWhite)
-							)
+								VStack {
+									Spacer()
+									Text("Settings")
+										.font(.callout)
+										.bold()
+										.padding([.top, .bottom], .grid(1))
+										.frame(maxWidth: .infinity)
+										.foregroundColor(self.colorScheme == .light ? .black : .photoGuesserCream)
+										.background(self.colorScheme == .light ? Color.photoGuesserCream : .black)
+										.clipShape(
+											RoundedRectangle(cornerRadius: 13, style: .continuous)
+													.inset(by: 2)
+										)
+								}
+							}
 						}
 					}
 				}
 				.padding(.grid(16))
 				.foregroundColor(self.colorScheme == .dark ? .photoGuesserCream : .black)
 				.background(
-					(self.colorScheme == .dark ? .black : Color.photoGuesserCream).opacity(0.7)
+					(self.colorScheme == .dark ? .black.opacity(0.5) : Color.black.opacity(0.1))
 						.ignoresSafeArea()
 						.background(
 							MenuBackgroundView(
@@ -141,27 +203,25 @@ public struct HomeView: View {
 	}
 }
 
-struct HomeButton<Label: View>: View {
+struct HomeButton<Content: View>: View {
 	@Environment(\.colorScheme) var colorScheme
 
 	var buttonAction: (() -> Void)?
-	var label: Label
+	var content: () -> Content
 
 	init(
 		buttonAction: (() -> Void)? = nil,
-		label: Label
+		@ViewBuilder content: @escaping () -> Content
 	) {
 		self.buttonAction = buttonAction
-		self.label = label
+		self.content = content
 	}
 
 	var body: some View {
 		Button {
 			self.buttonAction?()
 		} label: {
-			VStack(alignment: .center) {
-				label
-			}
+			content()
 		}
 		.buttonStyle(
 			HomeButtonStyle(
