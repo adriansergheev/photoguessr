@@ -53,13 +53,13 @@ public struct GameNotificationView: View {
 			VStack(alignment: .leading) {
 				HStack(spacing: .grid(4)) {
 					Image(systemName: "crown")
-						.foregroundColor(.adaptiveBlack)
+						.foregroundColor(.black)
 					Text(viewStore.text)
 						.font(.system(size: 17))
-						.foregroundColor(.adaptiveBlack)
+						.foregroundColor(.black)
 						.bold()
 					Image(systemName: "crown")
-						.foregroundColor(.adaptiveBlack)
+						.foregroundColor(.black)
 				}
 			}
 			.padding(.grid(2))

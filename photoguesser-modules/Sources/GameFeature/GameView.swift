@@ -11,6 +11,7 @@ import ComposableArchitecture
 
 public struct GameView: View {
 	public let store: StoreOf<Game>
+	@Environment(\.colorScheme) var colorScheme
 	@ObservedObject public var viewStore: ViewStore<Game.State, Game.Action>
 
 	public init(store: StoreOf<Game>) {
@@ -31,15 +32,18 @@ public struct GameView: View {
 					VStack {
 						HStack {
 							Text("\(viewStore.score)")
+								.foregroundColor(.adaptiveWhite)
 								.bold()
 								.frame(width: 40)
 								.padding(.leading, .grid(4))
+
 							Spacer()
-							if let guess = viewStore.guess {
-								Text(verbatim: "\(guess)")
-									.font(.system(size: 24))
-									.bold()
-							}
+							Text(verbatim: "\(viewStore.guess ?? 0)")
+								.foregroundColor(.adaptiveWhite)
+								.font(.system(size: 24))
+								.bold()
+								.opacity(viewStore.guess != nil ? 1.0 : 0.0)
+								.transaction { $0.animation = nil }
 							Spacer()
 
 							switch viewStore.mode {
@@ -52,6 +56,7 @@ public struct GameView: View {
 							case let .limited(max: limit, current: current):
 								Text("\(current)/\(limit)")
 									.bold()
+									.foregroundColor(.adaptiveWhite)
 									.frame(width: 40)
 									.padding(.trailing, .grid(4))
 							}
@@ -154,6 +159,7 @@ public struct GameView: View {
 			)
 			.zIndex(1)
 		}
+		.background(colorScheme == .light ? .black : .photoGuesserCream)
 	}
 }
 extension AnyTransition {

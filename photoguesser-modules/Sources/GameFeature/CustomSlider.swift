@@ -67,9 +67,9 @@ public struct CustomSliderView: View {
 						.foregroundColor(.black)
 						.padding(.grid(2))
 						.padding([.leading, .trailing], .grid(1))
-						.background(Color.photoGuesserGold)
+						.background(Color.photoGuesserCream)
 						.cornerRadius(36)
-						.foregroundColor(.photoGuesserGold)
+						.foregroundColor(.photoGuesserCream)
 						.padding(.bottom, .grid(10))
 				}
 			}
