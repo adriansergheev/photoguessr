@@ -82,112 +82,44 @@ public struct HomeView: View {
 					HomeButton {
 						viewStore.send(.onPlayLimitedTap)
 					} content: {
-						ZStack {
-							Image(systemName: "photo.stack.fill")
-								.resizable()
-								.aspectRatio(contentMode: .fit)
-								.padding(.all, .grid(14))
-								.foregroundColor(.adaptiveWhite)
-							VStack {
-								Spacer()
-								Text("Play")
-									.font(.callout)
-									.bold()
-									.padding([.top, .bottom], .grid(1))
-									.frame(maxWidth: .infinity)
-									.foregroundColor(self.colorScheme == .light ? .black : .photoGuesserCream)
-									.background(self.colorScheme == .light ? Color.photoGuesserCream : .black)
-									.clipShape(
-										RoundedRectangle(cornerRadius: 13, style: .continuous)
-												.inset(by: 2)
-									)
-							}
-						}
+						HomeButtonContent(
+							image: Image(systemName: "photo.stack.fill"),
+							imagePadding: .grid(12),
+							text: Text("Play")
+						)
 					}
 					HomeButton {
 						viewStore.send(.onPlayUnlimitedTap)
 					} content: {
-						ZStack {
-							Image(systemName: "infinity")
-								.resizable()
-								.aspectRatio(contentMode: .fit)
-								.padding(.all, .grid(20))
-								.foregroundColor(.adaptiveWhite)
-							VStack {
-								Spacer()
-								Text("Play Unlimited")
-									.font(.callout)
-									.bold()
-									.padding([.top, .bottom], .grid(1))
-									.frame(maxWidth: .infinity)
-									.foregroundColor(self.colorScheme == .light ? .black : .photoGuesserCream)
-									.background(self.colorScheme == .light ? Color.photoGuesserCream : .black)
-									.clipShape(
-										RoundedRectangle(cornerRadius: 13, style: .continuous)
-												.inset(by: 2)
-									)
-							}
-						}
-
+						HomeButtonContent(
+							image: Image(systemName: "infinity"),
+							imagePadding: .grid(18),
+							text: Text("Play Unlimited")
+						)
 					}
 					HStack {
 						HomeButton {
 							//
 						} content: {
-							ZStack {
-								Image(systemName: "star.leadinghalf.filled")
-									.resizable()
-									.aspectRatio(contentMode: .fit)
-									.padding(.all, .grid(10))
-									.foregroundColor(.adaptiveWhite)
-								VStack {
-									Spacer()
-									Text("Leaderboards")
-										.font(.callout)
-										.bold()
-										.padding([.top, .bottom], .grid(1))
-										.frame(maxWidth: .infinity)
-										.foregroundColor(self.colorScheme == .light ? .black : .photoGuesserCream)
-										.background(self.colorScheme == .light ? Color.photoGuesserCream : .black)
-										.clipShape(
-											RoundedRectangle(cornerRadius: 13, style: .continuous)
-													.inset(by: 2)
-										)
-								}
-							}
+							HomeButtonContent(
+								image: Image(systemName: "star.leadinghalf.filled"),
+								text: Text("Leaderboards")
+							)
 						}
-
 						HomeButton {
 							//
 						} content: {
-							ZStack {
-								Image(systemName: "gearshape")
-									.resizable()
-									.aspectRatio(contentMode: .fit)
-									.padding(.all, .grid(9))
-									.foregroundColor(.adaptiveWhite)
-								VStack {
-									Spacer()
-									Text("Settings")
-										.font(.callout)
-										.bold()
-										.padding([.top, .bottom], .grid(1))
-										.frame(maxWidth: .infinity)
-										.foregroundColor(self.colorScheme == .light ? .black : .photoGuesserCream)
-										.background(self.colorScheme == .light ? Color.photoGuesserCream : .black)
-										.clipShape(
-											RoundedRectangle(cornerRadius: 13, style: .continuous)
-													.inset(by: 2)
-										)
-								}
-							}
+							HomeButtonContent(
+								image: Image(systemName: "gearshape"),
+								text: Text("Settings")
+							)
 						}
 					}
 				}
 				.padding(.grid(16))
-				.foregroundColor(self.colorScheme == .dark ? .photoGuesserCream : .black)
+				.foregroundColor(self.colorScheme == .light ? .photoGuesserCream : .black)
 				.background(
-					(self.colorScheme == .dark ? .black.opacity(0.5) : Color.black.opacity(0.1))
+					(self.colorScheme == .light ? .black.opacity(0.5) : Color.black.opacity(0.1))
 						.ignoresSafeArea()
 						.background(
 							MenuBackgroundView(
@@ -198,6 +130,48 @@ public struct HomeView: View {
 							)
 						)
 				)
+			}
+		}
+	}
+}
+
+struct HomeButtonContent: View {
+	@Environment(\.colorScheme) var colorScheme
+
+	let image: Image
+	let imagePadding: CGFloat
+	let text: Text
+
+	init(
+		image: Image,
+		imagePadding: CGFloat = .grid(9),
+		text: Text
+	) {
+		self.image = image
+		self.imagePadding = imagePadding
+		self.text = text
+	}
+
+	var body: some View {
+		ZStack {
+			image
+				.resizable()
+				.aspectRatio(contentMode: .fit)
+				.padding(.all, self.imagePadding)
+				.foregroundColor(.adaptiveBlack)
+			VStack {
+				Spacer()
+				text
+					.font(.callout)
+					.bold()
+					.padding([.top, .bottom], .grid(1))
+					.frame(maxWidth: .infinity)
+					.foregroundColor(self.colorScheme == .dark ? .black : .photoGuesserCream)
+					.background(self.colorScheme == .dark ? Color.photoGuesserCream : .black)
+					.clipShape(
+						RoundedRectangle(cornerRadius: 13, style: .continuous)
+							.inset(by: 2)
+					)
 			}
 		}
 	}
@@ -225,8 +199,8 @@ struct HomeButton<Content: View>: View {
 		}
 		.buttonStyle(
 			HomeButtonStyle(
-				backgroundColor: self.colorScheme == .dark ? .photoGuesserCream : .black,
-				foregroundColor: self.colorScheme == .dark ? .black : .photoGuesserCream
+				backgroundColor: self.colorScheme == .light ? .photoGuesserCream : .black,
+				foregroundColor: self.colorScheme == .light ? .black : .photoGuesserCream
 			)
 		)
 		.opacity(0.9)
