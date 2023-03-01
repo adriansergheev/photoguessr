@@ -12,6 +12,7 @@ let package = Package(
 	products: [
 		.library(name: "ApiClient", targets: ["ApiClient"]),
 		.library(name: "ApiClientLive", targets: ["ApiClientLive"]),
+		.library(name: "BottomMenu", targets: ["BottomMenu"]),
 		.library(name: "GameFeature", targets: ["GameFeature"]),
 		.library(name: "GameNotification", targets: ["GameNotification"]),
 		.library(name: "GameOver", targets: ["GameOver"]),
@@ -44,6 +45,13 @@ let package = Package(
 				"ApiClient",
 				"SharedModels",
 				.product(name: "Dependencies", package: "swift-dependencies")
+			]
+		),
+		.target(
+			name: "BottomMenu",
+			dependencies: [
+				"Styleguide",
+				.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
 			]
 		),
 		.target(

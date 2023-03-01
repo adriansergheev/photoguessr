@@ -168,12 +168,14 @@ extension AnyTransition {
 #if DEBUG
 struct ContentView_Previews: PreviewProvider {
 	static var previews: some View {
-		GameView(
-			store: .init(
-				initialState: Game.State(score: 0, gameNotification: .init(text: "You nailed it! \(50) points!")),
-				reducer: Game()
+		Preview {
+			GameView(
+				store: .init(
+					initialState: Game.State(score: 0, gameNotification: .init(text: "You nailed it! \(50) points!")),
+					reducer: Game()
+				)
 			)
-		)
+		}
 	}
 }
 #endif

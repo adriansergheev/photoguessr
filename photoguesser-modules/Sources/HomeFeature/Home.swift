@@ -132,6 +132,7 @@ public struct HomeView: View {
 				)
 			}
 		}
+//		.modifier(DeviceStateModifier())
 	}
 }
 
@@ -241,12 +242,14 @@ struct HomeButtonStyle: ButtonStyle {
 #if DEBUG
 struct HomeView_Previews: PreviewProvider {
 	static var previews: some View {
-		HomeView(
-			store: .init(
-				initialState: .init(),
-				reducer: Home()
+		Preview {
+			HomeView(
+				store: .init(
+					initialState: .init(),
+					reducer: Home()
+				)
 			)
-		)
+		}
 	}
 }
 #endif

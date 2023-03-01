@@ -105,12 +105,14 @@ public struct GameOverView: View {
 #if DEBUG
 struct GameOverView_Previews: PreviewProvider {
 	static var previews: some View {
-		GameOverView(
-			store: .init(
-				initialState: .init(),
-				reducer: GameOver()
+		Preview {
+			GameOverView(
+				store: .init(
+					initialState: .init(),
+					reducer: GameOver()
+				)
 			)
-		)
+		}
 	}
 }
 #endif

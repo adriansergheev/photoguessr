@@ -86,11 +86,13 @@ public struct MenuBackgroundView: View {
 
 struct MenuBackgroundView_Previews: PreviewProvider {
 	static var previews: some View {
-		MenuBackgroundView(
-			store: .init(
-				initialState: .init(),
-				reducer: MenuBackground()
+		Preview {
+			MenuBackgroundView(
+				store: .init(
+					initialState: .init(),
+					reducer: MenuBackground()
+				)
 			)
-		)
+		}
 	}
 }

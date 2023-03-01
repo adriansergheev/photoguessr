@@ -77,12 +77,14 @@ public struct GameNotificationView: View {
 #if DEBUG
 struct GameNotification_Previews: PreviewProvider {
 	static var previews: some View {
-		GameNotificationView(
-			store: .init(
-				initialState: .init(text: "You nailed it!"),
-				reducer: GameNotification()
+		Preview {
+			GameNotificationView(
+				store: .init(
+					initialState: .init(text: "You nailed it!"),
+					reducer: GameNotification()
+				)
 			)
-		)
+		}
 	}
 }
 #endif
