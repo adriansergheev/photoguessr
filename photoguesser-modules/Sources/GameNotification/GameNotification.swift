@@ -69,9 +69,7 @@ public struct GameNotificationView: View {
 				RoundedRectangle(cornerRadius: 10)
 					.stroke(Color.adaptiveBlack, lineWidth: 0.5)
 			}
-			.onAppear {
-				viewStore.send(.onAppear)
-			}
+			.onAppear { viewStore.send(.onAppear) }
 		}
 	}
 }

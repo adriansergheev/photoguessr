@@ -31,12 +31,12 @@ struct GameNavigationBarView: View {
 		WithViewStore(self.store) { viewStore in
 			HStack(alignment: .center, spacing: .grid(2)) {
 				Text("PhotoGuesser")
-					.foregroundColor(.adaptiveBlack)
+					.foregroundColor(.adaptiveWhite)
 					.bold()
 					.padding(.grid(1))
 					.padding([.leading, .trailing], .grid(2))
-					.foregroundColor(self.colorScheme == .light ? .black : .photoGuesserCream)
-					.background(self.colorScheme == .light ? Color.photoGuesserCream : .black)
+					.foregroundColor(self.colorScheme == .dark ? .black : .photoGuesserCream)
+					.background(self.colorScheme == .dark ? Color.photoGuesserCream : .black)
 					.clipShape(
 						RoundedRectangle(cornerRadius: 13, style: .continuous)
 								.inset(by: 2)
@@ -46,25 +46,25 @@ struct GameNavigationBarView: View {
 					viewStore.send(.onSettingsTap)
 				}) {
 					Image(systemName: "ellipsis")
-						.foregroundColor(.adaptiveBlack)
+						.foregroundColor(.adaptiveWhite)
 						.padding()
 						.rotationEffect(.degrees(90))
-						.foregroundColor(self.colorScheme == .light ? .black : .photoGuesserCream)
-						.background(self.colorScheme == .light ? Color.photoGuesserCream : .black)
+						.foregroundColor(self.colorScheme == .dark ? .black : .photoGuesserCream)
+						.background(self.colorScheme == .dark ? Color.photoGuesserCream : .black)
 						.clipShape(
 							RoundedRectangle(cornerRadius: 13, style: .continuous)
 									.inset(by: 2)
 						)
 				}
 				.frame(maxHeight: .infinity)
-				.background(colorScheme == .light ? Color.photoGuesserGold.opacity(0.05) : .white.opacity(0.1))
+				.background(colorScheme == .dark ? Color.photoGuesserGold.opacity(0.05) : .white.opacity(0.1))
 				.cornerRadius(12)
 			}
 			.fixedSize(horizontal: false, vertical: true)
 			.padding([.leading, .trailing])
 			.padding([.top, .bottom], .grid(2))
 			.background(
-				colorScheme == .light ? Color.black : Color.photoGuesserCream.opacity(0.9)
+				colorScheme == .dark ? Color.black : Color.photoGuesserCream.opacity(0.9)
 			)
 		}
 	}

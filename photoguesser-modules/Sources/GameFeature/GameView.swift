@@ -32,14 +32,14 @@ public struct GameView: View {
 					VStack {
 						HStack {
 							Text("\(viewStore.score)")
-								.foregroundColor(.adaptiveWhite)
+								.foregroundColor(.adaptiveBlack)
 								.bold()
 								.frame(width: 40)
 								.padding(.leading, .grid(4))
 
 							Spacer()
 							Text(verbatim: "\(viewStore.guess ?? 0)")
-								.foregroundColor(.adaptiveWhite)
+								.foregroundColor(.adaptiveBlack)
 								.font(.system(size: 24))
 								.bold()
 								.opacity(viewStore.guess != nil ? 1.0 : 0.0)
@@ -49,14 +49,13 @@ public struct GameView: View {
 							switch viewStore.mode {
 							case .unlimited:
 								Text("♾️")
-									.foregroundColor(.adaptiveBlack)
 									.bold()
 									.frame(width: 40)
 									.padding(.trailing, .grid(4))
 							case let .limited(max: limit, current: current):
 								Text("\(current)/\(limit)")
 									.bold()
-									.foregroundColor(.adaptiveWhite)
+									.foregroundColor(.adaptiveBlack)
 									.frame(width: 40)
 									.padding(.trailing, .grid(4))
 							}
@@ -159,7 +158,7 @@ public struct GameView: View {
 			)
 			.zIndex(1)
 		}
-		.background(colorScheme == .light ? .black : .photoGuesserCream)
+		.background(colorScheme == .dark ? .black : .photoGuesserCream)
 	}
 }
 extension AnyTransition {
