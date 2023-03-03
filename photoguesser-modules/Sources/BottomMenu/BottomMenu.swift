@@ -3,11 +3,9 @@ import Styleguide
 import XCTestDynamicOverlay
 import ComposableArchitecture
 
-//TODO: clean-up
-
 public struct BottomMenu {
 	public var buttons: [Button]
-	public var footerButton: Button?
+	public var footerButton: Button
 	public var message: Text?
 	public var title: Text
 
@@ -15,7 +13,7 @@ public struct BottomMenu {
 		title: Text,
 		message: Text? = nil,
 		buttons: [Button],
-		footerButton: Button? = nil
+		footerButton: Button
 	) {
 		self.buttons = buttons
 		self.footerButton = footerButton
@@ -97,11 +95,6 @@ private struct BottomMenuWrapper<Content: View>: View {
 									.font(.system(size: 18))
 									.foregroundColor(colorScheme == .light ? .photoGuesserBlack : .photoGuesserCream)
 								Spacer()
-								Button(action: { self.item = nil }) {
-									Image(systemName: "xmark.circle.fill")
-										.foregroundColor(colorScheme == .light ? .photoGuesserBlack : .photoGuesserCream)
-										.font(.system(size: 24))
-								}
 							}
 
 							if let message = menu.message {
@@ -121,31 +114,28 @@ private struct BottomMenuWrapper<Content: View>: View {
 								)
 							}
 						}
-
-						if let footerButton = menu.footerButton {
-							Button(
-								action: {
-									self.item = nil
-									footerButton.action()
-								}
-							) {
-								HStack {
-									footerButton.title
-										.font(.system(size: 18))
-									Spacer()
-									footerButton.icon
-								}
+						Button(
+							action: {
+								self.item = nil
+								menu.footerButton.action()
 							}
-							.buttonStyle(
-								ActionButtonStyle(
-									backgroundColor: self.colorScheme == .light ? .photoGuesserCream : .black,
-									foregroundColor: self.colorScheme == .light ? .black : .photoGuesserCream
-								)
-							)
+						) {
+							HStack {
+								menu.footerButton.title
+									.font(.system(size: 18))
+								Spacer()
+								menu.footerButton.icon
+							}
 						}
+						.buttonStyle(
+							ActionButtonStyle(
+								backgroundColor: .black,
+								foregroundColor: .photoGuesserCream
+							)
+						)
 					}
 					.frame(maxWidth: .infinity)
-					.padding(24)
+					.padding(.grid(6))
 					.padding(.bottom)
 					.background(self.colorScheme == .light ? Color.photoGuesserCream : .hex(0x242424))
 					.zIndex(2)
@@ -174,7 +164,7 @@ private struct MenuButton: View {
 			.foregroundColor(self.colorScheme == .light ? .photoGuesserBlack : .photoGuesserCream)
 			.frame(maxWidth: .infinity)
 			.padding([.top, .bottom], 24)
-			.background(self.colorScheme == .light ? Color.photoGuesserBlack : .photoGuesserCream)
+			.background(self.colorScheme == .light ? Color.hex(0x242424) : .photoGuesserCream)
 			.cornerRadius(12)
 		}
 		.buttonStyle(MenuButtonStyle())
@@ -209,10 +199,10 @@ struct BottomMenu_Classic_Previews: PreviewProvider {
 			title: Text("Solo"),
 			message: Text("Are you sure you want to exit the game?"),
 			buttons: [
-				.init(title: Text("End Game"), icon: Image(systemName: "flag"))
+				.init(title: Text("Keep Playing"), icon: Image(systemName: "arrowtriangle.right"))
 			],
-			footerButton: nil
-//			footerButton: .init(title: Text("End Game"), icon: Image(systemName: "flag"))
+			//			footerButton: nil
+			footerButton: .init(title: Text("End Game"), icon: Image(systemName: "flag"))
 		)
 	}
 

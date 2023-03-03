@@ -67,6 +67,7 @@ let package = Package(
 			dependencies: [
 				"ApiClient",
 				"ApiClientLive",
+				"BottomMenu",
 				"GameNotification",
 				"GameOver",
 				"Haptics",

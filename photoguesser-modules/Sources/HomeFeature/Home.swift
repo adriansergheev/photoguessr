@@ -44,7 +44,9 @@ public struct Home: ReducerProtocol {
 				case .onPlayLimitedTap:
 					state.gameInstance = .init(mode: .limited(max: 10, current: 0))
 					return .none
-				case .game(.gameNavigationBar(.onSettingsTap)):
+				case .game(.gameNavigationBar):
+					return .none
+				case .game(.endGame):
 					state.gameInstance = nil
 					return .none
 				case .game:

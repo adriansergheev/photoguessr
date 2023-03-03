@@ -3,6 +3,7 @@ import NukeUI
 import SwiftUI
 import Sliders
 import GameOver
+import BottomMenu
 import Styleguide
 import SharedModels
 import ApiClientLive
@@ -158,6 +159,7 @@ public struct GameView: View {
 			)
 			.zIndex(1)
 		}
+		.bottomMenu(self.store.scope(state: \.bottomMenu))
 		.background(colorScheme == .dark ? .black : .photoGuesserCream)
 	}
 }

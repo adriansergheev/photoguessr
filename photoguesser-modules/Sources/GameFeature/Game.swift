@@ -1,6 +1,7 @@
 import Haptics
 import GameOver
 import Foundation
+import BottomMenu
 import SharedModels
 import GameNotification
 import ComposableArchitecture
@@ -24,6 +25,7 @@ public struct Game: ReducerProtocol {
 		var gameNotification: GameNotification.State?
 		var slider: CustomSlider.State?
 		var gameOver: GameOver.State?
+		var bottomMenu: BottomMenuState<Action>?
 
 		var guess: Int? {
 			get {
@@ -62,6 +64,9 @@ public struct Game: ReducerProtocol {
 		case gameNotification(GameNotification.Action)
 		case gameNavigationBar(GameNavigationBar.Action)
 		case gameOver(GameOver.Action)
+
+		case dismissBottomMenu
+		case endGame
 	}
 
 	@Dependency(\.apiClient) var apiClient
@@ -174,12 +179,18 @@ public struct Game: ReducerProtocol {
 				case .gameNotification(.didExpire):
 					state.gameNotification = nil
 					return .none
-				case .gameNavigationBar:
+				case .gameNavigationBar(.onMenuButtonTapped):
+					state.bottomMenu = .endGameMenu(state: state)
 					return .none
 				case .gameOver(.delegate(.close)):
 					state.gameOver = nil
 					return .none
 				case .gameOver:
+					return .none
+				case .dismissBottomMenu:
+					state.bottomMenu = nil
+					return .none
+				case .endGame:
 					return .none
 				}
 			}
@@ -195,5 +206,24 @@ public struct Game: ReducerProtocol {
 			.haptics(triggerOnChangeOf: \.guess)
 			.haptics(triggerOnChangeOf: \.score)
 		}
+	}
+}
+
+import SwiftUI
+extension BottomMenuState where Action == Game.Action {
+	public static func endGameMenu(state: Game.State) -> Self {
+		var menu = BottomMenuState(
+			title: .init("Solo"),
+			message: .init("Are you sure you want to exit the game?"),
+			buttons: [
+				.init(title: .init("Keep Playing"), icon: Image(systemName: "arrowtriangle.right"))
+			],
+			footerButton: .init(
+				title: .init("End Game"),
+				icon: Image(systemName: "flag"),
+				action: .init(action: .endGame, animation: .default))
+		)
+		menu.onDismiss = .init(action: .dismissBottomMenu, animation: .default)
+		return menu
 	}
 }

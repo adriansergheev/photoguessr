@@ -5,14 +5,14 @@ public struct GameNavigationBar: ReducerProtocol {
 	public struct State: Equatable {}
 
 	public enum Action: Equatable {
-		case onSettingsTap
+		case onMenuButtonTapped
 	}
 
 	public init() {}
 	public var body: some ReducerProtocol<State, Action> {
 		Reduce { _, action in
 			switch action {
-			case .onSettingsTap:
+			case .onMenuButtonTapped:
 				return .none
 			}
 		}
@@ -43,7 +43,7 @@ struct GameNavigationBarView: View {
 					)
 				Spacer()
 				Button(action: {
-					viewStore.send(.onSettingsTap)
+					viewStore.send(.onMenuButtonTapped, animation: .default)
 				}) {
 					Image(systemName: "ellipsis")
 						.foregroundColor(.adaptiveWhite)
