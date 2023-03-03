@@ -80,7 +80,7 @@ struct GameNotification_Previews: PreviewProvider {
 		Preview {
 			GameNotificationView(
 				store: .init(
-					initialState: .init(text: "You nailed it!"),
+				initialState: .init(text: "Photo was taken between \(0) and \(0)\n\(0) points!"),
 					reducer: GameNotification()
 				)
 			)

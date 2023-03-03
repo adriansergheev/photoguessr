@@ -125,10 +125,8 @@ public struct Game: ReducerProtocol {
 							}
 
 							if case let .limited(max, current) = state.mode {
-								if current + 1 >= 10 {
+								if current + 1 >= max {
 									state.gameOver = .init(score: state.score)
-									state.score = 0
-									state.mode = .limited(max: max, current: 0)
 								} else {
 									state.mode = .limited(max: max, current: current + 1)
 								}
@@ -152,7 +150,7 @@ public struct Game: ReducerProtocol {
 							let score = max(0, 50 - distance * 2)
 
 							state.score += score
-							state.gameNotification = .init(text: "Photo was taken in \(targetYear) which is \(distance) years  away.\nYou received \(score) points")
+							state.gameNotification = .init(text: "Photo was taken in \(targetYear) which is \(distance) years away. \(score) points!")
 						}
 
 					case let .range(lowerBound: lowerBound, upperBound: upperBound):
@@ -168,7 +166,7 @@ public struct Game: ReducerProtocol {
 							let score = max(0, 40 - distance * 2)
 
 							state.score += score
-							state.gameNotification = .init(text: "Photo was taken between \(lowerBound) and \(upperBound)\n You received \(score) points")
+							state.gameNotification = .init(text: "Photo was taken between \(lowerBound) and \(upperBound)\n\(score) points!")
 						}
 					}
 					return .none
