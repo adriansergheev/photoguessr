@@ -168,10 +168,11 @@ struct HomeButtonContent: View {
 					.frame(maxWidth: .infinity)
 					.foregroundColor(self.colorScheme == .dark ? .black : .photoGuesserCream)
 					.background(self.colorScheme == .dark ? Color.photoGuesserCream : .black)
-					.clipShape(
-						RoundedRectangle(cornerRadius: 13, style: .continuous)
-							.inset(by: 2)
-					)
+					.adaptiveCornerRadius([.bottomLeft, .bottomRight], 13)
+//					.clipShape(
+//						RoundedRectangle(cornerRadius: 13, style: .continuous)
+//							.inset(by: 2)
+//					)
 			}
 		}
 	}
