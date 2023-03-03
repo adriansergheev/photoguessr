@@ -32,9 +32,6 @@ public struct Home: ReducerProtocol {
 		CombineReducers {
 			Scope(state: \State.menuBackground, action: /Action.menuBackground) {
 				MenuBackground()
-#if DEBUG
-					._printChanges()
-#endif
 			}
 			Reduce { state, action in
 				switch action {
@@ -46,7 +43,7 @@ public struct Home: ReducerProtocol {
 					return .none
 				case .game(.gameNavigationBar):
 					return .none
-				case .game(.endGame):
+				case .game(.gameOver(.delegate(.close))):
 					state.gameInstance = nil
 					return .none
 				case .game:

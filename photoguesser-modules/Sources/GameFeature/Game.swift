@@ -191,6 +191,7 @@ public struct Game: ReducerProtocol {
 					state.bottomMenu = nil
 					return .none
 				case .endGame:
+					state.gameOver = .init(score: state.score)
 					return .none
 				}
 			}

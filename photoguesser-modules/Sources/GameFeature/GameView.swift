@@ -29,121 +29,117 @@ public struct GameView: View {
 						action: Game.Action.gameNavigationBar
 					)
 				)
-				GeometryReader { proxy in
-					VStack {
-						HStack {
-							Text("\(viewStore.score)")
-								.foregroundColor(.adaptiveBlack)
+				VStack {
+					HStack {
+						Text("\(viewStore.score)")
+							.foregroundColor(.adaptiveBlack)
+							.bold()
+							.frame(width: 40)
+							.padding(.leading, .grid(4))
+
+						Spacer()
+						Text(verbatim: "\(viewStore.guess ?? 0)")
+							.foregroundColor(.adaptiveBlack)
+							.font(.system(size: 24))
+							.bold()
+							.opacity(viewStore.guess != nil ? 1.0 : 0.0)
+							.transaction { $0.animation = nil }
+						Spacer()
+
+						switch viewStore.mode {
+						case .unlimited:
+							Text("♾️")
 								.bold()
 								.frame(width: 40)
-								.padding(.leading, .grid(4))
-
-							Spacer()
-							Text(verbatim: "\(viewStore.guess ?? 0)")
-								.foregroundColor(.adaptiveBlack)
-								.font(.system(size: 24))
+								.padding(.trailing, .grid(4))
+						case let .limited(max: limit, current: current):
+							Text("\(current)/\(limit)")
 								.bold()
-								.opacity(viewStore.guess != nil ? 1.0 : 0.0)
-								.transaction { $0.animation = nil }
-							Spacer()
-
-							switch viewStore.mode {
-							case .unlimited:
-								Text("♾️")
-									.bold()
-									.frame(width: 40)
-									.padding(.trailing, .grid(4))
-							case let .limited(max: limit, current: current):
-								Text("\(current)/\(limit)")
-									.bold()
-									.foregroundColor(.adaptiveBlack)
-									.frame(width: 40)
-									.padding(.trailing, .grid(4))
-							}
+								.foregroundColor(.adaptiveBlack)
+								.frame(width: 40)
+								.padding(.trailing, .grid(4))
 						}
+					}
 
-						if let photo = viewStore.currentInGamePhoto,
-							 let imageUrl = photo.imageUrl {
-							ZStack {
-								VStack {
-									IfLetStore(
-										self.store.scope(
-											state: \.gameNotification,
-											action: Game.Action.gameNotification
-										),
-										then: { store in
-											GameNotificationView(store: store)
-												.padding(.grid(2))
-										}
-									)
-									Spacer()
-								}
-								.zIndex(1)
-
-								VStack(alignment: .leading) {
-									Spacer()
-									VStack(spacing: .grid(2)) {
-										HStack(alignment: .center) {
-											Text(photo.title)
-												.padding(.grid(2))
-												.bold()
-												.foregroundColor(Color.adaptiveBlack)
-												.background(.ultraThinMaterial.opacity(0.9), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-												.onTapGesture {
-													viewStore.send(.toggleSlider, animation: .easeIn)
-												}
-											Spacer()
-											Button {
-												viewStore.send(.toggleSlider, animation: .easeIn)
-											} label: {
-												Image(systemName: "chevron.up")
-													.rotationEffect(.degrees(viewStore.slider != nil ? 180 : 0))
-													.foregroundColor(.adaptiveBlack)
-													.padding(.grid(2))
-													.background(.ultraThinMaterial.opacity(0.9), in: RoundedRectangle(cornerRadius: 36, style: .continuous))
-													.padding(.grid(2))
-													.padding(.trailing, .grid(2))
-											}
-											.transaction { $0.animation = nil }
-										}
-										.padding(.leading, .grid(3))
-										.padding(.bottom, viewStore.slider == nil ? .grid(16) : 0)
+					if let photo = viewStore.currentInGamePhoto,
+						 let imageUrl = photo.imageUrl {
+						ZStack {
+							VStack {
+								IfLetStore(
+									self.store.scope(
+										state: \.gameNotification,
+										action: Game.Action.gameNotification
+									),
+									then: { store in
+										GameNotificationView(store: store)
+											.padding(.grid(2))
 									}
-									IfLetStore(
-										self.store.scope(
-											state: \.slider,
-											action: Game.Action.slider
-										),
-										then: { store in
-											CustomSliderView(store: store)
+								)
+								Spacer()
+							}
+							.zIndex(1)
+
+							VStack(alignment: .leading) {
+								Spacer()
+								VStack(spacing: .grid(2)) {
+									HStack(alignment: .center) {
+										Text(photo.title)
+											.padding(.grid(2))
+											.bold()
+											.foregroundColor(Color.adaptiveBlack)
+											.background(.ultraThinMaterial.opacity(0.9), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+											.onTapGesture {
+												viewStore.send(.toggleSlider, animation: .easeIn)
+											}
+										Spacer()
+										Button {
+											viewStore.send(.toggleSlider, animation: .easeIn)
+										} label: {
+											Image(systemName: "chevron.up")
+												.rotationEffect(.degrees(viewStore.slider != nil ? 180 : 0))
+												.foregroundColor(.adaptiveBlack)
+												.padding(.grid(2))
+												.background(.ultraThinMaterial.opacity(0.9), in: RoundedRectangle(cornerRadius: 36, style: .continuous))
+												.padding(.grid(2))
+												.padding(.trailing, .grid(2))
 										}
-									)
+										.transaction { $0.animation = nil }
+									}
+									.padding(.leading, .grid(3))
+									.padding(.bottom, viewStore.slider == nil ? .grid(16) : 0)
 								}
-								.zIndex(1)
-
-								LazyImage(url: imageUrl, transaction: .init(animation: .default)) {
-									$0.image
-										.aspectRatio(contentMode: .fill)
-										.frame(width: proxy.size.width - 32)
-								}
-
+								IfLetStore(
+									self.store.scope(
+										state: \.slider,
+										action: Game.Action.slider
+									),
+									then: { store in
+										CustomSliderView(store: store)
+									}
+								)
 							}
-							.edgesIgnoringSafeArea(.bottom)
-						} else {
-							Spacer()
-							if viewStore.isInEmptyState {
-								Text("Could not find any pics for this location ;(")
-									.foregroundColor(.adaptiveBlack)
-							} else {
-								ProgressView()
+							.zIndex(1)
+
+							LazyImage(url: imageUrl, transaction: .init(animation: .default)) {
+								$0.image
+									.aspectRatio(contentMode: .fill)
+									.frame(width: 100, height: 100)
 							}
-							Spacer()
 						}
-
+						.edgesIgnoringSafeArea(.bottom)
+					} else {
+						Spacer()
+						if viewStore.isInEmptyState {
+							Text("Could not find any pics for this location ;(")
+								.foregroundColor(.adaptiveBlack)
+						} else {
+							ProgressView()
+						}
+						Spacer()
 					}
-					.onAppear {
-						viewStore.send(.startGame)
-					}
+				}
+				.onAppear {
+					viewStore.send(.startGame)
 				}
 			}
 			IfLetStore(

@@ -89,7 +89,7 @@ struct CustomSlider_Previews: PreviewProvider {
 			Spacer()
 			CustomSliderView(
 				store: .init(
-					initialState: CustomSlider.State.init(sliderValue: 1950, range: 1900...2000),
+					initialState: CustomSlider.State(sliderValue: 1950, range: 1900...2000),
 					reducer: CustomSlider()
 				)
 			)
