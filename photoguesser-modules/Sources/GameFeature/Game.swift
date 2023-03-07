@@ -4,6 +4,7 @@ import Foundation
 import BottomMenu
 import SharedModels
 import GameNotification
+import UserDefaultsClient
 import ComposableArchitecture
 
 public struct Game: ReducerProtocol {
@@ -70,6 +71,7 @@ public struct Game: ReducerProtocol {
 	}
 
 	@Dependency(\.apiClient) var apiClient
+	@Dependency(\.userDefaults) var userDefaults
 
 	public init() {}
 
@@ -85,13 +87,15 @@ public struct Game: ReducerProtocol {
 					state.gamePhotos = nil
 					state.currentInGamePhoto = nil
 
+					let seenKey = userDefaults.integerForKey(seenKey)
+					let except = (seenKey == 0) ? nil : seenKey
 					// Stockholm
 					let req = NearestPhotoRequest(
 						//					geo: [59.32938, 18.06871] // stockholm
 						//					geo: [47.003670, 28.907089], // chisinau
 						geo: [55.67594, 12.56553], // copenhagen
 						limit: 100,
-						except: 228481
+						except: except
 					)
 					return .task { [req] in
 						await .gamePhotosResponse(
@@ -167,7 +171,9 @@ public struct Game: ReducerProtocol {
 							state.gameNotification = .init(text: "Photo was taken between \(lowerBound) and \(upperBound)\n\(score) points!")
 						}
 					}
-					return .none
+					return .fireAndForget { [photoInPlay] in
+						await markAsSeen(id: photoInPlay.cid)
+					}
 				case .slider:
 					return .none
 				case .gameNotification(.onAppear):
@@ -204,7 +210,14 @@ public struct Game: ReducerProtocol {
 			.haptics(triggerOnChangeOf: \.score)
 		}
 	}
+
+	// TODO: Support more
+	func markAsSeen(id: Int) async {
+		await userDefaults.setInteger(id, seenKey)
+	}
 }
+
+let seenKey = "photoSeenKey"
 
 import SwiftUI
 extension BottomMenuState where Action == Game.Action {

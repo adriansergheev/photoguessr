@@ -20,7 +20,8 @@ let package = Package(
 		.library(name: "HomeFeature", targets: ["HomeFeature"]),
 		.library(name: "MenuBackground", targets: ["MenuBackground"]),
 		.library(name: "SharedModels", targets: ["SharedModels"]),
-		.library(name: "Styleguide", targets: ["Styleguide"])
+		.library(name: "Styleguide", targets: ["Styleguide"]),
+		.library(name: "UserDefaultsClient", targets: ["UserDefaultsClient"])
 	],
 	dependencies: [
 		.package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "0.50.2"),
@@ -72,6 +73,7 @@ let package = Package(
 				"GameOver",
 				"Haptics",
 				"SharedModels",
+				"UserDefaultsClient",
 				.product(name: "Sliders", package: "swiftui-sliders"),
 				.product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
 				.product(name: "NukeUI", package: "Nuke")
@@ -121,6 +123,13 @@ let package = Package(
 		),
 		.target(
 			name: "Styleguide"
+		),
+		.target(
+			name: "UserDefaultsClient",
+			dependencies: [
+				.product(name: "Dependencies", package: "swift-dependencies"),
+				.product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay")
+			]
 		)
 	]
 )
