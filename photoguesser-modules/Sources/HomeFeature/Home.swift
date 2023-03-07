@@ -19,8 +19,10 @@ public struct Home: ReducerProtocol {
 	}
 
 	public enum Action: Equatable {
-		case onPlayUnlimitedTap
-		case onPlayLimitedTap
+		case onPlayTap
+		case onCitiesTap
+		case onLeaderboardsTap
+		case onSettingsTap
 
 		case game(Game.Action)
 		case menuBackground(MenuBackground.Action)
@@ -35,11 +37,17 @@ public struct Home: ReducerProtocol {
 			}
 			Reduce { state, action in
 				switch action {
-				case .onPlayUnlimitedTap:
-					state.gameInstance = .init(mode: .unlimited)
-					return .none
-				case .onPlayLimitedTap:
+				case .onPlayTap:
 					state.gameInstance = .init(mode: .limited(max: 10, current: 0))
+					return .none
+				case .onCitiesTap:
+					print("Present cities")
+					return .none
+				case .onLeaderboardsTap:
+					print("Present cities")
+					return .none
+				case .onSettingsTap:
+					print("Present Settings")
 					return .none
 				case .game(.gameNavigationBar):
 					return .none
@@ -79,7 +87,7 @@ public struct HomeView: View {
 						.font(.system(.largeTitle))
 						.bold()
 					HomeButton {
-						viewStore.send(.onPlayLimitedTap)
+						viewStore.send(.onPlayTap)
 					} content: {
 						HomeButtonContent(
 							image: Image(systemName: "photo.stack.fill"),
@@ -88,17 +96,17 @@ public struct HomeView: View {
 						)
 					}
 					HomeButton {
-						viewStore.send(.onPlayUnlimitedTap)
+						viewStore.send(.onCitiesTap)
 					} content: {
 						HomeButtonContent(
-							image: Image(systemName: "infinity"),
-							imagePadding: .grid(18),
-							text: Text("Play Unlimited")
+							image: Image(systemName: "building.columns"),
+							imagePadding: .grid(12),
+							text: Text("Cities")
 						)
 					}
 					HStack {
 						HomeButton {
-							//
+							viewStore.send(.onLeaderboardsTap)
 						} content: {
 							HomeButtonContent(
 								image: Image(systemName: "star.leadinghalf.filled"),
@@ -106,7 +114,7 @@ public struct HomeView: View {
 							)
 						}
 						HomeButton {
-							//
+							viewStore.send(.onSettingsTap)
 						} content: {
 							HomeButtonContent(
 								image: Image(systemName: "gearshape"),
@@ -245,7 +253,7 @@ struct HomeView_Previews: PreviewProvider {
 		Preview {
 			HomeView(
 				store: .init(
-					initialState: .init(),
+					initialState: .init(gameInstance: .init(mode: .limited(max: 3, current: 0))),
 					reducer: Home()
 				)
 			)

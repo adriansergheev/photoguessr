@@ -12,12 +12,12 @@ public struct Game: ReducerProtocol {
 		public typealias GamePhotos = NearestPhotosResponse
 
 		public enum GameMode: Equatable {
-			case unlimited
+//			case unlimited
 			case limited(max: Int, current: Int)
 		}
 
 		var score: Int = 0
-		var mode: State.GameMode = .unlimited
+		var mode: State.GameMode
 		var gamePhotos: GamePhotos?
 		var currentInGamePhoto: Photo?
 
@@ -38,13 +38,13 @@ public struct Game: ReducerProtocol {
 			set { if let newValue { slider?.sliderValue = Double(newValue) } }
 		}
 
-		var isInEmptyState: Bool {
+		var isEmptyState: Bool {
 			gamePhotos?.result.photos.isEmpty ?? false
 		}
 
 		public init(
 			score: Int = 0,
-			mode: GameMode = .unlimited,
+			mode: GameMode = .limited(max: 10, current: 0),
 			gameNotification: GameNotification.State? = nil,
 			slider: CustomSlider.State? = nil
 		) {
@@ -133,9 +133,7 @@ public struct Game: ReducerProtocol {
 							}
 
 						} else {
-#if DEBUG
-							print("🤠 finished pics")
-#endif
+							state.gameOver = .init(score: state.score, reason: .outOfPics)
 						}
 					}
 

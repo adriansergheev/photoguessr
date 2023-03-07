@@ -5,9 +5,21 @@ import ComposableArchitecture
 public struct GameOver: ReducerProtocol {
 
 	public struct State: Equatable {
-		var score: Int
-		public init(score: Int = 0) {
+		public enum Reason {
+			case outOfPics
+			case finishedGame
+		}
+		var gameOverReason: Reason
+ 		var score: Int
+//		public init(score: Int = 0) {
+//			self.score = score
+//		}
+		public init(
+			score: Int = 0,
+			reason: Reason = .finishedGame
+		) {
 			self.score = score
+			self.gameOverReason = reason
 		}
 	}
 
@@ -56,8 +68,13 @@ public struct GameOverView: View {
 					}
 					.font(.system(size: 24))
 					.padding()
-
-					Text("Final Score: \(viewStore.score) 🔫 ")
+					if case .outOfPics = viewStore.gameOverReason {
+						Text("Out of pictures ;(")
+							.font(.system(size: 30))
+							.foregroundColor(.adaptiveBlack)
+							.multilineTextAlignment(.center)
+					}
+					Text("🌆 Final Score: \(viewStore.score)! 🌃")
 						.font(.system(size: 30))
 						.foregroundColor(.adaptiveBlack)
 						.multilineTextAlignment(.center)

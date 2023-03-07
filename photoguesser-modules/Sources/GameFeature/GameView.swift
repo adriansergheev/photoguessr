@@ -47,11 +47,11 @@ public struct GameView: View {
 						Spacer()
 
 						switch viewStore.mode {
-						case .unlimited:
-							Text("♾️")
-								.bold()
-								.frame(width: 40)
-								.padding(.trailing, .grid(4))
+//						case .unlimited:
+//							Text("♾️")
+//								.bold()
+//								.frame(width: 40)
+//								.padding(.trailing, .grid(4))
 						case let .limited(max: limit, current: current):
 							Text("\(current)/\(limit)")
 								.bold()
@@ -129,7 +129,7 @@ public struct GameView: View {
 						.edgesIgnoringSafeArea(.bottom)
 					} else {
 						Spacer()
-						if viewStore.isInEmptyState {
+						if viewStore.isEmptyState {
 							Text("Could not find any pics for this location ;(")
 								.foregroundColor(.adaptiveBlack)
 						} else {

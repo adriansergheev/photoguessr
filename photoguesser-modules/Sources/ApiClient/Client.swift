@@ -116,7 +116,7 @@ extension ApiClient {
 			giveNearestPhotos: { _ in
 					.init(
 						result: .init(
-							photos: [
+							photos: (0...3).map { _ in
 								Photo(
 									s: 5,
 									cid: 449470,
@@ -131,7 +131,8 @@ extension ApiClient {
 									yearUpperBound: nil,
 									ccount: nil
 								)
-							]
+
+							}
 						),
 						rid: "cl1z1mcnjt"
 					)
