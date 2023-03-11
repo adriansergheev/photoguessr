@@ -31,7 +31,6 @@ struct GameNavigationBarView: View {
 		WithViewStore(self.store) { viewStore in
 			HStack(alignment: .center, spacing: .grid(2)) {
 				Text("PhotoGuesser")
-					.foregroundColor(.adaptiveWhite)
 					.bold()
 					.padding(.grid(1))
 					.padding([.leading, .trailing], .grid(2))
@@ -46,7 +45,6 @@ struct GameNavigationBarView: View {
 					viewStore.send(.onMenuButtonTapped, animation: .default)
 				}) {
 					Image(systemName: "ellipsis")
-						.foregroundColor(.adaptiveWhite)
 						.padding()
 						.rotationEffect(.degrees(90))
 						.foregroundColor(self.colorScheme == .dark ? .black : .photoGuesserCream)

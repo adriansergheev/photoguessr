@@ -13,6 +13,7 @@ let package = Package(
 		.library(name: "ApiClient", targets: ["ApiClient"]),
 		.library(name: "ApiClientLive", targets: ["ApiClientLive"]),
 		.library(name: "BottomMenu", targets: ["BottomMenu"]),
+		.library(name: "CitiesFeature", targets: ["CitiesFeature"]),
 		.library(name: "GameFeature", targets: ["GameFeature"]),
 		.library(name: "GameNotification", targets: ["GameNotification"]),
 		.library(name: "GameOver", targets: ["GameOver"]),
@@ -28,8 +29,7 @@ let package = Package(
 		.package(url: "https://github.com/pointfreeco/swift-dependencies", from: "0.1.4"),
 		.package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "0.8.2"),
 		.package(url: "https://github.com/kean/Nuke", from: "12.0.0"),
-		.package(url: "https://github.com/spacenation/swiftui-sliders", .upToNextMajor(from: "2.1.0")),
-		.package(url: "https://github.com/pointfreeco/swift-nonempty", branch: "main")
+		.package(url: "https://github.com/spacenation/swiftui-sliders", .upToNextMajor(from: "2.1.0"))
 	],
 	targets: [
 		.target(
@@ -54,6 +54,14 @@ let package = Package(
 				"Styleguide",
 				.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
 			]
+		),
+		.target(
+			name: "CitiesFeature",
+			dependencies: [
+				"Styleguide",
+				.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+			],
+			resources: [.process("Resources/")]
 		),
 		.target(
 			name: "Haptics",
@@ -116,10 +124,7 @@ let package = Package(
 			resources: [.process("Resources/")]
 		),
 		.target(
-			name: "SharedModels",
-			dependencies: [
-				.product(name: "NonEmpty", package: "swift-nonempty")
-			]
+			name: "SharedModels"
 		),
 		.target(
 			name: "Styleguide"
