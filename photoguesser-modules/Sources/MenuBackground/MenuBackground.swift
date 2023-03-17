@@ -72,12 +72,12 @@ public struct MenuBackgroundView: View {
 	}
 
 	public var body: some View {
-		WithViewStore(self.store) { viewStore in
-			viewStore.backgroundImage
+		WithViewStore(self.store, observe: {$0.backgroundImage}) { viewStore in
+			viewStore.state
 				.resizable()
 				.aspectRatio(contentMode: .fill)
 				.ignoresSafeArea()
-				.animation(.easeIn(duration: 3), value: viewStore.backgroundImage)
+				.animation(.easeIn(duration: 3), value: viewStore.state)
 				.onAppear { viewStore.send(.onAppear) }
 				.onDisappear { viewStore.send(.onDisappear) }
 		}
