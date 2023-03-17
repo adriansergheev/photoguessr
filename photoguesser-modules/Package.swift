@@ -25,7 +25,7 @@ let package = Package(
 		.library(name: "UserDefaultsClient", targets: ["UserDefaultsClient"])
 	],
 	dependencies: [
-		.package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "0.50.2"),
+		.package(url: "https://github.com/pointfreeco/swift-composable-architecture", branch: "prerelease/1.0"),
 		.package(url: "https://github.com/pointfreeco/swift-dependencies", from: "0.1.4"),
 		.package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "0.8.2"),
 		.package(url: "https://github.com/kean/Nuke", from: "12.0.0"),
@@ -58,8 +58,11 @@ let package = Package(
 		.target(
 			name: "CitiesFeature",
 			dependencies: [
+				"ApiClientLive",
+				"SharedModels",
 				"Styleguide",
-				.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+				.product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+				.product(name: "NukeUI", package: "Nuke")
 			],
 			resources: [.process("Resources/")]
 		),
@@ -108,8 +111,9 @@ let package = Package(
 		.target(
 			name: "HomeFeature",
 			dependencies: [
-				"MenuBackground",
-				"GameFeature"
+				"CitiesFeature",
+				"GameFeature",
+				"MenuBackground"
 			]
 		),
 		.target(

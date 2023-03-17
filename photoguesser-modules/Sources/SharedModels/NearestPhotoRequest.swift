@@ -5,7 +5,7 @@ public struct NearestPhotoRequest: Equatable, Encodable, Sendable {
 	let limit: Int
 	let except: Int?
 
-	public init(geo: [Double], limit: Int, except: Int?) {
+	public init(geo: [Double], limit: Int, except: Int? = nil) {
 		self.geo = geo
 		self.limit = limit
 		self.except = except

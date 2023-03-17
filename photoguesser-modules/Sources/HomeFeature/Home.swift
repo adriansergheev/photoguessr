@@ -1,6 +1,7 @@
 import SwiftUI
 import Styleguide
 import GameFeature
+import CitiesFeature
 import MenuBackground
 import ComposableArchitecture
 
@@ -8,6 +9,7 @@ public struct Home: ReducerProtocol {
 	public struct State: Equatable {
 		public var gameInstance: Game.State?
 		public var menuBackground = MenuBackground.State()
+		@PresentationState public var cities: CitiesFeature.State?
 
 		public init(
 			gameInstance: Game.State? = nil,
@@ -26,6 +28,7 @@ public struct Home: ReducerProtocol {
 
 		case game(Game.Action)
 		case menuBackground(MenuBackground.Action)
+		case cities(PresentationAction<CitiesFeature.Action>)
 	}
 
 	public init() {}
@@ -41,7 +44,7 @@ public struct Home: ReducerProtocol {
 					state.gameInstance = .init(mode: .limited(max: 10, current: 0))
 					return .none
 				case .onCitiesTap:
-					print("Present cities")
+					state.cities = .init()
 					return .none
 				case .onLeaderboardsTap:
 					print("Present cities")
@@ -58,10 +61,16 @@ public struct Home: ReducerProtocol {
 					return .none
 				case .menuBackground:
 					return .none
+				case .cities:
+					return .none
 				}
 			}
 			.ifLet(\.gameInstance, action: /Action.game) {
 				Game()
+			}
+			.ifLet(\.$cities, action: /Action.cities) {
+				CitiesFeature()
+					._printChanges()
 			}
 		}
 	}
@@ -70,11 +79,11 @@ public struct Home: ReducerProtocol {
 public struct HomeView: View {
 	@Environment(\.colorScheme) var colorScheme
 	let store: StoreOf<Home>
-	@ObservedObject var viewStore: ViewStore<Home.State, Home.Action>
+	@ObservedObject var viewStore: ViewStore<Void, Home.Action>
 
 	public init(store: StoreOf<Home>) {
 		self.store = store
-		self.viewStore = ViewStore(self.store)
+		self.viewStore = ViewStore(self.store.stateless)
 	}
 
 	public var body: some View {
@@ -139,6 +148,11 @@ public struct HomeView: View {
 				)
 			}
 		}
+		.sheet(
+			store: self.store.scope(state: \.$cities, action: Home.Action.cities)
+		) { store in
+			Cities(store: store)
+		}
 //		.modifier(DeviceStateModifier())
 	}
 }
@@ -177,10 +191,6 @@ struct HomeButtonContent: View {
 					.foregroundColor(self.colorScheme == .dark ? .black : .photoGuesserCream)
 					.background(self.colorScheme == .dark ? Color.photoGuesserCream : .black)
 					.adaptiveCornerRadius([.bottomLeft, .bottomRight], 13)
-//					.clipShape(
-//						RoundedRectangle(cornerRadius: 13, style: .continuous)
-//							.inset(by: 2)
-//					)
 			}
 		}
 	}

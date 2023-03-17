@@ -9,6 +9,7 @@ struct PhotoGuesser: App {
 				store: .init(
 					initialState: .init(),
 					reducer: Home()
+					//						._printChanges()
 				)
 			)
 		}
