@@ -8,18 +8,14 @@ import UserDefaultsClient
 import ComposableArchitecture
 
 public struct Game: ReducerProtocol {
-
 	public struct State: Equatable {
-		public typealias GamePhotos = NearestPhotosResponse
-
 		public enum GameMode: Equatable {
-//			case unlimited
 			case limited(max: Int, current: Int)
 		}
 
 		var score: Int = 0
 		var mode: State.GameMode
-		var gamePhotos: GamePhotos?
+		var gameLocation: GameLocation
 		var currentInGamePhoto: Photo?
 
 		var navigationBar = GameNavigationBar.State()
@@ -28,29 +24,16 @@ public struct Game: ReducerProtocol {
 		var gameOver: GameOver.State?
 		var bottomMenu: BottomMenuState<Action>?
 
-		var guess: Int? {
-			get {
-				if let sliderValue = slider?.sliderValue {
-					return Int(sliderValue)
-				} else {
-					return nil
-				}
-			}
-			set { if let newValue { slider?.sliderValue = Double(newValue) } }
-		}
-
-		var isEmptyState: Bool {
-			gamePhotos?.result.photos.isEmpty ?? false
-		}
-
 		public init(
 			score: Int = 0,
 			mode: GameMode = .limited(max: 10, current: 0),
+			gameLocation: GameLocation = .init(location: .init(lat: 55.67594, long: 12.56553), name: "Copenhagen"),
 			gameNotification: GameNotification.State? = nil,
 			slider: CustomSlider.State? = nil
 		) {
 			self.score = score
 			self.mode = mode
+			self.gameLocation = gameLocation
 			self.gameNotification = gameNotification
 			self.slider = slider
 		}
@@ -58,7 +41,7 @@ public struct Game: ReducerProtocol {
 
 	public enum Action: Equatable {
 		case startGame
-		case gamePhotosResponse(TaskResult<State.GamePhotos>)
+		case gamePhotosResponse(TaskResult<GameLocation.GamePhotos>)
 		case toggleSlider
 
 		case slider(CustomSlider.Action)
@@ -84,22 +67,20 @@ public struct Game: ReducerProtocol {
 				switch action {
 				case .startGame:
 					state.score = 0
-					state.gamePhotos = nil
+					// clear out the list before starting
+					state.gameLocation.gamePhotos = nil
 					state.currentInGamePhoto = nil
-
 					let seenKey = userDefaults.integerForKey(seenKey)
 					let except = (seenKey == 0) ? nil : seenKey
-					// Stockholm
-					let req = NearestPhotoRequest(
-						//					geo: [59.32938, 18.06871] // stockholm
-						//					geo: [47.003670, 28.907089], // chisinau
-						geo: [55.67594, 12.56553], // copenhagen
-						limit: 100,
-						except: except
-					)
-					return .task { [req] in
-						await .gamePhotosResponse(
-							TaskResult { try await self.apiClient.giveNearestPhotos(req) }
+
+					return .task { [location = state.gameLocation.location] in
+						let request = PastvuPhotoRequest(
+							geo: [location.lat, location.long],
+							limit: 100,
+							except: except
+						)
+						return await .gamePhotosResponse(
+							TaskResult { try await self.apiClient.giveNearestPhotos(request) }
 						)
 					}
 				case let .gamePhotosResponse(.success(gamePhotos)):
@@ -108,7 +89,7 @@ public struct Game: ReducerProtocol {
 						let value = array.remove(at: index)
 						state.currentInGamePhoto = value
 					}
-					state.gamePhotos = NearestPhotosResponse(result: .init(photos: array), rid: gamePhotos.rid)
+					state.gameLocation.gamePhotos = PastvuPhotoResponse(result: .init(photos: array), rid: gamePhotos.rid)
 					return .none
 				case .gamePhotosResponse(.failure):
 					return .none
@@ -118,14 +99,14 @@ public struct Game: ReducerProtocol {
 				case .slider(.submitTapped):
 					guard let guess = state.guess, let photoInPlay = state.currentInGamePhoto else { return .none }
 					defer {
-						if var gamePhotos = state.gamePhotos?.result.photos,
-							 let rid = state.gamePhotos?.rid,
+						if var gamePhotos = state.gameLocation.gamePhotos?.result.photos,
+							 let rid = state.gameLocation.gamePhotos?.rid,
 							 !gamePhotos.isEmpty {
 
 							if let index = gamePhotos.indices.randomElement() {
 								let value = gamePhotos.remove(at: index)
 								state.currentInGamePhoto = value
-								state.gamePhotos = NearestPhotosResponse(result: .init(photos: gamePhotos), rid: rid)
+								state.gameLocation.gamePhotos = PastvuPhotoResponse(result: .init(photos: gamePhotos), rid: rid)
 							}
 
 							if case let .limited(max, current) = state.mode {
@@ -214,6 +195,23 @@ public struct Game: ReducerProtocol {
 	// TODO: Support more
 	func markAsSeen(id: Int) async {
 		await userDefaults.setInteger(id, seenKey)
+	}
+}
+
+extension Game.State {
+	var guess: Int? {
+		get {
+			if let sliderValue = slider?.sliderValue {
+				return Int(sliderValue)
+			} else {
+				return nil
+			}
+		}
+		set { if let newValue { slider?.sliderValue = Double(newValue) } }
+	}
+
+	var isEmptyState: Bool {
+		gameLocation.imageUrls?.isEmpty ?? false
 	}
 }
 

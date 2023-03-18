@@ -16,11 +16,11 @@ public protocol APIEndpoint {
 
 public struct ApiClient {
 	public var apiRequest: (any APIEndpoint) async throws -> (data: Data, response: URLResponse)
-	public var giveNearestPhotos: @Sendable (NearestPhotoRequest) async throws -> NearestPhotosResponse
+	public var giveNearestPhotos: @Sendable (PastvuPhotoRequest) async throws -> PastvuPhotoResponse
 
 	public init(
 		apiRequest: @escaping (any APIEndpoint) async throws -> (data: Data, response: URLResponse),
-		giveNearestPhotos: @escaping @Sendable (NearestPhotoRequest) async throws -> NearestPhotosResponse
+		giveNearestPhotos: @escaping @Sendable (PastvuPhotoRequest) async throws -> PastvuPhotoResponse
 	) {
 		self.apiRequest = apiRequest
 		self.giveNearestPhotos = giveNearestPhotos

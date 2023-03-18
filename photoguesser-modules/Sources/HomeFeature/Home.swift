@@ -41,7 +41,7 @@ public struct Home: ReducerProtocol {
 			Reduce { state, action in
 				switch action {
 				case .onPlayTap:
-					state.gameInstance = .init(mode: .limited(max: 10, current: 0))
+					state.gameInstance = .init()
 					return .none
 				case .onCitiesTap:
 					state.cities = .init()
@@ -63,6 +63,10 @@ public struct Home: ReducerProtocol {
 					return .none
 				case .cities(.presented(.delegate(.close))):
 					state.cities = nil
+					return .none
+				case let .cities(.presented(.delegate(.startGame(gameLocation)))):
+					state.cities = nil
+					state.gameInstance = .init(gameLocation: gameLocation)
 					return .none
 				case .cities:
 					return .none
@@ -124,6 +128,8 @@ public struct HomeView: View {
 								image: Image(systemName: "star.leadinghalf.filled"),
 								text: Text("Leaderboards")
 							)
+							.opacity(0.5)
+							.disabled(true)
 						}
 						HomeButton {
 							viewStore.send(.onSettingsTap)
@@ -132,6 +138,8 @@ public struct HomeView: View {
 								image: Image(systemName: "gearshape"),
 								text: Text("Settings")
 							)
+							.opacity(0.5)
+							.disabled(true)
 						}
 					}
 				}

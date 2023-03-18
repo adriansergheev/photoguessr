@@ -8,32 +8,8 @@ import IdentifiedCollections
 import ComposableArchitecture
 
 public struct CitiesFeature: Reducer {
-	public struct City: Equatable, Identifiable {
-		public let location: Location
-		public let name: String
-		// TODO: revisit for uniqueness
-		public var id: Double { 360 * round(location.lat) + round(location.long) }
-		public var imageUrls: [URL]?
-
-		public init(location: Location, name: String) {
-			self.location = location
-			self.name = name
-		}
-	}
-	public struct Location: Equatable {
-		public typealias Coordinate = Double
-
-		public let lat: Coordinate
-		public let long: Coordinate
-
-		public init(lat: Coordinate, long: Coordinate) {
-			self.lat = lat
-			self.long = long
-		}
-	}
-
 	public enum Section: Equatable, Identifiable {
-		case city(City, isLoading: Bool = false)
+		case city(GameLocation, isLoading: Bool = false)
 		case upgradeBanner
 
 		public var id: Double {
@@ -49,12 +25,11 @@ public struct CitiesFeature: Reducer {
 
 	public struct State: Equatable {
 		public var sections: IdentifiedArrayOf<Section>
-		public var showPlaceholder: Bool = false
 
 		public init(sections: IdentifiedArrayOf<Section> = [
-			.city(City(location: .init(lat: 0, long: 0), name: "San-Francisco"), isLoading: true),
-			.city(City(location: .init(lat: 59.32938, long: 18.06871), name: "Stockholm"), isLoading: true),
-			.city(City(location: .init(lat: 47.003670, long: 28.907089), name: "Chișinău"), isLoading: true),
+			.city(GameLocation(location: .init(lat: 0, long: 0), name: "San-Francisco"), isLoading: true),
+			.city(GameLocation(location: .init(lat: 59.32938, long: 18.06871), name: "Stockholm"), isLoading: true),
+			.city(GameLocation(location: .init(lat: 47.003670, long: 28.907089), name: "Chișinău"), isLoading: true),
 			.upgradeBanner
 		]) {
 			self.sections = sections
@@ -63,7 +38,7 @@ public struct CitiesFeature: Reducer {
 
 	public enum DelegateAction: Equatable {
 		case close
-		case startGame(City.ID)
+		case startGame(GameLocation)
 	}
 
 	public enum Action: Equatable {
@@ -83,17 +58,15 @@ public struct CitiesFeature: Reducer {
 		Reduce { state, action in
 			switch action {
 			case .onAppear:
-				state.showPlaceholder = true
 				return .run { [sections = state.sections] send in
 					await withTaskGroup(of: Void.self) { group in
 						for section in sections {
 							group.addTask {
 								if case var .city(city, _) = section {
 									let location = city.location
-									let req = NearestPhotoRequest(geo: [location.lat, location.long], limit: 10)
+									let req = PastvuPhotoRequest(geo: [location.lat, location.long], limit: 10)
 									let result = try? await apiClient.giveNearestPhotos(req)
-									city.imageUrls = result?.result.photos.compactMap { $0.imageUrl } ?? []
-									try? await self.mainQueue.sleep(for: .seconds(0.5))
+									city.gamePhotos = result
 									await send(.updateSection(.city(city, isLoading: false)))
 								}
 							}
@@ -103,8 +76,15 @@ public struct CitiesFeature: Reducer {
 			case let.onSectionTap(id):
 				guard let section = state.sections[id: id] else { return .none }
 				switch section {
-				case .city:
-					return .send(.delegate(.startGame(id)))
+				case var .city(gameLocation, _):
+					if let imageUrls = gameLocation.imageUrls, !imageUrls.isEmpty {
+						// re-set the photos for the game instance.
+						gameLocation.gamePhotos = nil
+						return .send(.delegate(.startGame(gameLocation)))
+					} else {
+						// TODO: Can't start game, no pics to show at the location
+						return .none
+					}
 				case .upgradeBanner:
 					// TODO: Send to upgrade
 					return .none
@@ -153,26 +133,23 @@ public struct Cities: View {
 									VStack {
 										switch section {
 										case let .city(city, isLoading):
-											VStack {
-												if let imageUrls = city.imageUrls {
-													if !imageUrls.isEmpty {
-														LazyImage(url: imageUrls.randomElement()) { phase in
-															if let image = phase.image {
-																image.resizable()
-																	.aspectRatio(contentMode: .fill)
-															} else {
-																ProgressView()
-															}
-														}
+											if let imageUrls = city.imageUrls {
+												LazyImage(url: imageUrls.randomElement()) { phase in
+													if let image = phase.image {
+														image.resizable()
+															.aspectRatio(contentMode: .fill)
 													} else {
-														Text("Could not fetch images for this city ;(")
+														ProgressView()
 													}
+												}
+											} else {
+												if isLoading {
+													//
 												} else {
-													Rectangle()
-														.opacity(0.5)
-														.redacted(reason: isLoading ? .placeholder : [])
+													Text("Could not fetch images for this location ;(")
 												}
 											}
+
 										case .upgradeBanner:
 											TextStyle(text: "More cities coming soon!")
 										}
@@ -218,9 +195,9 @@ struct ContentView_Previews: PreviewProvider {
 				store: .init(
 					initialState: .init(
 						sections: [
-							.city(CitiesFeature.City(location: .init(lat: 0, long: 0), name: "San-Francisco")),
-							.city(CitiesFeature.City(location: .init(lat: 59.32938, long: 18.06871), name: "Stockholm")),
-							.city(CitiesFeature.City(location: .init(lat: 47.003670, long: 28.907089), name: "Chisinau")),
+							.city(GameLocation(location: .init(lat: 0, long: 0), name: "San-Francisco")),
+							.city(GameLocation(location: .init(lat: 59.32938, long: 18.06871), name: "Stockholm")),
+							.city(GameLocation(location: .init(lat: 47.003670, long: 28.907089), name: "Chisinau")),
 							.upgradeBanner
 						]
 					),

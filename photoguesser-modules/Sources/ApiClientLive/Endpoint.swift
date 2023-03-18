@@ -3,12 +3,12 @@ import ApiClient
 import SharedModels
 
 public enum PastvuEndpoint {
-	case giveNearestPhotos(NearestPhotoRequest)
+	case giveNearestPhotos(PastvuPhotoRequest)
 }
 
 extension PastvuEndpoint: APIEndpoint {
 
-	public typealias Response = NearestPhotosResponse
+	public typealias Response = PastvuPhotoResponse
 
 	public var httpMethod: HTTPMethod {
 		.get

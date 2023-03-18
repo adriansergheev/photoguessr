@@ -1,6 +1,6 @@
 import Foundation
 
-public struct NearestPhotosResponse: Codable, Equatable {
+public struct PastvuPhotoResponse: Codable, Equatable {
 	public let result: Result
 	public let rid: String
 
