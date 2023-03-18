@@ -76,6 +76,10 @@ public struct Game: ReducerProtocol {
 		}
 	}
 
+	public enum DelegateAction {
+		case close
+	}
+
 	public enum Action: Equatable {
 		case startGame
 		case gamePhotosResponse(TaskResult<GameLocation.GamePhotos>)
@@ -88,6 +92,7 @@ public struct Game: ReducerProtocol {
 
 		case dismissBottomMenu
 		case endGame
+		case delegate(DelegateAction)
 	}
 
 	@Dependency(\.apiClient) var apiClient
@@ -201,7 +206,13 @@ public struct Game: ReducerProtocol {
 					state.bottomMenu = nil
 					return .none
 				case .endGame:
-					state.gameOver = .init(score: state.score)
+					if !(state.score == 0) {
+						state.gameOver = .init(score: state.score)
+						return .none
+					} else {
+						return .send(.delegate(.close))
+					}
+				case .delegate:
 					return .none
 				}
 			}

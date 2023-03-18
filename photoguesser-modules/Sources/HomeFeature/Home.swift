@@ -57,6 +57,9 @@ public struct Home: ReducerProtocol {
 				case .game(.gameOver(.delegate(.close))):
 					state.gameInstance = nil
 					return .none
+				case .game(.delegate(.close)):
+					state.gameInstance = nil
+					return .none
 				case .game:
 					return .none
 				case .menuBackground:
