@@ -84,6 +84,7 @@ public struct MenuBackgroundView: View {
 	}
 }
 
+#if DEBUG
 struct MenuBackgroundView_Previews: PreviewProvider {
 	static var previews: some View {
 		Preview {
@@ -96,3 +97,4 @@ struct MenuBackgroundView_Previews: PreviewProvider {
 		}
 	}
 }
+#endif

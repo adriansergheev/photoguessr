@@ -1,4 +1,5 @@
 import SwiftUI
+import Styleguide
 import ComposableArchitecture
 
 public struct GameNavigationBar: ReducerProtocol {
@@ -30,16 +31,10 @@ struct GameNavigationBarView: View {
 	var body: some View {
 		WithViewStore(self.store) { viewStore in
 			HStack(alignment: .center, spacing: .grid(2)) {
-				Text("PhotoGuesser")
-					.bold()
-					.padding(.grid(1))
-					.padding([.leading, .trailing], .grid(2))
-					.foregroundColor(self.colorScheme == .dark ? .black : .photoGuesserCream)
-					.background(self.colorScheme == .dark ? Color.photoGuesserCream : .black)
-					.clipShape(
-						RoundedRectangle(cornerRadius: 13, style: .continuous)
-								.inset(by: 2)
-					)
+				TextStyle(
+					text: "PhotoGuesser",
+					padding: .grid(1)
+				)
 				Spacer()
 				Button(action: {
 					viewStore.send(.onMenuButtonTapped, animation: .default)

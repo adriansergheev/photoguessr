@@ -10,8 +10,8 @@ import ComposableArchitecture
 public struct CitiesFeature: Reducer {
 	public struct City: Equatable, Identifiable {
 		public let location: Location
-		let name: String
-		// revisit for uniqueness
+		public let name: String
+		// TODO: revisit for uniqueness
 		public var id: Double { 360 * round(location.lat) + round(location.long) }
 		public var imageUrls: [URL]?
 
@@ -33,7 +33,7 @@ public struct CitiesFeature: Reducer {
 	}
 
 	public enum Section: Equatable, Identifiable {
-		case city(City)
+		case city(City, isLoading: Bool = false)
 		case upgradeBanner
 
 		public var id: Double {
@@ -41,7 +41,7 @@ public struct CitiesFeature: Reducer {
 			case .upgradeBanner:
 				// NB: There can be one upgrade banner only.
 				return 1
-			case let .city(city):
+			case let .city(city, _):
 				return city.id
 			}
 		}
@@ -49,21 +49,28 @@ public struct CitiesFeature: Reducer {
 
 	public struct State: Equatable {
 		public var sections: IdentifiedArrayOf<Section>
+		public var showPlaceholder: Bool = false
 
 		public init(sections: IdentifiedArrayOf<Section> = [
-			.city(City(location: .init(lat: 0, long: 0), name: "San-Francisco")),
-			.city(City(location: .init(lat: 59.32938, long: 18.06871), name: "Stockholm")),
-			.city(City(location: .init(lat: 47.003670, long: 28.907089), name: "Chisinau")),
+			.city(City(location: .init(lat: 0, long: 0), name: "San-Francisco"), isLoading: true),
+			.city(City(location: .init(lat: 59.32938, long: 18.06871), name: "Stockholm"), isLoading: true),
+			.city(City(location: .init(lat: 47.003670, long: 28.907089), name: "Chișinău"), isLoading: true),
 			.upgradeBanner
 		]) {
 			self.sections = sections
 		}
 	}
 
+	public enum DelegateAction: Equatable {
+		case close
+	}
+
 	public enum Action: Equatable {
 		case onAppear
 		case onUpgradeTapped
 		case updateSection(Section)
+		case onCloseButtonTapped
+		case delegate(DelegateAction)
 	}
 
 	@Dependency(\.apiClient) var apiClient
@@ -74,16 +81,17 @@ public struct CitiesFeature: Reducer {
 		Reduce { state, action in
 			switch action {
 			case .onAppear:
+				state.showPlaceholder = true
 				return .run { [sections = state.sections] send in
 					await withTaskGroup(of: Void.self) { group in
 						for section in sections {
 							group.addTask {
-								if case var .city(city) = section {
+								if case var .city(city, _) = section {
 									let location = city.location
 									let req = NearestPhotoRequest(geo: [location.lat, location.long], limit: 10)
 									let result = try? await apiClient.giveNearestPhotos(req)
 									city.imageUrls = result?.result.photos.compactMap { $0.imageUrl } ?? []
-									await send(.updateSection(.city(city)))
+									await send(.updateSection(.city(city, isLoading: false)))
 								}
 							}
 						}
@@ -94,12 +102,14 @@ public struct CitiesFeature: Reducer {
 			case let .updateSection(section):
 				state.sections.updateOrAppend(section)
 				return .none
+			case .onCloseButtonTapped:
+				return .send(.delegate(.close))
+			case .delegate:
+				return .none
 			}
 		}
 	}
 }
-
-// let sfLady = UIImage(named: "sf-lady", in: Bundle.module, with: nil)!
 
 public struct Cities: View {
 	@Environment(\.colorScheme) var colorScheme
@@ -112,68 +122,85 @@ public struct Cities: View {
 	}
 
 	public var body: some View {
-		GeometryReader { proxy in
-			ScrollView {
-				LazyVStack {
-					ForEach(self.viewStore.sections) { section  in
-						ZStack {
-							VStack {
-								switch section {
-								case let .city(city):
-									if let imageUrls = city.imageUrls {
-										if !imageUrls.isEmpty {
-											AsyncImage(url: imageUrls.first) { phase in
-												phase.image?
-													.resizable()
-													.aspectRatio(contentMode: .fill)
+		VStack(spacing: 0) {
+			HStack {
+				Spacer()
+				Button(action: { viewStore.send(.onCloseButtonTapped, animation: .default) }) {
+					Image(systemName: "xmark")
+				}
+			}
+			.font(.system(size: 24))
+			.padding()
+
+			GeometryReader { proxy in
+				ScrollView {
+					LazyVStack {
+						ForEach(self.viewStore.sections) { section  in
+							ZStack {
+								VStack {
+									switch section {
+									case let .city(city, isLoading):
+										VStack {
+											if let imageUrls = city.imageUrls {
+												if !imageUrls.isEmpty {
+													LazyImage(url: imageUrls.randomElement()) { phase in
+														if let image = phase.image {
+															image.resizable()
+																.aspectRatio(contentMode: .fill)
+														} else {
+															ProgressView()
+														}
+													}
+												} else {
+													Text("Could not fetch images for this city ;(")
+														.transaction { $0.animation = nil }
+												}
+											} else {
+												Rectangle()
+													.opacity(0.5)
+													.redacted(reason: isLoading ? .placeholder : [])
 											}
-										} else {
-											Text("Could not fetch images for this city ;(")
+										}
+										.frame(height: proxy.size.height / 4)
+									case .upgradeBanner:
+										Button {
+											self.viewStore.send(.onUpgradeTapped)
+										} label: {
+											TextStyle(text: "More cities coming soon!")
 										}
 									}
-								case .upgradeBanner:
-									Button {
-										self.viewStore.send(.onUpgradeTapped)
-									} label: {
-										Text("Add your own city")
-											.border(.red)
-									}
 								}
-							}
-							.frame(height: proxy.size.height / 4)
-							.cornerRadius(8)
-							.padding([.leading, .trailing], .grid(4))
-							.padding([.top, .bottom], .grid(2))
+								.frame(height: proxy.size.height / 4)
+								.cornerRadius(8)
+								.padding([.leading, .trailing], .grid(4))
+								.padding([.top, .bottom], .grid(2))
 
-							VStack {
-								Spacer()
-								HStack {
+								VStack {
 									Spacer()
-									if case let .city(city) = section {
-										Text(city.name)
-											.bold()
-											.padding(.grid(2))
-											.padding([.leading, .trailing], .grid(2))
-											.foregroundColor(self.colorScheme == .dark ? .black : .photoGuesserCream)
-											.background(self.colorScheme == .dark ? Color.photoGuesserCream : .black)
-											.clipShape(
-												RoundedRectangle(cornerRadius: 13, style: .continuous)
-													.inset(by: 2)
-											)
+									HStack {
+										Spacer()
+										if case let .city(city, _) = section {
+											TextStyle(text: city.name)
+										}
 									}
 								}
+								.padding([.trailing], .grid(8))
+								.padding([.bottom], .grid(4))
 							}
-							.padding([.trailing], .grid(8))
-							.padding([.bottom], .grid(4))
-						}
-						.onTapGesture {
-							//
+							.onTapGesture {
+								//							section.id
+							}
 						}
 					}
 				}
 			}
+			.onAppear { self.viewStore.send(.onAppear) }
 		}
-		.onAppear { self.viewStore.send(.onAppear) }
+		.foregroundColor(self.colorScheme == .dark ? .photoGuesserCream : .black)
+		.background(
+			(self.colorScheme == .dark ? .black : Color.photoGuesserCream)
+				.ignoresSafeArea()
+		)
 	}
 }
 

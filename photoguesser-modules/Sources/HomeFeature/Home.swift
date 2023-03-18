@@ -61,6 +61,9 @@ public struct Home: ReducerProtocol {
 					return .none
 				case .menuBackground:
 					return .none
+				case .cities(.presented(.delegate(.close))):
+					state.cities = nil
+					return .none
 				case .cities:
 					return .none
 				}

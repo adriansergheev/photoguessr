@@ -35,6 +35,7 @@ public struct ActionButtonStyle: ButtonStyle {
 	}
 }
 
+#if DEBUG
 struct Buttons_Previews: PreviewProvider {
 	static var previews: some View {
 		let view = NavigationView {
@@ -61,3 +62,4 @@ struct Buttons_Previews: PreviewProvider {
 		}
 	}
 }
+#endif
