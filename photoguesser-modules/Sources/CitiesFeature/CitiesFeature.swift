@@ -63,17 +63,19 @@ public struct CitiesFeature: Reducer {
 
 	public enum DelegateAction: Equatable {
 		case close
+		case startGame(City.ID)
 	}
 
 	public enum Action: Equatable {
 		case onAppear
-		case onUpgradeTapped
+		case onSectionTap(Section.ID)
 		case updateSection(Section)
 		case onCloseButtonTapped
 		case delegate(DelegateAction)
 	}
 
 	@Dependency(\.apiClient) var apiClient
+	@Dependency(\.mainQueue) var mainQueue
 	public init() {
 
 	}
@@ -91,14 +93,22 @@ public struct CitiesFeature: Reducer {
 									let req = NearestPhotoRequest(geo: [location.lat, location.long], limit: 10)
 									let result = try? await apiClient.giveNearestPhotos(req)
 									city.imageUrls = result?.result.photos.compactMap { $0.imageUrl } ?? []
+									try? await self.mainQueue.sleep(for: .seconds(0.5))
 									await send(.updateSection(.city(city, isLoading: false)))
 								}
 							}
 						}
 					}
 				}
-			case .onUpgradeTapped:
-				return .none
+			case let.onSectionTap(id):
+				guard let section = state.sections[id: id] else { return .none }
+				switch section {
+				case .city:
+					return .send(.delegate(.startGame(id)))
+				case .upgradeBanner:
+					// TODO: Send to upgrade
+					return .none
+				}
 			case let .updateSection(section):
 				state.sections.updateOrAppend(section)
 				return .none
@@ -135,61 +145,57 @@ public struct Cities: View {
 			GeometryReader { proxy in
 				ScrollView {
 					LazyVStack {
-						ForEach(self.viewStore.sections) { section  in
-							ZStack {
-								VStack {
-									switch section {
-									case let .city(city, isLoading):
-										VStack {
-											if let imageUrls = city.imageUrls {
-												if !imageUrls.isEmpty {
-													LazyImage(url: imageUrls.randomElement()) { phase in
-														if let image = phase.image {
-															image.resizable()
-																.aspectRatio(contentMode: .fill)
-														} else {
-															ProgressView()
+						ForEach(self.viewStore.sections) { section in
+							Button {
+								viewStore.send(.onSectionTap(section.id))
+							} label: {
+								ZStack {
+									VStack {
+										switch section {
+										case let .city(city, isLoading):
+											VStack {
+												if let imageUrls = city.imageUrls {
+													if !imageUrls.isEmpty {
+														LazyImage(url: imageUrls.randomElement()) { phase in
+															if let image = phase.image {
+																image.resizable()
+																	.aspectRatio(contentMode: .fill)
+															} else {
+																ProgressView()
+															}
 														}
+													} else {
+														Text("Could not fetch images for this city ;(")
 													}
 												} else {
-													Text("Could not fetch images for this city ;(")
-														.transaction { $0.animation = nil }
+													Rectangle()
+														.opacity(0.5)
+														.redacted(reason: isLoading ? .placeholder : [])
 												}
-											} else {
-												Rectangle()
-													.opacity(0.5)
-													.redacted(reason: isLoading ? .placeholder : [])
 											}
-										}
-										.frame(height: proxy.size.height / 4)
-									case .upgradeBanner:
-										Button {
-											self.viewStore.send(.onUpgradeTapped)
-										} label: {
+										case .upgradeBanner:
 											TextStyle(text: "More cities coming soon!")
 										}
 									}
-								}
-								.frame(height: proxy.size.height / 4)
-								.cornerRadius(8)
-								.padding([.leading, .trailing], .grid(4))
-								.padding([.top, .bottom], .grid(2))
+									.frame(height: proxy.size.height / 4)
+									.cornerRadius(8)
+									.padding([.leading, .trailing], .grid(4))
+									.padding([.top, .bottom], .grid(2))
 
-								VStack {
-									Spacer()
-									HStack {
+									VStack {
 										Spacer()
-										if case let .city(city, _) = section {
-											TextStyle(text: city.name)
+										HStack {
+											Spacer()
+											if case let .city(city, _) = section {
+												TextStyle(text: city.name)
+											}
 										}
 									}
+									.padding([.trailing], .grid(8))
+									.padding([.bottom], .grid(4))
 								}
-								.padding([.trailing], .grid(8))
-								.padding([.bottom], .grid(4))
 							}
-							.onTapGesture {
-								//							section.id
-							}
+							.allowsHitTesting(!(section == .upgradeBanner))
 						}
 					}
 				}

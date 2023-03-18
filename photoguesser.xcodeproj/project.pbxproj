@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0418D3D129C6134F005496B3 /* CitiesPreviewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0418D3D029C6134F005496B3 /* CitiesPreviewApp.swift */; };
+		0418D3DD29C61388005496B3 /* CitiesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 0418D3DC29C61388005496B3 /* CitiesFeature */; };
 		0431EB0529A3FFD100BCABA4 /* HomeFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 0431EB0429A3FFD100BCABA4 /* HomeFeature */; };
 		043F958029A2387B00C983C7 /* HomePreviewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043F957F29A2387B00C983C7 /* HomePreviewApp.swift */; };
 		043F958C29A2396C00C983C7 /* HomeFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 043F958B29A2396C00C983C7 /* HomeFeature */; };
@@ -20,6 +22,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0418D3CE29C6134F005496B3 /* CitiesPreview.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CitiesPreview.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0418D3D029C6134F005496B3 /* CitiesPreviewApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CitiesPreviewApp.swift; sourceTree = "<group>"; };
 		043F957D29A2387B00C983C7 /* HomePreview.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HomePreview.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		043F957F29A2387B00C983C7 /* HomePreviewApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomePreviewApp.swift; sourceTree = "<group>"; };
 		045A188D29A924E500D6B55D /* GameOverPreview.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GameOverPreview.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -34,6 +38,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		0418D3CB29C6134F005496B3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0418D3DD29C61388005496B3 /* CitiesFeature in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		043F957A29A2387B00C983C7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -69,6 +81,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0418D3CF29C6134F005496B3 /* CitiesPreview */ = {
+			isa = PBXGroup;
+			children = (
+				0418D3D029C6134F005496B3 /* CitiesPreviewApp.swift */,
+			);
+			path = CitiesPreview;
+			sourceTree = "<group>";
+		};
 		043F957E29A2387B00C983C7 /* HomePreview */ = {
 			isa = PBXGroup;
 			children = (
@@ -100,6 +120,7 @@
 				043F957E29A2387B00C983C7 /* HomePreview */,
 				045A188E29A924E500D6B55D /* GameOverPreview */,
 				04D979D629B299FF00CB9A13 /* GamePreview */,
+				0418D3CF29C6134F005496B3 /* CitiesPreview */,
 				04BF02A729980FA000109E06 /* Products */,
 				04AB9CEF2999694D00B6C43E /* Frameworks */,
 			);
@@ -112,6 +133,7 @@
 				043F957D29A2387B00C983C7 /* HomePreview.app */,
 				045A188D29A924E500D6B55D /* GameOverPreview.app */,
 				04D979D529B299FF00CB9A13 /* GamePreview.app */,
+				0418D3CE29C6134F005496B3 /* CitiesPreview.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -145,6 +167,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		0418D3CD29C6134F005496B3 /* CitiesPreview */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0418D3DB29C61350005496B3 /* Build configuration list for PBXNativeTarget "CitiesPreview" */;
+			buildPhases = (
+				0418D3CA29C6134F005496B3 /* Sources */,
+				0418D3CB29C6134F005496B3 /* Frameworks */,
+				0418D3CC29C6134F005496B3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CitiesPreview;
+			packageProductDependencies = (
+				0418D3DC29C61388005496B3 /* CitiesFeature */,
+			);
+			productName = CitiesPreview;
+			productReference = 0418D3CE29C6134F005496B3 /* CitiesPreview.app */;
+			productType = "com.apple.product-type.application";
+		};
 		043F957C29A2387B00C983C7 /* HomePreview */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 043F958A29A2387C00C983C7 /* Build configuration list for PBXNativeTarget "HomePreview" */;
@@ -235,6 +277,9 @@
 				LastSwiftUpdateCheck = 1420;
 				LastUpgradeCheck = 1420;
 				TargetAttributes = {
+					0418D3CD29C6134F005496B3 = {
+						CreatedOnToolsVersion = 14.2;
+					};
 					043F957C29A2387B00C983C7 = {
 						CreatedOnToolsVersion = 14.2;
 					};
@@ -266,11 +311,19 @@
 				043F957C29A2387B00C983C7 /* HomePreview */,
 				045A188C29A924E500D6B55D /* GameOverPreview */,
 				04D979D429B299FF00CB9A13 /* GamePreview */,
+				0418D3CD29C6134F005496B3 /* CitiesPreview */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		0418D3CC29C6134F005496B3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		043F957B29A2387B00C983C7 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -304,6 +357,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		0418D3CA29C6134F005496B3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0418D3D129C6134F005496B3 /* CitiesPreviewApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		043F957929A2387B00C983C7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -339,6 +400,64 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		0418D3D929C61350005496B3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "green-black.CitiesPreview";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		0418D3DA29C61350005496B3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "green-black.CitiesPreview";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		043F958829A2387C00C983C7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -690,6 +809,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		0418D3DB29C61350005496B3 /* Build configuration list for PBXNativeTarget "CitiesPreview" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0418D3D929C61350005496B3 /* Debug */,
+				0418D3DA29C61350005496B3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		043F958A29A2387C00C983C7 /* Build configuration list for PBXNativeTarget "HomePreview" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -738,6 +866,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0418D3DC29C61388005496B3 /* CitiesFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CitiesFeature;
+		};
 		0431EB0429A3FFD100BCABA4 /* HomeFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = HomeFeature;

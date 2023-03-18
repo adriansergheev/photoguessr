@@ -63,8 +63,7 @@ let package = Package(
 				"Styleguide",
 				.product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
 				.product(name: "NukeUI", package: "Nuke")
-			],
-			resources: [.process("Resources/")]
+			]
 		),
 		.target(
 			name: "Haptics",
