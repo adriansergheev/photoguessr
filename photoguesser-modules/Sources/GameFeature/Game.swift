@@ -12,6 +12,43 @@ public struct Game: ReducerProtocol {
 		public enum GameMode: Equatable {
 			case limited(max: Int, current: Int)
 		}
+		enum Scoring {
+			private enum ScoreBounds: Int {
+				case max = 50 // max score
+				case maxInRange = 40 // max score for ranged guess
+			}
+
+			case max(Int)
+			case calculated(Int, targetYear: Int)
+
+			case maxInRange(Int)
+			case calculatedInRange(Int, lowerBound: Int, upperBound: Int)
+
+			static func score(target: Photo.Year, guess: Int) -> Self {
+				switch target {
+				case let .year(targetYear):
+					switch guess {
+					case targetYear:
+						return .max(ScoreBounds.max.rawValue)
+					default:
+						let distance = abs(targetYear - guess)
+						let score = Swift.max(0, ScoreBounds.max.rawValue - distance * 2)
+						return .calculated(score, targetYear: targetYear)
+					}
+				case let .range(lowerBound: lowerBound, upperBound: upperBound):
+					let targetRange = lowerBound...upperBound
+					let isContained = targetRange ~= guess
+					if isContained {
+						return .maxInRange(ScoreBounds.maxInRange.rawValue)
+					} else {
+						let targetYear = (lowerBound + upperBound) / 2
+						let distance = abs(targetYear - guess)
+						let score = Swift.max(0, ScoreBounds.maxInRange.rawValue - distance * 2)
+						return .calculatedInRange(score, lowerBound: lowerBound, upperBound: upperBound)
+					}
+				}
+			}
+		}
 
 		var score: Int = 0
 		var mode: State.GameMode
@@ -97,7 +134,10 @@ public struct Game: ReducerProtocol {
 					state.slider = state.slider == nil ? CustomSlider.State(sliderValue: 1913, range: 1826...2000) : nil
 					return .none
 				case .slider(.submitTapped):
-					guard let guess = state.guess, let photoInPlay = state.currentInGamePhoto else { return .none }
+					guard
+						let guess = state.guess,
+						let photoInPlay = state.currentInGamePhoto
+					else { return .none }
 					defer {
 						if var gamePhotos = state.gameLocation.gamePhotos?.result.photos,
 							 let rid = state.gameLocation.gamePhotos?.rid,
@@ -118,40 +158,27 @@ public struct Game: ReducerProtocol {
 							}
 
 						} else {
-							state.gameOver = .init(score: state.score, reason: .outOfPics)
+							state.gameOver = .init(score: state.score, reason: .outOfImages)
 						}
 					}
 
-					switch photoInPlay.specificYear {
-					case let .year(targetYear):
-						switch guess {
-						case targetYear:
-							state.score += 50
-							state.gameNotification = .init(text: "You nailed it! \(50) points!")
-						default:
-							let distance = abs(targetYear - guess)
-							let score = max(0, 50 - distance * 2)
+					let score = State.Scoring.score(target: photoInPlay.specificYear, guess: guess)
 
-							state.score += score
-							state.gameNotification = .init(text: "Photo was taken in \(targetYear) which is \(distance) years away. \(score) points!")
-						}
-
-					case let .range(lowerBound: lowerBound, upperBound: upperBound):
-						let targetRange = lowerBound...upperBound
-						let isContained = targetRange ~= guess
-
-						if isContained {
-							state.score += 40
-							state.gameNotification = .init(text: "Your guess is within the range! \(40) points!")
-						} else {
-							let targetYear = (lowerBound + upperBound) / 2
-							let distance = abs(targetYear - guess)
-							let score = max(0, 40 - distance * 2)
-
-							state.score += score
-							state.gameNotification = .init(text: "Photo was taken between \(lowerBound) and \(upperBound)\n\(score) points!")
-						}
+					switch score {
+					case let .max(score):
+						state.score += score
+						state.gameNotification = .init(text: "You nailed it! \(score) points!")
+					case let .maxInRange(score):
+						state.score += score
+						state.gameNotification = .init(text: "Your guess is within the range!\(score) points!")
+					case let .calculated(score, targetYear):
+						state.score += score
+						state.gameNotification = .init(text: "Photo was taken in \(targetYear)\n\(score) points!")
+					case let .calculatedInRange(score, lowerBound, upperBound):
+						state.score += score
+						state.gameNotification = .init(text: "Photo was taken between \(lowerBound) and \(upperBound)\n\(score) points!")
 					}
+
 					return .fireAndForget { [photoInPlay] in
 						await markAsSeen(id: photoInPlay.cid)
 					}
@@ -221,7 +248,7 @@ import SwiftUI
 extension BottomMenuState where Action == Game.Action {
 	public static func endGameMenu(state: Game.State) -> Self {
 		var menu = BottomMenuState(
-			title: .init("Solo"),
+			title: .init(""),
 			message: .init("Are you sure you want to exit the game?"),
 			buttons: [
 				.init(title: .init("Keep Playing"), icon: Image(systemName: "arrowtriangle.right"))
