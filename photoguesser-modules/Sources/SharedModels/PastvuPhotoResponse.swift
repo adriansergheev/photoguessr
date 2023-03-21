@@ -25,8 +25,8 @@ public struct Photo: Codable, Equatable {
 	public let geo: [Double]
 
 	// TODO: move year tuple in a enum
-	public let year: Int
-	public let yearUpperBound: Int?
+	let _year: Int
+	let _yearUpperBound: Int?
 
 	public let ccount: Int?
 
@@ -47,8 +47,8 @@ public struct Photo: Codable, Equatable {
 		self.title = title
 		self.direction = direction
 		self.geo = geo
-		self.year = year
-		self.yearUpperBound = yearUpperBound
+		self._year = year
+		self._yearUpperBound = yearUpperBound
 		self.ccount = ccount
 	}
 
@@ -59,8 +59,8 @@ public struct Photo: Codable, Equatable {
 		case title
 		case direction = "dir"
 		case geo
-		case year = "year"
-		case yearUpperBound = "year2"
+		case _year = "year"
+		case _yearUpperBound = "year2"
 		case ccount
 	}
 }
@@ -78,12 +78,12 @@ extension Photo {
 		case range(lowerBound: Int, upperBound: Int)
 	}
 
-	public var specificYear: Year {
-		if let yearUpperBound {
-			if yearUpperBound != self.year {
-				return .range(lowerBound: self.year, upperBound: yearUpperBound)
+	public var year: Year {
+		if let _yearUpperBound {
+			if _yearUpperBound != self._year {
+				return .range(lowerBound: self._year, upperBound: _yearUpperBound)
 			}
 		}
-		return .year(self.year)
+		return .year(self._year)
 	}
 }

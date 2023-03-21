@@ -114,6 +114,7 @@ let package = Package(
 			dependencies: [
 				"CitiesFeature",
 				"GameFeature",
+				"LocationClientLive",
 				"MenuBackground"
 			]
 		),

@@ -1,8 +1,10 @@
 import SwiftUI
 import Styleguide
 import GameFeature
+import Dependencies
 import CitiesFeature
 import MenuBackground
+import LocationClientLive
 import ComposableArchitecture
 
 public struct Home: ReducerProtocol {
@@ -31,6 +33,7 @@ public struct Home: ReducerProtocol {
 		case cities(PresentationAction<CitiesFeature.Action>)
 	}
 
+	@Dependency (\.locationClient) var locationClient
 	public init() {}
 
 	public var body: some ReducerProtocol<State, Action> {

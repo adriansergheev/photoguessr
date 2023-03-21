@@ -167,7 +167,7 @@ public struct Game: ReducerProtocol {
 						}
 					}
 
-					let score = State.Scoring.score(target: photoInPlay.specificYear, guess: guess)
+					let score = State.Scoring.score(target: photoInPlay.year, guess: guess)
 
 					switch score {
 					case let .max(score):
