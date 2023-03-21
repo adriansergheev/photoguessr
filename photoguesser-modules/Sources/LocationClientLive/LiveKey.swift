@@ -27,16 +27,26 @@ extension LocationClient: DependencyKey {
 
 		let locationManager = CLLocationManager()
 		let subject = PassthroughSubject<DelegateEvent, Never>()
-		var delegate: Delegate? = Delegate(subject: subject)
+		let delegate: Delegate? = Delegate(subject: subject)
 		locationManager.delegate = delegate
+		// https://forums.swift.org/t/asyncsequence-stream-version-of-passthroughsubject-or-currentvaluesubject/60395/7
+		let stream = AsyncStream(bufferingPolicy: .bufferingOldest(0)) { continuation in
+			let cancellable = subject.sink { signal in
+				continuation.yield(signal)
+			}
+			continuation.onTermination = { continuation in
+				cancellable.cancel()
+			}
+		}
 
 		return Self(
 			authorizationStatus: CLLocationManager.authorizationStatus,
 			requestWhenInUseAuthorization: locationManager.requestWhenInUseAuthorization,
 			requestLocation: locationManager.requestLocation,
-			delegate: subject
-				.handleEvents(receiveCancel: { delegate = nil })
-				.eraseToAnyPublisher()
+			delegate: stream
+//				subject
+//				.handleEvents(receiveCancel: { delegate = nil })
+//				.eraseToAnyPublisher()
 		)
 	}
 }

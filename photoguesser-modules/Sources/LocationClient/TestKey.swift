@@ -13,14 +13,24 @@ extension DependencyValues {
 extension LocationClient: TestDependencyKey {
 	public static var testValue: LocationClient {
 		let subject = PassthroughSubject<DelegateEvent, Never>()
-
+		
+		// https://forums.swift.org/t/asyncsequence-stream-version-of-passthroughsubject-or-currentvaluesubject/60395/7
+		let stream = AsyncStream(bufferingPolicy: .bufferingOldest(0)) { continuation in
+			let cancellable = subject.sink { signal in
+				continuation.yield(signal)
+			}
+			continuation.onTermination = { continuation in
+				cancellable.cancel()
+			}
+		}
+		
 		return Self(
 			authorizationStatus: { .authorizedWhenInUse },
 			requestWhenInUseAuthorization: { },
 			requestLocation: {
 				subject.send(.didUpdateLocations([CLLocation()]))
 			},
-			delegate: subject.eraseToAnyPublisher()
+			delegate: stream
 		)
 	}
 }
