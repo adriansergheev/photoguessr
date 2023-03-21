@@ -1,7 +1,6 @@
 import NukeUI
 import SwiftUI
 import Styleguide
-import CoreLocation
 import SharedModels
 import ApiClientLive
 import IdentifiedCollections
