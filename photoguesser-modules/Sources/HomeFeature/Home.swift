@@ -53,8 +53,14 @@ public struct Home: ReducerProtocol {
 					print("Present cities")
 					return .none
 				case .onSettingsTap:
+					locationClient.requestWhenInUseAuthorization()
+					locationClient.requestLocation()
 					print("Present Settings")
-					return .none
+					return .run { _ in
+						for await event in locationClient.delegate {
+							print("Event: \(event)")
+						}
+					}
 				case .game(.gameNavigationBar):
 					return .none
 				case .game(.gameOver(.delegate(.close))):

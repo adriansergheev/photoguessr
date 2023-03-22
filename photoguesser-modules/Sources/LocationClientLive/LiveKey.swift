@@ -34,7 +34,8 @@ extension LocationClient: DependencyKey {
 			let cancellable = subject.sink { signal in
 				continuation.yield(signal)
 			}
-			continuation.onTermination = { continuation in
+			continuation.onTermination = { _ in
+				_ = delegate
 				cancellable.cancel()
 			}
 		}
@@ -44,9 +45,6 @@ extension LocationClient: DependencyKey {
 			requestWhenInUseAuthorization: locationManager.requestWhenInUseAuthorization,
 			requestLocation: locationManager.requestLocation,
 			delegate: stream
-//				subject
-//				.handleEvents(receiveCancel: { delegate = nil })
-//				.eraseToAnyPublisher()
 		)
 	}
 }
