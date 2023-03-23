@@ -2,6 +2,7 @@ import SwiftUI
 import Styleguide
 import GameFeature
 import Dependencies
+import SharedModels
 import CitiesFeature
 import MenuBackground
 import LocationClientLive
@@ -9,8 +10,11 @@ import ComposableArchitecture
 
 public struct Home: ReducerProtocol {
 	public struct State: Equatable {
-		public var gameInstance: Game.State?
-		public var menuBackground = MenuBackground.State()
+		var gameInstance: Game.State?
+		var menuBackground = MenuBackground.State()
+		var _isLoading: Bool = false
+
+		var alert: AlertState<Action.Alert>?
 		@PresentationState public var cities: CitiesFeature.State?
 
 		public init(
@@ -23,7 +27,7 @@ public struct Home: ReducerProtocol {
 	}
 
 	public enum Action: Equatable {
-		case onPlayTap
+		case onPlayTap(GameLocation? = nil)
 		case onCitiesTap
 		case onLeaderboardsTap
 		case onSettingsTap
@@ -31,6 +35,13 @@ public struct Home: ReducerProtocol {
 		case game(Game.Action)
 		case menuBackground(MenuBackground.Action)
 		case cities(PresentationAction<CitiesFeature.Action>)
+		case alert(Alert)
+
+		public enum Alert {
+			case dismiss
+			case deny
+			case okToUseLocation
+		}
 	}
 
 	@Dependency (\.locationClient) var locationClient
@@ -43,8 +54,13 @@ public struct Home: ReducerProtocol {
 			}
 			Reduce { state, action in
 				switch action {
-				case .onPlayTap:
-					state.gameInstance = .init()
+				case let .onPlayTap(gameLocation):
+					defer { state._isLoading = false }
+					if let gameLocation {
+						state.gameInstance = .init(gameLocation: gameLocation)
+					} else {
+						state.gameInstance = .init()
+					}
 					return .none
 				case .onCitiesTap:
 					state.cities = .init()
@@ -53,14 +69,22 @@ public struct Home: ReducerProtocol {
 					print("Present cities")
 					return .none
 				case .onSettingsTap:
-					locationClient.requestWhenInUseAuthorization()
-					locationClient.requestLocation()
-					print("Present Settings")
-					return .run { _ in
-						for await event in locationClient.delegate {
-							print("Event: \(event)")
+					print("Present settings")
+					// TODO: Move this out
+					state.alert = AlertState {
+						TextState("Play with nearby photos?")
+					} actions: {
+						ButtonState(action: .okToUseLocation) {
+							TextState("Sure!")
 						}
+						ButtonState(action: .deny) {
+							TextState("Let me select the location")
+						}
+					} message: {
+						TextState("View nearby historical photos?")
 					}
+					return .none
+
 				case .game(.gameNavigationBar):
 					return .none
 				case .game(.gameOver(.delegate(.close))):
@@ -82,6 +106,46 @@ public struct Home: ReducerProtocol {
 					return .none
 				case .cities:
 					return .none
+				case .alert(.dismiss):
+					state.alert = nil
+					return .none
+				case .alert(.deny):
+					state.cities = .init()
+					return .none
+				case .alert(.okToUseLocation):
+					locationClient.requestWhenInUseAuthorization()
+					locationClient.requestLocation()
+					state._isLoading = true
+					return .run { send in
+						for await delegateEvent in locationClient.delegate
+							.prefix(1) {
+							#if DEBUG
+							print("LocationDelegateEvent:\(delegateEvent)")
+							#endif
+							switch delegateEvent {
+							case let .didChangeAuthorization(authorization):
+								print(authorization)
+								break
+							case let .didUpdateLocations(locations):
+								let location = locations.first!
+								if case let .success(placemarks) = await locationClient.reverseGeocodeLocation(location) {
+									let name = placemarks.first!.name!
+									let gameLocation = GameLocation(
+										location: .init(lat: location.coordinate.latitude, long: location.coordinate.longitude),
+										name: name
+									)
+									print(gameLocation.name)
+									await send(.onPlayTap(gameLocation))
+								}
+							case let .didFailWithError(error):
+								#if DEBUG
+								print(error)
+								#endif
+								await send(.onPlayTap(nil))
+								break
+							}
+						}
+					}
 				}
 			}
 			.ifLet(\.gameInstance, action: /Action.game) {
@@ -89,7 +153,6 @@ public struct Home: ReducerProtocol {
 			}
 			.ifLet(\.$cities, action: /Action.cities) {
 				CitiesFeature()
-					._printChanges()
 			}
 		}
 	}
@@ -98,11 +161,11 @@ public struct Home: ReducerProtocol {
 public struct HomeView: View {
 	@Environment(\.colorScheme) var colorScheme
 	let store: StoreOf<Home>
-	@ObservedObject var viewStore: ViewStore<Void, Home.Action>
+	@ObservedObject var viewStore: ViewStore<Bool, Home.Action>
 
 	public init(store: StoreOf<Home>) {
 		self.store = store
-		self.viewStore = ViewStore(self.store.stateless)
+		self.viewStore = ViewStore(self.store, observe: { $0._isLoading })
 	}
 
 	public var body: some View {
@@ -110,65 +173,75 @@ public struct HomeView: View {
 			IfLetStore(self.store.scope(state: \.gameInstance, action: Home.Action.game)) { store in
 				GameView(store: store)
 			} else: {
-				VStack {
-					Text("Photoguesser")
-						.font(.system(.largeTitle))
-						.bold()
-					HomeButton {
-						viewStore.send(.onPlayTap)
-					} content: {
-						HomeButtonContent(
-							image: Image(systemName: "photo.stack.fill"),
-							imagePadding: .grid(12),
-							text: Text("Play")
-						)
+				ZStack {
+					if viewStore.state {
+						ProgressView()
+							.zIndex(1)
 					}
-					HomeButton {
-						viewStore.send(.onCitiesTap)
-					} content: {
-						HomeButtonContent(
-							image: Image(systemName: "building.columns"),
-							imagePadding: .grid(12),
-							text: Text("Cities")
-						)
-					}
-					HStack {
+					VStack {
+						Text("Photoguesser")
+							.font(.system(.largeTitle))
+							.bold()
 						HomeButton {
-							viewStore.send(.onLeaderboardsTap)
+							viewStore.send(.onPlayTap(nil))
 						} content: {
 							HomeButtonContent(
-								image: Image(systemName: "star.leadinghalf.filled"),
-								text: Text("Leaderboards")
+								image: Image(systemName: "photo.stack.fill"),
+								imagePadding: .grid(12),
+								text: Text("Play")
 							)
-							.opacity(0.5)
-							.disabled(true)
 						}
 						HomeButton {
-							viewStore.send(.onSettingsTap)
+							viewStore.send(.onCitiesTap)
 						} content: {
 							HomeButtonContent(
-								image: Image(systemName: "gearshape"),
-								text: Text("Settings")
+								image: Image(systemName: "building.columns"),
+								imagePadding: .grid(12),
+								text: Text("Cities")
 							)
-							.opacity(0.5)
-							.disabled(true)
+						}
+						HStack {
+							HomeButton {
+								viewStore.send(.onLeaderboardsTap)
+							} content: {
+								HomeButtonContent(
+									image: Image(systemName: "star.leadinghalf.filled"),
+									text: Text("Leaderboards")
+								)
+								.opacity(0.5)
+								.disabled(true)
+							}
+							HomeButton {
+								viewStore.send(.onSettingsTap)
+							} content: {
+								HomeButtonContent(
+									image: Image(systemName: "gearshape"),
+									text: Text("Settings")
+								)
+								.opacity(0.5)
+								.disabled(true)
+							}
 						}
 					}
-				}
-				.padding(.grid(16))
-				.foregroundColor(self.colorScheme == .light ? .photoGuesserCream : .black)
-				.background(
-					(self.colorScheme == .light ? .black.opacity(0.5) : Color.black.opacity(0.1))
-						.ignoresSafeArea()
-						.background(
-							MenuBackgroundView(
-								store: self.store.scope(
-									state: \.menuBackground,
-									action: Home.Action.menuBackground
+					.padding(.grid(16))
+					.foregroundColor(self.colorScheme == .light ? .photoGuesserCream : .black)
+					.background(
+						(self.colorScheme == .light ? .black.opacity(0.5) : Color.black.opacity(0.1))
+							.ignoresSafeArea()
+							.background(
+								MenuBackgroundView(
+									store: self.store.scope(
+										state: \.menuBackground,
+										action: Home.Action.menuBackground
+									)
 								)
 							)
-						)
-				)
+					)
+					.alert(
+						self.store.scope(state: \.alert, action: Home.Action.alert),
+						dismiss: Home.Action.Alert.dismiss
+					)
+				}
 			}
 		}
 		.sheet(

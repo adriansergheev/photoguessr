@@ -30,6 +30,7 @@ extension LocationClient: TestDependencyKey {
 			requestLocation: {
 				subject.send(.didUpdateLocations([CLLocation()]))
 			},
+			reverseGeocodeLocation: { _ in .success([]) },
 			delegate: stream
 		)
 	}

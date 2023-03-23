@@ -44,7 +44,37 @@ extension LocationClient: DependencyKey {
 			authorizationStatus: CLLocationManager.authorizationStatus,
 			requestWhenInUseAuthorization: locationManager.requestWhenInUseAuthorization,
 			requestLocation: locationManager.requestLocation,
+			reverseGeocodeLocation: { location in
+				do {
+					return .success(try await CLGeocoder().reverseGeocodeLocation(location))
+				} catch let error {
+					return .failure(error)
+				}
+			},
 			delegate: stream
 		)
+	}
+}
+
+extension CLGeocoder {
+	func reverseGeocodeLocation(_ location: CLLocation) async throws -> [CLPlacemark] {
+		return try await withCheckedThrowingContinuation { continuation in
+			self.reverseGeocodeLocation(location) { placemarks, error in
+				if let error = error {
+					continuation.resume(throwing: error)
+				} else if let placemarks = placemarks {
+					continuation.resume(returning: placemarks)
+				} else {
+					continuation.resume(
+						throwing:
+							NSError(
+								domain: "CLGeocoder",
+								code: -1,
+								userInfo: [NSLocalizedDescriptionKey: "Unknown error"]
+							)
+					)
+				}
+			}
+		}
 	}
 }
