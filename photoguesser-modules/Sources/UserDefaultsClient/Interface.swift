@@ -19,18 +19,11 @@ public struct UserDefaultsClient {
 	public var setDouble: @Sendable (Double, String) async -> Void
 	public var setInteger: @Sendable (Int, String) async -> Void
 
-	//	public var hasShownFirstLaunchOnboarding: Bool {
-	//		self.boolForKey(hasShownFirstLaunchOnboardingKey)
-	//	}
-	//
-	//	public var installationTime: Double {
-	//		self.doubleForKey(installationTimeKey)
-	//	}
-	//
-	//	public func setInstallationTime(_ double: Double) async {
-	//		await self.setDouble(double, installationTimeKey)
-	//	}
+	public var isNotWillingToShareLocation: Bool {
+		self.boolForKey(isSharingLocationKey)
+	}
+	public func setNotSharingLocationPreference(_ bool: Bool) async {
+		await self.setBool(bool, isSharingLocationKey)
+	}
 }
-
-// let hasShownFirstLaunchOnboardingKey = "hasShownFirstLaunchOnboardingKey"
-// let installationTimeKey = "installationTimeKey"
+let isSharingLocationKey: String = "isSharingLocationKey"

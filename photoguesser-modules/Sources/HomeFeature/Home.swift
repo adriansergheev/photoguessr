@@ -27,11 +27,9 @@ public struct Home: ReducerProtocol {
 	}
 
 	public enum Action: Equatable {
-		case onPlayTap(GameLocation? = nil)
-		case onCitiesTap
-		case onLeaderboardsTap
-		case onSettingsTap
-
+		// TODO: this should not be nil. Either first in the "cities" list, either from disk etc.
+		case startGame(GameLocation? = nil)
+		case tap(Tap)
 		case game(Game.Action)
 		case menuBackground(MenuBackground.Action)
 		case cities(PresentationAction<CitiesFeature.Action>)
@@ -42,9 +40,17 @@ public struct Home: ReducerProtocol {
 			case deny
 			case okToUseLocation
 		}
+
+		public enum Tap {
+			case onPlay
+			case onCities
+			case onLeaderboards
+			case onSettings
+		}
 	}
 
-	@Dependency (\.locationClient) var locationClient
+	@Dependency(\.locationClient) var locationClient
+	@Dependency(\.userDefaults) var userDefaultsClient
 	public init() {}
 
 	public var body: some ReducerProtocol<State, Action> {
@@ -54,37 +60,58 @@ public struct Home: ReducerProtocol {
 			}
 			Reduce { state, action in
 				switch action {
-				case let .onPlayTap(gameLocation):
-					defer { state._isLoading = false }
-					if let gameLocation {
-						state.gameInstance = .init(gameLocation: gameLocation)
-					} else {
-						state.gameInstance = .init()
+				case .tap(.onPlay):
+					switch locationClient.authorizationStatus {
+					case .denied, .restricted:
+						break
+					case .authorizedAlways, .authorizedWhenInUse:
+						// TODO: - get latest played from disk as JSON as "city". See the latest seen pointfree episode
+						break
+					case .notDetermined:
+						// && default city is not selected
+						if userDefaultsClient.isNotWillingToShareLocation {
+							state.cities = .init()
+							return .none
+						}
+						state.alert = AlertState {
+							TextState("Play with nearby photos?")
+						} actions: {
+							ButtonState(action: .okToUseLocation) {
+								TextState("Sure!")
+							}
+							ButtonState(action: .deny) {
+								TextState("Let me select the location")
+							}
+							ButtonState(role: .cancel, action: .dismiss) {
+								TextState("Disimss")
+							}
+						} message: {
+							TextState("View nearby historical photos")
+						}
+					@unknown default: break
+					}
+					return .fireAndForget { [authorizationStatus = locationClient.authorizationStatus] in
+						switch authorizationStatus {
+						case .denied, .restricted:
+							await userDefaultsClient.setNotSharingLocationPreference(true)
+						case .authorizedAlways, .authorizedWhenInUse:
+							await userDefaultsClient.setNotSharingLocationPreference(false)
+						case .notDetermined: break
+						@unknown default: break
+						}
+					}
+				case .tap(.onCities):
+					// ignore more than one location events
+					if state.cities == nil {
+						state.cities = .init()
 					}
 					return .none
-				case .onCitiesTap:
-					state.cities = .init()
-					return .none
-				case .onLeaderboardsTap:
+				case .tap(.onLeaderboards):
 					print("Present cities")
 					return .none
-				case .onSettingsTap:
+				case .tap(.onSettings):
 					print("Present settings")
-					// TODO: Move this out
-					state.alert = AlertState {
-						TextState("Play with nearby photos?")
-					} actions: {
-						ButtonState(action: .okToUseLocation) {
-							TextState("Sure!")
-						}
-						ButtonState(action: .deny) {
-							TextState("Let me select the location")
-						}
-					} message: {
-						TextState("View nearby historical photos?")
-					}
 					return .none
-
 				case .game(.gameNavigationBar):
 					return .none
 				case .game(.gameOver(.delegate(.close))):
@@ -111,41 +138,52 @@ public struct Home: ReducerProtocol {
 					return .none
 				case .alert(.deny):
 					state.cities = .init()
-					return .none
+					return .fireAndForget {
+						await userDefaultsClient.setNotSharingLocationPreference(true)
+					}
 				case .alert(.okToUseLocation):
+					// TODO: perhaps "search bar" in the "cities" list?
 					locationClient.requestWhenInUseAuthorization()
 					locationClient.requestLocation()
 					state._isLoading = true
 					return .run { send in
-						for await delegateEvent in locationClient.delegate
-							.prefix(1) {
-							#if DEBUG
-							print("LocationDelegateEvent:\(delegateEvent)")
-							#endif
+						for await delegateEvent in locationClient.delegate { // at most one ok auth, and one location
 							switch delegateEvent {
 							case let .didChangeAuthorization(authorization):
-								print(authorization)
-								break
+								switch authorization {
+								case .authorizedAlways, .authorizedWhenInUse: break
+								case .denied, .notDetermined, .restricted:
+									// rename event
+									await send(.tap(.onCities))
+									return
+								@unknown default: break
+								}
 							case let .didUpdateLocations(locations):
-								let location = locations.first!
+								guard let location = locations.first else {
+									// rename event
+									await send(.tap(.onCities))
+									return
+								}
 								if case let .success(placemarks) = await locationClient.reverseGeocodeLocation(location) {
-									let name = placemarks.first!.name!
+									let name = placemarks.first?.name ?? placemarks.first?.locality ?? ""
 									let gameLocation = GameLocation(
 										location: .init(lat: location.coordinate.latitude, long: location.coordinate.longitude),
 										name: name
 									)
-									print(gameLocation.name)
-									await send(.onPlayTap(gameLocation))
+									await send(.startGame(gameLocation))
 								}
-							case let .didFailWithError(error):
-								#if DEBUG
-								print(error)
-								#endif
-								await send(.onPlayTap(nil))
-								break
+							case .didFailWithError: break
 							}
 						}
 					}
+				case let .startGame(gameLocation):
+					defer { state._isLoading = false }
+					if let gameLocation {
+						state.gameInstance = .init(gameLocation: gameLocation)
+					} else {
+						state.gameInstance = .init(gameLocation: .init(location: .init(lat: 59.32938, long: 18.06871), name: "Stockholm"))
+					}
+					return .none
 				}
 			}
 			.ifLet(\.gameInstance, action: /Action.game) {
@@ -183,7 +221,7 @@ public struct HomeView: View {
 							.font(.system(.largeTitle))
 							.bold()
 						HomeButton {
-							viewStore.send(.onPlayTap(nil))
+							viewStore.send(.tap(.onPlay))
 						} content: {
 							HomeButtonContent(
 								image: Image(systemName: "photo.stack.fill"),
@@ -192,7 +230,7 @@ public struct HomeView: View {
 							)
 						}
 						HomeButton {
-							viewStore.send(.onCitiesTap)
+							viewStore.send(.tap(.onCities))
 						} content: {
 							HomeButtonContent(
 								image: Image(systemName: "building.columns"),
@@ -202,7 +240,7 @@ public struct HomeView: View {
 						}
 						HStack {
 							HomeButton {
-								viewStore.send(.onLeaderboardsTap)
+								viewStore.send(.tap(.onLeaderboards))
 							} content: {
 								HomeButtonContent(
 									image: Image(systemName: "star.leadinghalf.filled"),
@@ -212,7 +250,7 @@ public struct HomeView: View {
 								.disabled(true)
 							}
 							HomeButton {
-								viewStore.send(.onSettingsTap)
+								viewStore.send(.tap(.onSettings))
 							} content: {
 								HomeButtonContent(
 									image: Image(systemName: "gearshape"),

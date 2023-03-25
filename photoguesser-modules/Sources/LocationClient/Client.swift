@@ -3,14 +3,14 @@ import Combine
 import CoreLocation
 
 public struct LocationClient {
-	public var authorizationStatus: () -> CLAuthorizationStatus
+	public var authorizationStatus: CLAuthorizationStatus
 	public var requestWhenInUseAuthorization: () -> Void
 	public var requestLocation: () -> Void
 	public var reverseGeocodeLocation: (CLLocation) async -> Result<[CLPlacemark], Error>
 	public var delegate: AsyncStream<DelegateEvent>
 
 	public init(
-		authorizationStatus: @escaping () -> CLAuthorizationStatus,
+		authorizationStatus: CLAuthorizationStatus,
 		requestWhenInUseAuthorization: @escaping () -> Void,
 		requestLocation: @escaping () -> Void,
 		reverseGeocodeLocation: @escaping (CLLocation) async -> Result<[CLPlacemark], Error>,

@@ -24,7 +24,6 @@ extension LocationClient: DependencyKey {
 				self.subject.send(.didFailWithError(error))
 			}
 		}
-
 		let locationManager = CLLocationManager()
 		let subject = PassthroughSubject<DelegateEvent, Never>()
 		let delegate: Delegate? = Delegate(subject: subject)
@@ -41,7 +40,7 @@ extension LocationClient: DependencyKey {
 		}
 
 		return Self(
-			authorizationStatus: CLLocationManager.authorizationStatus,
+			authorizationStatus: locationManager.authorizationStatus,
 			requestWhenInUseAuthorization: locationManager.requestWhenInUseAuthorization,
 			requestLocation: locationManager.requestLocation,
 			reverseGeocodeLocation: { location in

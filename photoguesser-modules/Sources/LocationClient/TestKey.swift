@@ -25,7 +25,7 @@ extension LocationClient: TestDependencyKey {
 		}
 
 		return Self(
-			authorizationStatus: { .authorizedWhenInUse },
+			authorizationStatus: .authorizedWhenInUse,
 			requestWhenInUseAuthorization: { },
 			requestLocation: {
 				subject.send(.didUpdateLocations([CLLocation()]))
