@@ -64,13 +64,9 @@ extension CLGeocoder {
 				} else if let placemarks = placemarks {
 					continuation.resume(returning: placemarks)
 				} else {
+					struct GeocoderError: Error {}
 					continuation.resume(
-						throwing:
-							NSError(
-								domain: "CLGeocoder",
-								code: -1,
-								userInfo: [NSLocalizedDescriptionKey: "Unknown error"]
-							)
+						throwing: GeocoderError()
 					)
 				}
 			}

@@ -23,6 +23,7 @@ let package = Package(
 		.library(name: "LocationClientLive", targets: ["LocationClientLive"]),
 		.library(name: "MenuBackground", targets: ["MenuBackground"]),
 		.library(name: "SharedModels", targets: ["SharedModels"]),
+		.library(name: "StorageClient", targets: ["StorageClient"]),
 		.library(name: "Styleguide", targets: ["Styleguide"]),
 		.library(name: "UserDefaultsClient", targets: ["UserDefaultsClient"])
 	],
@@ -143,6 +144,13 @@ let package = Package(
 		),
 		.target(
 			name: "SharedModels"
+		),
+		.target(
+			name: "StorageClient",
+			dependencies: [
+				.product(name: "Dependencies", package: "swift-dependencies"),
+				.product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay")
+			]
 		),
 		.target(
 			name: "Styleguide"
