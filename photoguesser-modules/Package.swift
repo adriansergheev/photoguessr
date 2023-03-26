@@ -116,7 +116,8 @@ let package = Package(
 				"CitiesFeature",
 				"GameFeature",
 				"LocationClientLive",
-				"MenuBackground"
+				"MenuBackground",
+				"StorageClient"
 			]
 		),
 		.target(

@@ -8,7 +8,7 @@ import ComposableArchitecture
 
 public struct CitiesFeature: Reducer {
 	public enum Section: Equatable, Identifiable {
-		case city(GameLocation, isLoading: Bool = false)
+		case city(GameLocation, isLoading: Bool = true)
 		case upgradeBanner
 
 		public var id: Double {
@@ -26,9 +26,9 @@ public struct CitiesFeature: Reducer {
 		public var sections: IdentifiedArrayOf<Section>
 
 		public init(sections: IdentifiedArrayOf<Section> = [
-			.city(GameLocation(location: .init(lat: 0, long: 0), name: "San-Francisco"), isLoading: true),
-			.city(GameLocation(location: .init(lat: 59.32938, long: 18.06871), name: "Stockholm"), isLoading: true),
-			.city(GameLocation(location: .init(lat: 47.003670, long: 28.907089), name: "Chișinău"), isLoading: true),
+			.city(.defaults[0]),
+			.city(.defaults[1]),
+			.city(.defaults[2]),
 			.upgradeBanner
 		]) {
 			self.sections = sections

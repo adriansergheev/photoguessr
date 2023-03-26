@@ -3,6 +3,7 @@ import Styleguide
 import GameFeature
 import Dependencies
 import SharedModels
+import StorageClient
 import CitiesFeature
 import MenuBackground
 import LocationClientLive
@@ -27,10 +28,9 @@ public struct Home: ReducerProtocol {
 	}
 
 	public enum Action: Equatable {
-		// TODO: this should not be nil. Either first in the "cities" list, either from disk etc.
-		case startGame(GameLocation? = nil)
 		case tap(Tap)
 		case game(Game.Action)
+		case location(Location)
 		case menuBackground(MenuBackground.Action)
 		case cities(PresentationAction<CitiesFeature.Action>)
 		case alert(Alert)
@@ -39,6 +39,10 @@ public struct Home: ReducerProtocol {
 			case dismiss
 			case deny
 			case okToUseLocation
+		}
+
+		public enum Location: Equatable {
+			case locationChanged(GameLocation?)
 		}
 
 		public enum Tap {
@@ -51,7 +55,14 @@ public struct Home: ReducerProtocol {
 
 	@Dependency(\.locationClient) var locationClient
 	@Dependency(\.userDefaults) var userDefaultsClient
+	@Dependency(\.storageClient) var storageClient
 	public init() {}
+
+	func startGame(_ state: inout State, gameLocation: GameLocation) {
+		state.gameInstance = .init(gameLocation: gameLocation)
+		state._isLoading = false
+		try? saveGameLocation(gameLocation)
+	}
 
 	public var body: some ReducerProtocol<State, Action> {
 		CombineReducers {
@@ -61,45 +72,47 @@ public struct Home: ReducerProtocol {
 			Reduce { state, action in
 				switch action {
 				case .tap(.onPlay):
-					switch locationClient.authorizationStatus {
-					case .denied, .restricted:
-						break
-					case .authorizedAlways, .authorizedWhenInUse:
-						// TODO: - get latest played from disk as JSON as "city". See the latest seen pointfree episode
-						break
-					case .notDetermined:
-						// && default city is not selected
-						if userDefaultsClient.isNotWillingToShareLocation {
-							state.cities = .init()
-							return .none
+					do {
+						self.startGame(&state, gameLocation: (try loadGameLocation()))
+						// figure out if this has to execute even if the try above throws
+						return .fireAndForget { @MainActor  [authorizationStatus = locationClient.authorizationStatus] in
+							switch authorizationStatus {
+							 case .denied, .restricted:
+								 await userDefaultsClient.setNotSharingLocationPreference(true)
+							 case .authorizedAlways, .authorizedWhenInUse:
+								 await userDefaultsClient.setNotSharingLocationPreference(false)
+							 case .notDetermined: break
+							 @unknown default: break
+							 }
+						 }
+					} catch {
+						switch locationClient.authorizationStatus {
+						case .notDetermined:
+							if userDefaultsClient.isNotWillingToShareLocation {
+								state.cities = .init()
+								return .none
+							}
+
+							state.alert = AlertState {
+								TextState("Play with nearby photos?")
+							} actions: {
+								ButtonState(action: .okToUseLocation) {
+									TextState("Sure!")
+								}
+								ButtonState(action: .deny) {
+									TextState("Let me select the location")
+								}
+								ButtonState(role: .cancel, action: .dismiss) {
+									TextState("Disimss")
+								}
+							} message: {
+								TextState("View nearby historical photos")
+							}
+						default: break
 						}
-						state.alert = AlertState {
-							TextState("Play with nearby photos?")
-						} actions: {
-							ButtonState(action: .okToUseLocation) {
-								TextState("Sure!")
-							}
-							ButtonState(action: .deny) {
-								TextState("Let me select the location")
-							}
-							ButtonState(role: .cancel, action: .dismiss) {
-								TextState("Disimss")
-							}
-						} message: {
-							TextState("View nearby historical photos")
-						}
-					@unknown default: break
+						return .none
 					}
-					return .fireAndForget { [authorizationStatus = locationClient.authorizationStatus] in
-						switch authorizationStatus {
-						case .denied, .restricted:
-							await userDefaultsClient.setNotSharingLocationPreference(true)
-						case .authorizedAlways, .authorizedWhenInUse:
-							await userDefaultsClient.setNotSharingLocationPreference(false)
-						case .notDetermined: break
-						@unknown default: break
-						}
-					}
+
 				case .tap(.onCities):
 					// ignore more than one location events
 					if state.cities == nil {
@@ -129,7 +142,7 @@ public struct Home: ReducerProtocol {
 					return .none
 				case let .cities(.presented(.delegate(.startGame(gameLocation)))):
 					state.cities = nil
-					state.gameInstance = .init(gameLocation: gameLocation)
+					self.startGame(&state, gameLocation: gameLocation)
 					return .none
 				case .cities:
 					return .none
@@ -147,21 +160,19 @@ public struct Home: ReducerProtocol {
 					locationClient.requestLocation()
 					state._isLoading = true
 					return .run { send in
-						for await delegateEvent in locationClient.delegate { // at most one ok auth, and one location
+						for await delegateEvent in locationClient.delegate {
 							switch delegateEvent {
 							case let .didChangeAuthorization(authorization):
 								switch authorization {
 								case .authorizedAlways, .authorizedWhenInUse: break
 								case .denied, .notDetermined, .restricted:
-									// rename event
-									await send(.tap(.onCities))
+									await send(.location(.locationChanged(nil)))
 									return
 								@unknown default: break
 								}
 							case let .didUpdateLocations(locations):
 								guard let location = locations.first else {
-									// rename event
-									await send(.tap(.onCities))
+									await send(.location(.locationChanged(nil)))
 									return
 								}
 								if case let .success(placemarks) = await locationClient.reverseGeocodeLocation(location) {
@@ -170,18 +181,18 @@ public struct Home: ReducerProtocol {
 										location: .init(lat: location.coordinate.latitude, long: location.coordinate.longitude),
 										name: name
 									)
-									await send(.startGame(gameLocation))
+									await send(.location(.locationChanged(gameLocation)))
 								}
 							case .didFailWithError: break
 							}
 						}
 					}
-				case let .startGame(gameLocation):
-					defer { state._isLoading = false }
-					if let gameLocation {
-						state.gameInstance = .init(gameLocation: gameLocation)
-					} else {
-						state.gameInstance = .init(gameLocation: .init(location: .init(lat: 59.32938, long: 18.06871), name: "Stockholm"))
+				case let .location(.locationChanged(gameLocation)):
+					// ignore more than one location events
+					if let gameLocation, state.gameInstance == nil {
+						self.startGame(&state, gameLocation: gameLocation)
+					} else if state.cities == nil {
+						state.cities = .init()
 					}
 					return .none
 				}
@@ -193,6 +204,31 @@ public struct Home: ReducerProtocol {
 				CitiesFeature()
 			}
 		}
+	}
+}
+
+extension Home {
+	func hasSavedGameLocation() -> Bool {
+		do {
+			_ = try loadGameLocation()
+			return true
+		} catch {
+			return false
+		}
+	}
+
+	func loadGameLocation() throws -> GameLocation {
+		try JSONDecoder().decode(
+			GameLocation.self,
+			from: storageClient.load(.gameLocation)
+		)
+	}
+
+	func saveGameLocation(_ gameLocation: GameLocation) throws {
+		try storageClient.save(
+			JSONEncoder().encode(gameLocation),
+			.gameLocation
+		)
 	}
 }
 
@@ -289,6 +325,11 @@ public struct HomeView: View {
 		}
 //		.modifier(DeviceStateModifier())
 	}
+}
+
+extension URL {
+	fileprivate static let gameLocation = Self.documentsDirectory
+		.appending(component: "gameLocation.json")
 }
 
 struct HomeButtonContent: View {

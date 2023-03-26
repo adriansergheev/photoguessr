@@ -1,13 +1,13 @@
-import Dependencies
 import Foundation
+import Dependencies
 
-struct StorageClient: Sendable {
-	var load: @Sendable (URL) throws -> Data
-	var save: @Sendable (Data, URL) throws -> Void
+public struct StorageClient: Sendable {
+	public var load: @Sendable (URL) throws -> Data
+	public var save: @Sendable (Data, URL) throws -> Void
 }
 
 extension DependencyValues {
-	var dataManager: StorageClient {
+	public var storageClient: StorageClient {
 		get { self[StorageClient.self] }
 		set { self[StorageClient.self] = newValue }
 	}
