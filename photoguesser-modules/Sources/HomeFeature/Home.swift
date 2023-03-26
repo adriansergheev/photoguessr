@@ -5,8 +5,8 @@ import Dependencies
 import SharedModels
 import StorageClient
 import CitiesFeature
+import LocationClient
 import MenuBackground
-import LocationClientLive
 import ComposableArchitecture
 
 public struct Home: ReducerProtocol {

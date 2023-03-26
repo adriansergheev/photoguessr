@@ -20,7 +20,6 @@ let package = Package(
 		.library(name: "Haptics", targets: ["Haptics"]),
 		.library(name: "HomeFeature", targets: ["HomeFeature"]),
 		.library(name: "LocationClient", targets: ["LocationClient"]),
-		.library(name: "LocationClientLive", targets: ["LocationClientLive"]),
 		.library(name: "MenuBackground", targets: ["MenuBackground"]),
 		.library(name: "SharedModels", targets: ["SharedModels"]),
 		.library(name: "StorageClient", targets: ["StorageClient"]),
@@ -115,7 +114,7 @@ let package = Package(
 			dependencies: [
 				"CitiesFeature",
 				"GameFeature",
-				"LocationClientLive",
+				"LocationClient",
 				"MenuBackground",
 				"StorageClient"
 			]
@@ -124,12 +123,6 @@ let package = Package(
 			name: "LocationClient",
 			dependencies: [
 				.product(name: "Dependencies", package: "swift-dependencies")
-			]
-		),
-		.target(
-			name: "LocationClientLive",
-			dependencies: [
-				"LocationClient"
 			]
 		),
 		.target(
