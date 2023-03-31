@@ -53,7 +53,7 @@ public struct Settings: View {
 	}
 
 	public var body: some View {
-		VStack(spacing: 0) {
+		VStack {
 			HStack {
 				Spacer()
 				Button(action: { viewStore.send(.onCloseButtonTapped, animation: .default) }) {
@@ -63,18 +63,18 @@ public struct Settings: View {
 			.font(.system(size: 24))
 			.padding([.top, .leading, .trailing])
 
-			VStack(alignment: .leading, spacing: 16) {
+			VStack(alignment: .leading, spacing: .grid(4)) {
 				Text("Settings")
 					.font(.title)
 				Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
 					.font(.subheadline)
-					.foregroundColor(Color.black)
+//					.foregroundColor(Color.black)
 					.font(.system(size: 16))
 					.multilineTextAlignment(.leading)
 				Spacer()
 				ScrollView(.vertical, showsIndicators: false) {
-					VStack(alignment: .leading, spacing: 32) {
-						VStack(spacing: 30) {
+					VStack(alignment: .leading, spacing: .grid(8)) {
+						VStack(spacing: .grid(8)) {
 							SettingCell {
 								Button(action: {
 									self.onReachOutViaEmail()
@@ -82,9 +82,8 @@ public struct Settings: View {
 									Text("Reach out")
 									Spacer()
 									Image(systemName: "arrow.right")
-										.padding(.trailing, 4)
+										.padding(.trailing, .grid(1))
 								})
-								.foregroundColor(.black)
 							}
 #if DEBUG
 							SettingCell {
@@ -95,7 +94,6 @@ public struct Settings: View {
 										.foregroundColor(.red)
 									Spacer()
 								})
-								.foregroundColor(.black)
 							}
 #endif
 							//							SettingCell {
@@ -105,13 +103,12 @@ public struct Settings: View {
 							//									Text("GitHub")
 							//									Spacer()
 							//									Image(systemName: "arrow.right")
-							//										.padding(.trailing, 4)
+							//										.padding(.trailing, .grid(1))
 							//								})
-							//								.foregroundColor(.black)
 							//							}
 						}
 						.padding(16)
-						VStack(alignment: .leading, spacing: 4) {
+						VStack(alignment: .leading, spacing: .grid(1)) {
 							Text("Terms / Privacy")
 								.fontWeight(.semibold)
 								.font(.footnote)
@@ -125,7 +122,7 @@ public struct Settings: View {
 					}
 				}
 			}
-			.padding(EdgeInsets(top: 64, leading: 16, bottom: 16, trailing: 16))
+			.padding(EdgeInsets(top: .grid(12), leading: .grid(4), bottom: .grid(4), trailing: .grid(4)))
 
 		}
 		.foregroundColor(self.colorScheme == .dark ? .photoGuesserCream : .black)
@@ -160,7 +157,7 @@ struct SettingCell<Content: View>: View {
 	}
 	var body: some View {
 		ZStack {
-			VStack(alignment: .leading, spacing: 8) {
+			VStack(alignment: .leading, spacing: .grid(2)) {
 				self.content()
 				Divider()
 					.background(Color.black)
