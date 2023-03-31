@@ -35,17 +35,17 @@ public struct CitiesFeature: Reducer {
 		}
 	}
 
-	public enum DelegateAction: Equatable {
-		case close
-		case startGame(GameLocation)
-	}
-
 	public enum Action: Equatable {
 		case onAppear
 		case onSectionTap(Section.ID)
 		case updateSection(Section)
 		case onCloseButtonTapped
-		case delegate(DelegateAction)
+		case delegate(Delegate)
+
+		public enum Delegate: Equatable {
+			case close
+			case startGame(GameLocation)
+		}
 	}
 
 	@Dependency(\.apiClient) var apiClient

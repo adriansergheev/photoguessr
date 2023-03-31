@@ -15,11 +15,11 @@ public struct SettingsFeature: Reducer {
 #if DEBUG
 		case _reset
 #endif
-		case delegate(DelegateAction)
-	}
+		case delegate(Delegate)
 
-	public enum DelegateAction: Equatable {
-		case close
+		public enum Delegate: Equatable {
+			case close
+		}
 	}
 
 	public init() {

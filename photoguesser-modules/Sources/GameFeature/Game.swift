@@ -76,10 +76,6 @@ public struct Game: ReducerProtocol {
 		}
 	}
 
-	public enum DelegateAction {
-		case close
-	}
-
 	public enum Action: Equatable {
 		case startGame
 		case gamePhotosResponse(TaskResult<GameLocation.GamePhotos>)
@@ -92,7 +88,11 @@ public struct Game: ReducerProtocol {
 
 		case dismissBottomMenu
 		case endGame
-		case delegate(DelegateAction)
+		case delegate(Delegate)
+
+		public enum Delegate {
+			case close
+		}
 	}
 
 	@Dependency(\.apiClient) var apiClient

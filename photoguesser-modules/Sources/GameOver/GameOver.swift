@@ -21,11 +21,11 @@ public struct GameOver: ReducerProtocol {
 
 	public enum Action: Equatable {
 		case onCloseButtonTapped
-		case delegate(DelegateAction)
-	}
+		case delegate(Delegate)
 
-	public enum DelegateAction {
-		case close
+		public enum Delegate {
+			case close
+		}
 	}
 
 	public init() {}
