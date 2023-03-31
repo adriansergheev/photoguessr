@@ -7,6 +7,7 @@ import StorageClient
 import CitiesFeature
 import LocationClient
 import MenuBackground
+import SettingsFeature
 import ComposableArchitecture
 
 public struct Home: ReducerProtocol {
@@ -15,8 +16,9 @@ public struct Home: ReducerProtocol {
 		var menuBackground = MenuBackground.State()
 		var _isLoading: Bool = false
 
-		var alert: AlertState<Action.Alert>?
 		@PresentationState public var cities: CitiesFeature.State?
+		@PresentationState public var settings: SettingsFeature.State?
+		var alert: AlertState<Action.Alert>?
 
 		public init(
 			gameInstance: Game.State? = nil,
@@ -33,6 +35,7 @@ public struct Home: ReducerProtocol {
 		case location(Location)
 		case menuBackground(MenuBackground.Action)
 		case cities(PresentationAction<CitiesFeature.Action>)
+		case settings(PresentationAction<SettingsFeature.Action>)
 		case alert(Alert)
 
 		public enum Alert {
@@ -123,7 +126,7 @@ public struct Home: ReducerProtocol {
 					print("Present cities")
 					return .none
 				case .tap(.onSettings):
-					print("Present settings")
+					state.settings = .init()
 					return .none
 				case .game(.gameNavigationBar):
 					return .none
@@ -195,6 +198,11 @@ public struct Home: ReducerProtocol {
 						state.cities = .init()
 					}
 					return .none
+				case .settings(.presented(.delegate(.close))):
+					state.settings = nil
+					return .none
+				case .settings:
+					return .none
 				}
 			}
 			.ifLet(\.gameInstance, action: /Action.game) {
@@ -202,6 +210,9 @@ public struct Home: ReducerProtocol {
 			}
 			.ifLet(\.$cities, action: /Action.cities) {
 				CitiesFeature()
+			}
+			.ifLet(\.$settings, action: /Action.settings) {
+				SettingsFeature()
 			}
 		}
 	}
@@ -292,8 +303,6 @@ public struct HomeView: View {
 									image: Image(systemName: "gearshape"),
 									text: Text("Settings")
 								)
-								.opacity(0.5)
-								.disabled(true)
 							}
 						}
 					}
@@ -322,6 +331,11 @@ public struct HomeView: View {
 			store: self.store.scope(state: \.$cities, action: Home.Action.cities)
 		) { store in
 			Cities(store: store)
+		}
+		.sheet(
+			store: self.store.scope(state: \.$settings, action: Home.Action.settings)
+		) { store in
+			Settings(store: store)
 		}
 //		.modifier(DeviceStateModifier())
 	}

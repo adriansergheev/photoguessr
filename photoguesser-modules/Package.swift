@@ -21,6 +21,7 @@ let package = Package(
 		.library(name: "HomeFeature", targets: ["HomeFeature"]),
 		.library(name: "LocationClient", targets: ["LocationClient"]),
 		.library(name: "MenuBackground", targets: ["MenuBackground"]),
+		.library(name: "SettingsFeature", targets: ["SettingsFeature"]),
 		.library(name: "SharedModels", targets: ["SharedModels"]),
 		.library(name: "StorageClient", targets: ["StorageClient"]),
 		.library(name: "Styleguide", targets: ["Styleguide"]),
@@ -116,6 +117,7 @@ let package = Package(
 				"GameFeature",
 				"LocationClient",
 				"MenuBackground",
+				"SettingsFeature",
 				"StorageClient"
 			]
 		),
@@ -135,6 +137,13 @@ let package = Package(
 				.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
 			],
 			resources: [.process("Resources/")]
+		),
+		.target(
+			name: "SettingsFeature",
+			dependencies: [
+				"Styleguide",
+				.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+			]
 		),
 		.target(
 			name: "SharedModels"
