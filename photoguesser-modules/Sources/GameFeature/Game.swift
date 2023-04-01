@@ -282,11 +282,31 @@ extension BottomMenuState where Action == Game.Action {
 public struct GameView: View {
 	public let store: StoreOf<Game>
 	@Environment(\.colorScheme) var colorScheme
-	@ObservedObject public var viewStore: ViewStore<Game.State, Game.Action>
+	@ObservedObject var viewStore: ViewStore<ViewState, Game.Action>
+
+	struct ViewState: Equatable {
+		let score: Int
+		let guess: Int?
+		let mode: Game.State.GameMode
+		let slider: CustomSlider.State?
+		let gameLocation: GameLocation
+		let currentInGamePhoto: Photo?
+		let isEmptyState: Bool
+
+		init(state: Game.State) {
+			self.score = state.score
+			self.guess = state.guess
+			self.mode = state.mode
+			self.slider = state.slider
+			self.gameLocation = state.gameLocation
+			self.currentInGamePhoto = state.currentInGamePhoto
+			self.isEmptyState = state.isEmptyState
+		}
+	}
 
 	public init(store: StoreOf<Game>) {
 		self.store = store
-		self.viewStore = ViewStore(self.store)
+		self.viewStore = ViewStore(self.store, observe: ViewState.init)
 	}
 
 	public var body: some View {
