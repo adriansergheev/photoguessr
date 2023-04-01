@@ -49,7 +49,7 @@ public struct GameNotificationView: View {
 	}
 
 	public var body: some View {
-		WithViewStore(self.store) { viewStore in
+		WithViewStore(self.store, observe: { $0 }) { viewStore in
 			VStack(alignment: .leading) {
 				HStack(spacing: .grid(4)) {
 					Image(systemName: "crown")

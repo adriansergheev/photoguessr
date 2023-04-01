@@ -70,7 +70,7 @@ extension View {
 	public func bottomMenu<Action>(
 		_ store: Store<BottomMenuState<Action>?, Action>
 	) -> some View where Action: Equatable {
-		WithViewStore(store) { viewStore in
+		WithViewStore(store, observe: { $0 }) { viewStore in
 			self.bottomMenu(
 				item: Binding(
 					get: {
@@ -168,11 +168,9 @@ private struct BottomMenuPreviewReducer: ReducerProtocol {
 			)
 
 			var body: some View {
-				WithViewStore(self.store.stateless) { viewStore in
-					Button("Present") { viewStore.send(.show, animation: .default) }
-						.frame(maxWidth: .infinity, maxHeight: .infinity)
-						.bottomMenu(self.store)
-				}
+				Button("Present") { ViewStore(self.store.stateless).send(.show, animation: .default) }
+					.frame(maxWidth: .infinity, maxHeight: .infinity)
+					.bottomMenu(self.store)
 			}
 		}
 

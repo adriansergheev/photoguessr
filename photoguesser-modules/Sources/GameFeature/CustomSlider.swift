@@ -43,7 +43,7 @@ public struct CustomSliderView: View {
 	}
 
 	public var body: some View {
-		WithViewStore(self.store) { viewStore in
+		WithViewStore(self.store, observe: { $0 }) { viewStore in
 			VStack {
 				ValueSlider(
 					value: viewStore.binding(get: \.sliderValue, send: CustomSlider.Action.sliderValueChanged),

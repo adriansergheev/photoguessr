@@ -53,7 +53,7 @@ public struct GameOverView: View {
 	}
 
 	public var body: some View {
-		WithViewStore(self.store) { viewStore in
+		WithViewStore(self.store, observe: { $0 }) { viewStore in
 			ScrollView(showsIndicators: false) {
 				VStack(spacing: self.adaptiveSize.pad(24)) {
 					HStack {

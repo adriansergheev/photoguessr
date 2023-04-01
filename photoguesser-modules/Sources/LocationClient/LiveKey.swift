@@ -1,7 +1,6 @@
-import Dependencies
-import LocationClient
 import Combine
 import CoreLocation
+import Dependencies
 
 extension LocationClient: DependencyKey {
 	public static var liveValue: LocationClient {
