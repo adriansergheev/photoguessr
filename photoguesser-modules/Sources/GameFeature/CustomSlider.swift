@@ -56,10 +56,11 @@ public struct CustomSliderView: View {
 							.opacity(0.5)
 							.frame(height: 6)
 							.cornerRadius(3),
-						thumbSize: CGSize(width: 48, height: 16),
+						thumbSize: CGSize(width: 48, height: 24),
 						options: .interactiveTrack
 					)
 				)
+				.padding([.leading, .trailing], .grid(4))
 				Button {
 					viewStore.send(.submitTapped)
 				} label: {

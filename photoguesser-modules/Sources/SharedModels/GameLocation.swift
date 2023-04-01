@@ -43,7 +43,7 @@ public struct CanonicalLocation: Codable, Equatable {
 extension GameLocation {
 	public static var defaults: [GameLocation] {
 		[
-			.init(location: .init(lat: 0, long: 0), name: "San-Francisco"),
+			.init(location: .init(lat: 37.77493, long: -122.41942), name: "San-Francisco"),
 			.init(location: .init(lat: 59.32938, long: 18.06871), name: "Stockholm"),
 			.init(location: .init(lat: 47.003670, long: 28.907089), name: "Chișinău")
 		]
