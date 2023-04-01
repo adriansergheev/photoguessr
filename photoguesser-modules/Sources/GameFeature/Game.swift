@@ -9,6 +9,7 @@ import BottomMenu
 import Styleguide
 import SharedModels
 import ApiClientLive
+import PrefetcherClient
 import GameNotification
 import UserDefaultsClient
 import ComposableArchitecture
@@ -102,7 +103,8 @@ public struct Game: ReducerProtocol {
 	}
 
 	@Dependency(\.apiClient) var apiClient
-	@Dependency(\.userDefaults) var userDefaults
+	@Dependency(\.userDefaults) var userDefaultsClient
+	@Dependency(\.prefetcherClient) var prefetcherClient
 
 	public init() {}
 
@@ -118,7 +120,7 @@ public struct Game: ReducerProtocol {
 					// clear out the list before starting
 					state.gameLocation.gamePhotos = nil
 					state.currentInGamePhoto = nil
-					let seenKey = userDefaults.integerForKey(seenKey)
+					let seenKey = userDefaultsClient.integerForKey(seenKey)
 					let except = (seenKey == 0) ? nil : seenKey
 
 					return .task { [location = state.gameLocation.location] in
@@ -132,13 +134,21 @@ public struct Game: ReducerProtocol {
 						)
 					}
 				case let .gamePhotosResponse(.success(gamePhotos)):
-					var array = gamePhotos.result.photos
-					if let index = array.indices.randomElement() {
-						let value = array.remove(at: index)
-						state.currentInGamePhoto = value
+					switch state.mode {
+					case let .limited(max: max, current: _):
+						var array = gamePhotos.result.photos.shuffled().prefix(max).map { $0 }
+						if let index = array.indices.randomElement() {
+							let value = array.remove(at: index)
+							state.currentInGamePhoto = value
+						}
+						state.gameLocation.gamePhotos = PastvuPhotoResponse(
+							result: .init(photos: array),
+							rid: gamePhotos.rid
+						)
+						return .fireAndForget { [urls = array.compactMap { $0.imageUrl}] in
+							await prefetcherClient.prefetchImages(urls)
+						}
 					}
-					state.gameLocation.gamePhotos = PastvuPhotoResponse(result: .init(photos: array), rid: gamePhotos.rid)
-					return .none
 				case .gamePhotosResponse(.failure):
 					return .none
 				case .toggleSlider:
@@ -205,7 +215,10 @@ public struct Game: ReducerProtocol {
 					return .none
 				case .gameOver(.delegate(.close)):
 					state.gameOver = nil
-					return .none
+					return .merge(
+						.send(.delegate(.close)),
+						.fireAndForget { await prefetcherClient.cancelPrefetching() }
+					)
 				case .gameOver:
 					return .none
 				case .dismissBottomMenu:
@@ -216,7 +229,10 @@ public struct Game: ReducerProtocol {
 						state.gameOver = .init(score: state.score)
 						return .none
 					} else {
-						return .send(.delegate(.close))
+						return .merge(
+							.send(.delegate(.close)),
+							.fireAndForget { await prefetcherClient.cancelPrefetching() }
+						)
 					}
 				case .delegate:
 					return .none
@@ -238,7 +254,7 @@ public struct Game: ReducerProtocol {
 
 	// TODO: Support more
 	func markAsSeen(id: Int) async {
-		await userDefaults.setInteger(id, seenKey)
+		await userDefaultsClient.setInteger(id, seenKey)
 	}
 }
 

@@ -21,6 +21,7 @@ let package = Package(
 		.library(name: "HomeFeature", targets: ["HomeFeature"]),
 		.library(name: "LocationClient", targets: ["LocationClient"]),
 		.library(name: "MenuBackground", targets: ["MenuBackground"]),
+		.library(name: "PrefetcherClient", targets: ["PrefetcherClient"]),
 		.library(name: "SettingsFeature", targets: ["SettingsFeature"]),
 		.library(name: "SharedModels", targets: ["SharedModels"]),
 		.library(name: "StorageClient", targets: ["StorageClient"]),
@@ -85,6 +86,7 @@ let package = Package(
 				"GameNotification",
 				"GameOver",
 				"Haptics",
+				"PrefetcherClient",
 				"SharedModels",
 				"UserDefaultsClient",
 				.product(name: "Sliders", package: "swiftui-sliders"),
@@ -137,6 +139,13 @@ let package = Package(
 				.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
 			],
 			resources: [.process("Resources/")]
+		),
+		.target(
+			name: "PrefetcherClient",
+			dependencies: [
+				.product(name: "Dependencies", package: "swift-dependencies"),
+				.product(name: "Nuke", package: "Nuke")
+			]
 		),
 		.target(
 			name: "SettingsFeature",
