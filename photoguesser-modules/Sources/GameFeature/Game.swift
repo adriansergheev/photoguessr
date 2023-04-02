@@ -69,6 +69,7 @@ public struct Game: ReducerProtocol {
 	@Dependency(\.apiClient) var apiClient
 	@Dependency(\.userDefaults) var userDefaultsClient
 	@Dependency(\.prefetcherClient) var prefetcherClient
+	@Dependency(\.feedbackGenerator) var feedbackGenerator
 
 	public init() {}
 
@@ -163,6 +164,7 @@ public struct Game: ReducerProtocol {
 					}
 
 					return .fireAndForget { [photoInPlay] in
+						await feedbackGenerator.selectionChanged()
 						await markAsSeen(id: photoInPlay.cid)
 					}
 				case .gameNotification(.onAppear):
