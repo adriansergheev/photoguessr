@@ -321,6 +321,7 @@ public struct GameView: View {
 					HStack {
 						Text("\(viewStore.score)")
 							.foregroundColor(.adaptiveBlack)
+							.font(.system(size: 24))
 							.bold()
 							.padding(.leading, .grid(4))
 						Spacer()
@@ -333,6 +334,7 @@ public struct GameView: View {
 						case let .limited(max: limit, current: current):
 							Text("\(current)/\(limit)")
 								.bold()
+								.font(.system(size: 24))
 								.foregroundColor(.adaptiveBlack)
 								.padding(.trailing, .grid(4))
 						}
@@ -354,65 +356,70 @@ public struct GameView: View {
 								)
 								Spacer()
 							}
+							.zIndex(1)
 
 							VStack(alignment: .center) {
-								Spacer()
-								LazyImage(url: imageUrl, transaction: .init(animation: .default)) {
-									$0.image?.resizable()
-										.aspectRatio(contentMode: .fill)
-									// TODO: geometry reader
-										.frame(width: UIScreen.width, height: UIScreen.height / 3)
-								}
-								.padding([.top, .bottom], .grid(1))
-								Spacer()
-									VStack {
-										HStack {
-											Text(photo.title)
-												.lineLimit(2)
-												.padding(.grid(2))
-												.bold()
-												.foregroundColor(Color.adaptiveBlack)
-											Spacer()
-											Text(verbatim: "\(viewStore.guess)")
-												.foregroundColor(.adaptiveBlack)
-												.font(.system(size: 24))
-												.bold()
-										}
-										.padding([.leading, .trailing], .grid(2))
 
-										ValueSlider(
-											value: viewStore.binding(get: \.guess, send: Game.Action.sliderValueChanged),
-											in: viewStore.guessRange,
-											step: 1
-										)
-										.valueSliderStyle(
-											HorizontalValueSliderStyle(
-												track: Color.photoGuesserGold
-													.opacity(0.5)
-													.frame(height: 6)
-													.cornerRadius(3),
-												thumbSize: CGSize(width: 48, height: 24),
-												options: .interactiveTrack
-											)
-										)
-										.padding([.leading, .trailing], .grid(4))
-										Button {
-											viewStore.send(.submitTapped)
-										} label: {
-											Text("Submit")
-												.padding(.grid(2))
-												.padding([.leading, .trailing], .grid(1))
-												.foregroundColor(self.colorScheme == .dark ? .black : .photoGuesserCream)
-												.background(self.colorScheme == .dark ? Color.photoGuesserCream : .black)
-												.cornerRadius(36)
-												.padding(.bottom, .grid(10))
+								GeometryReader { proxy in
+									VStack {
+										Spacer()
+										LazyImage(url: imageUrl, transaction: .init(animation: .default)) {
+											$0.image?.resizable()
+												.aspectRatio(contentMode: .fit)
+												.frame(width: proxy.size.width, height: proxy.size.height)
 										}
+										.padding([.top, .bottom], .grid(1))
+										Spacer()
 									}
-									.frame(height: UIScreen.height / 4)
-									.background(
-										.ultraThinMaterial.opacity(1),
-										in: RoundedRectangle(cornerRadius: 0, style: .continuous)
+								}
+
+								VStack {
+									HStack {
+										Text(photo.title)
+											.lineLimit(2)
+											.bold()
+											.foregroundColor(Color.adaptiveBlack)
+										Spacer()
+										Text(verbatim: "\(viewStore.guess)")
+											.foregroundColor(.adaptiveBlack)
+											.font(.system(size: 24))
+											.bold()
+									}
+									.padding([.top, .leading, .trailing], .grid(2))
+
+									ValueSlider(
+										value: viewStore.binding(get: \.guess, send: Game.Action.sliderValueChanged),
+										in: viewStore.guessRange,
+										step: 1
 									)
+									.valueSliderStyle(
+										HorizontalValueSliderStyle(
+											track: Color.photoGuesserGold
+												.opacity(0.5)
+												.frame(height: 6)
+												.cornerRadius(3),
+											thumbSize: CGSize(width: 48, height: 24),
+											options: .interactiveTrack
+										)
+									)
+									.padding([.leading, .trailing], .grid(4))
+									Button {
+										viewStore.send(.submitTapped)
+									} label: {
+										Text("Submit")
+											.padding(.grid(2))
+											.padding([.leading, .trailing], .grid(1))
+											.foregroundColor(self.colorScheme == .dark ? .black : .photoGuesserCream)
+											.background(self.colorScheme == .dark ? Color.photoGuesserCream : .black)
+											.cornerRadius(36)
+											.padding(.bottom, .grid(10))
+									}
+								}
+								.frame(height: UIScreen.height / 4)
+								.background(
+									.ultraThinMaterial.opacity(1),
+									in: RoundedRectangle(cornerRadius: 0, style: .continuous)
+								)
 							}
 						}
 						.edgesIgnoringSafeArea(.bottom)
@@ -442,7 +449,7 @@ public struct GameView: View {
 					removal: .game
 				)
 			)
-			.zIndex(1)
+			.zIndex(2)
 		}
 		.bottomMenu(self.store.scope(state: \.bottomMenu))
 		.background(colorScheme == .dark ? .black : .photoGuesserCream)

@@ -8,7 +8,6 @@ extension Color {
 		$0.userInterfaceStyle == .dark ? .white : .photoGuesserBlack
 	}
 	public static let photoGuesserBlack = hex(0x121212)
-	public static let photoGuesserBrown = hex(0x8B6C42)
 	public static let photoGuesserCream = hex(0xFFFDD0)
 	public static let photoGuesserGold = hex(0xFFD700)
 }
