@@ -337,7 +337,7 @@ public struct GameView: View {
 							Text("\(current)/\(limit)")
 								.bold()
 								.font(.system(size: 24))
-								.foregroundColor(.adaptiveBlack)
+								.foregroundColor((limit - current == 1) ? .red : .adaptiveBlack)
 								.padding(.trailing, .grid(4))
 						}
 					}
