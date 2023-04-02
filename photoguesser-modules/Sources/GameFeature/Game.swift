@@ -154,7 +154,7 @@ public struct Game: ReducerProtocol {
 				case .toggleSlider:
 					state.slider = state.slider == nil ? CustomSlider.State(sliderValue: 1913, range: 1826...2000) : nil
 					return .none
-				case .slider(.submitTapped):
+				case .slider(.delegate(.submit)):
 					guard
 						let guess = state.guess,
 						let photoInPlay = state.currentInGamePhoto

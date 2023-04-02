@@ -20,6 +20,11 @@ public struct CustomSlider: ReducerProtocol {
 	public enum Action: Equatable {
 		case submitTapped
 		case sliderValueChanged(Double)
+		case delegate(Delegate)
+
+		public enum Delegate {
+			case submit
+		}
 	}
 
 	init() {}
@@ -27,9 +32,11 @@ public struct CustomSlider: ReducerProtocol {
 	public func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
 		switch action {
 		case .submitTapped:
-			return .none
+			return .send(.delegate(.submit))
 		case let .sliderValueChanged(value):
 			state.sliderValue = value
+			return .none
+		case .delegate:
 			return .none
 		}
 	}
