@@ -16,55 +16,16 @@ import ComposableArchitecture
 
 public struct Game: ReducerProtocol {
 	public struct State: Equatable {
-		public enum GameMode: Equatable {
-			case limited(max: Int, current: Int)
-		}
-		enum Scoring {
-			private enum ScoreBounds: Int {
-				case max = 50 // max score
-				case maxInRange = 40 // max score for ranged guess
-			}
-
-			case max(Int)
-			case calculated(Int, targetYear: Int)
-
-			case maxInRange(Int)
-			case calculatedInRange(Int, lowerBound: Int, upperBound: Int)
-
-			static func score(target: Photo.Year, guess: Int) -> Self {
-				switch target {
-				case let .year(targetYear):
-					switch guess {
-					case targetYear:
-						return .max(ScoreBounds.max.rawValue)
-					default:
-						let distance = abs(targetYear - guess)
-						let score = Swift.max(0, ScoreBounds.max.rawValue - distance * 2)
-						return .calculated(score, targetYear: targetYear)
-					}
-				case let .range(lowerBound: lowerBound, upperBound: upperBound):
-					let targetRange = lowerBound...upperBound
-					let isContained = targetRange ~= guess
-					if isContained {
-						return .maxInRange(ScoreBounds.maxInRange.rawValue)
-					} else {
-						let targetYear = (lowerBound + upperBound) / 2
-						let distance = abs(targetYear - guess)
-						let score = Swift.max(0, ScoreBounds.maxInRange.rawValue - distance * 2)
-						return .calculatedInRange(score, lowerBound: lowerBound, upperBound: upperBound)
-					}
-				}
-			}
-		}
-
 		var score: Int = 0
 		var mode: State.GameMode
 		var gameLocation: GameLocation
 		var currentInGamePhoto: Photo?
 
+		var guess: Int
+		var guessRange: ClosedRange<Int>
+
 		var navigationBar = GameNavigationBar.State()
 		var gameNotification: GameNotification.State?
-		var slider: CustomSlider.State?
 		var gameOver: GameOver.State?
 		var bottomMenu: BottomMenuState<Action>?
 
@@ -73,25 +34,28 @@ public struct Game: ReducerProtocol {
 			mode: GameMode = .limited(max: 10, current: 0),
 			gameLocation: GameLocation = .init(location: .init(lat: 55.67594, long: 12.56553), name: "Copenhagen"),
 			gameNotification: GameNotification.State? = nil,
-			slider: CustomSlider.State? = nil
+			guess: Int = 1950,
+			guessRange: ClosedRange<Int> = 1900...2000
 		) {
 			self.score = score
 			self.mode = mode
 			self.gameLocation = gameLocation
 			self.gameNotification = gameNotification
-			self.slider = slider
+			self.guess = guess
+			self.guessRange = guessRange
 		}
 	}
 
 	public enum Action: Equatable {
 		case startGame
 		case gamePhotosResponse(TaskResult<GameLocation.GamePhotos>)
-		case toggleSlider
 
-		case slider(CustomSlider.Action)
 		case gameNotification(GameNotification.Action)
 		case gameNavigationBar(GameNavigationBar.Action)
 		case gameOver(GameOver.Action)
+
+		case sliderValueChanged(Int)
+		case submitTapped
 
 		case dismissBottomMenu
 		case endGame
@@ -122,7 +86,6 @@ public struct Game: ReducerProtocol {
 					state.currentInGamePhoto = nil
 					let seenKey = userDefaultsClient.integerForKey(seenKey)
 					let except = (seenKey == 0) ? nil : seenKey
-
 					return .task { [location = state.gameLocation.location] in
 						let request = PastvuPhotoRequest(
 							geo: [location.lat, location.long],
@@ -151,14 +114,13 @@ public struct Game: ReducerProtocol {
 					}
 				case .gamePhotosResponse(.failure):
 					return .none
-				case .toggleSlider:
-					state.slider = state.slider == nil ? CustomSlider.State(sliderValue: 1913, range: 1826...2000) : nil
+				case let .sliderValueChanged(value):
+					state.guess = value
 					return .none
-				case .slider(.delegate(.submit)):
-					guard
-						let guess = state.guess,
-						let photoInPlay = state.currentInGamePhoto
-					else { return .none }
+				case .submitTapped:
+					guard let photoInPlay = state.currentInGamePhoto else {
+						return .none
+					}
 					defer {
 						if var gamePhotos = state.gameLocation.gamePhotos?.result.photos,
 							 let rid = state.gameLocation.gamePhotos?.rid,
@@ -183,7 +145,7 @@ public struct Game: ReducerProtocol {
 						}
 					}
 
-					let score = State.Scoring.score(target: photoInPlay.year, guess: guess)
+					let score = State.Scoring.score(target: photoInPlay.year, guess: state.guess)
 
 					switch score {
 					case let .max(score):
@@ -203,8 +165,6 @@ public struct Game: ReducerProtocol {
 					return .fireAndForget { [photoInPlay] in
 						await markAsSeen(id: photoInPlay.cid)
 					}
-				case .slider:
-					return .none
 				case .gameNotification(.onAppear):
 					return .none
 				case .gameNotification(.didExpire):
@@ -238,9 +198,6 @@ public struct Game: ReducerProtocol {
 					return .none
 				}
 			}
-			.ifLet(\.slider, action: /Action.slider) {
-				CustomSlider()
-			}
 			.ifLet(\.gameNotification, action: /Action.gameNotification) {
 				GameNotification()
 			}
@@ -251,31 +208,57 @@ public struct Game: ReducerProtocol {
 			.haptics(triggerOnChangeOf: \.score)
 		}
 	}
-
 	// TODO: Support more
 	func markAsSeen(id: Int) async {
 		await userDefaultsClient.setInteger(id, seenKey)
 	}
 }
+let seenKey = "photoSeenKey"
 
 extension Game.State {
-	var guess: Int? {
-		get {
-			if let sliderValue = slider?.sliderValue {
-				return Int(sliderValue)
-			} else {
-				return nil
+	public enum GameMode: Equatable {
+		case limited(max: Int, current: Int)
+	}
+	enum Scoring {
+		private enum ScoreBounds: Int {
+			case max = 50 // max score
+			case maxInRange = 40 // max score for ranged guess
+		}
+
+		case max(Int)
+		case calculated(Int, targetYear: Int)
+		case maxInRange(Int)
+		case calculatedInRange(Int, lowerBound: Int, upperBound: Int)
+
+		static func score(target: Photo.Year, guess: Int) -> Self {
+			switch target {
+			case let .year(targetYear):
+				switch guess {
+				case targetYear:
+					return .max(ScoreBounds.max.rawValue)
+				default:
+					let distance = abs(targetYear - guess)
+					let score = Swift.max(0, ScoreBounds.max.rawValue - distance * 2)
+					return .calculated(score, targetYear: targetYear)
+				}
+			case let .range(lowerBound: lowerBound, upperBound: upperBound):
+				let targetRange = lowerBound...upperBound
+				let isContained = targetRange ~= guess
+				if isContained {
+					return .maxInRange(ScoreBounds.maxInRange.rawValue)
+				} else {
+					let targetYear = (lowerBound + upperBound) / 2
+					let distance = abs(targetYear - guess)
+					let score = Swift.max(0, ScoreBounds.maxInRange.rawValue - distance * 2)
+					return .calculatedInRange(score, lowerBound: lowerBound, upperBound: upperBound)
+				}
 			}
 		}
-		set { if let newValue { slider?.sliderValue = Double(newValue) } }
 	}
-
 	var isEmptyState: Bool {
 		gameLocation.imageUrls?.isEmpty ?? false
 	}
 }
-
-let seenKey = "photoSeenKey"
 
 extension BottomMenuState where Action == Game.Action {
 	public static func endGameMenu(state: Game.State) -> Self {
@@ -301,19 +284,19 @@ public struct GameView: View {
 	@ObservedObject var viewStore: ViewStore<ViewState, Game.Action>
 
 	struct ViewState: Equatable {
+		let guess: Int
+		let guessRange: ClosedRange<Int>
 		let score: Int
-		let guess: Int?
 		let mode: Game.State.GameMode
-		let slider: CustomSlider.State?
 		let gameLocation: GameLocation
 		let currentInGamePhoto: Photo?
 		let isEmptyState: Bool
 
 		init(state: Game.State) {
-			self.score = state.score
 			self.guess = state.guess
+			self.guessRange = state.guessRange
+			self.score = state.score
 			self.mode = state.mode
-			self.slider = state.slider
 			self.gameLocation = state.gameLocation
 			self.currentInGamePhoto = state.currentInGamePhoto
 			self.isEmptyState = state.isEmptyState
@@ -339,29 +322,18 @@ public struct GameView: View {
 						Text("\(viewStore.score)")
 							.foregroundColor(.adaptiveBlack)
 							.bold()
-							.frame(width: 40)
 							.padding(.leading, .grid(4))
-
 						Spacer()
-						Text(verbatim: "\(viewStore.guess ?? 0)")
-							.foregroundColor(.adaptiveBlack)
-							.font(.system(size: 24))
-							.bold()
-							.opacity(viewStore.guess != nil ? 1.0 : 0.0)
-							.transaction { $0.animation = nil }
-						Spacer()
-
 						switch viewStore.mode {
-//						case .unlimited:
-//							Text("♾️")
-//								.bold()
-//								.frame(width: 40)
-//								.padding(.trailing, .grid(4))
+							//						case .unlimited:
+							//							Text("♾️")
+							//								.bold()
+							//								.frame(width: 40)
+							//								.padding(.trailing, .grid(4))
 						case let .limited(max: limit, current: current):
 							Text("\(current)/\(limit)")
 								.bold()
 								.foregroundColor(.adaptiveBlack)
-								.frame(width: 40)
 								.padding(.trailing, .grid(4))
 						}
 					}
@@ -382,53 +354,65 @@ public struct GameView: View {
 								)
 								Spacer()
 							}
-							.zIndex(1)
 
-							VStack(alignment: .leading) {
+							VStack(alignment: .center) {
 								Spacer()
-								VStack(spacing: .grid(2)) {
-									HStack(alignment: .center) {
-										Text(photo.title)
-											.padding(.grid(2))
-											.bold()
-											.foregroundColor(Color.adaptiveBlack)
-											.background(.ultraThinMaterial.opacity(0.9), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-											.onTapGesture {
-												viewStore.send(.toggleSlider, animation: .easeIn)
-											}
-										Spacer()
-										Button {
-											viewStore.send(.toggleSlider, animation: .easeIn)
-										} label: {
-											Image(systemName: "chevron.up")
-												.rotationEffect(.degrees(viewStore.slider != nil ? 180 : 0))
-												.foregroundColor(.adaptiveBlack)
-												.padding(.grid(2))
-												.background(.ultraThinMaterial.opacity(0.9), in: RoundedRectangle(cornerRadius: 36, style: .continuous))
-												.padding(.grid(2))
-												.padding(.trailing, .grid(2))
-										}
-										.transaction { $0.animation = nil }
-									}
-									.padding(.leading, .grid(3))
-									.padding(.bottom, viewStore.slider == nil ? .grid(16) : 0)
+								LazyImage(url: imageUrl, transaction: .init(animation: .default)) {
+									$0.image?.resizable()
+										.aspectRatio(contentMode: .fill)
+									// TODO: geometry reader
+										.frame(width: UIScreen.width, height: UIScreen.height / 3)
 								}
-								IfLetStore(
-									self.store.scope(
-										state: \.slider,
-										action: Game.Action.slider
-									),
-									then: { store in
-										CustomSliderView(store: store)
-									}
-								)
-							}
-							.zIndex(1)
+								.padding([.top, .bottom], .grid(1))
+								Spacer()
+									VStack {
+										HStack {
+											Text(photo.title)
+												.lineLimit(2)
+												.padding(.grid(2))
+												.bold()
+												.foregroundColor(Color.adaptiveBlack)
+											Spacer()
+											Text(verbatim: "\(viewStore.guess)")
+												.foregroundColor(.adaptiveBlack)
+												.font(.system(size: 24))
+												.bold()
+										}
+										.padding([.leading, .trailing], .grid(2))
 
-							LazyImage(url: imageUrl, transaction: .init(animation: .default)) {
-								$0.image
-									.aspectRatio(contentMode: .fill)
-									.frame(width: 100, height: 100)
+										ValueSlider(
+											value: viewStore.binding(get: \.guess, send: Game.Action.sliderValueChanged),
+											in: viewStore.guessRange,
+											step: 1
+										)
+										.valueSliderStyle(
+											HorizontalValueSliderStyle(
+												track: Color.photoGuesserGold
+													.opacity(0.5)
+													.frame(height: 6)
+													.cornerRadius(3),
+												thumbSize: CGSize(width: 48, height: 24),
+												options: .interactiveTrack
+											)
+										)
+										.padding([.leading, .trailing], .grid(4))
+										Button {
+											viewStore.send(.submitTapped)
+										} label: {
+											Text("Submit")
+												.padding(.grid(2))
+												.padding([.leading, .trailing], .grid(1))
+												.foregroundColor(self.colorScheme == .dark ? .black : .photoGuesserCream)
+												.background(self.colorScheme == .dark ? Color.photoGuesserCream : .black)
+												.cornerRadius(36)
+												.padding(.bottom, .grid(10))
+										}
+									}
+									.frame(height: UIScreen.height / 4)
+									.background(
+										.ultraThinMaterial.opacity(1),
+										in: RoundedRectangle(cornerRadius: 0, style: .continuous)
+									)
 							}
 						}
 						.edgesIgnoringSafeArea(.bottom)
