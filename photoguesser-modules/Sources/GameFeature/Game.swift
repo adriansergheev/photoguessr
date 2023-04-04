@@ -101,6 +101,10 @@ public struct Game: ReducerProtocol {
 					switch state.mode {
 					case let .limited(max: max, current: _):
 						var array = gamePhotos.result.photos.shuffled().prefix(max).map { $0 }
+						switch state.mode {
+						case let .limited(max: _, current: current):
+							state.mode = .limited(max: array.count, current: current)
+						}
 						if let index = array.indices.randomElement() {
 							let value = array.remove(at: index)
 							state.currentInGamePhoto = value
@@ -142,7 +146,7 @@ public struct Game: ReducerProtocol {
 							}
 
 						} else {
-							state.gameOver = .init(score: state.score, reason: .outOfImages)
+							state.gameOver = .init(score: state.score, reason: .finishedGame)
 						}
 					}
 

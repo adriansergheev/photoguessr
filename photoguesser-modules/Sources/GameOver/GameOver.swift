@@ -5,7 +5,6 @@ import ComposableArchitecture
 public struct GameOver: ReducerProtocol {
 	public struct State: Equatable {
 		public enum Reason {
-			case outOfImages
 			case finishedGame
 		}
 		var gameOverReason: Reason
@@ -64,12 +63,6 @@ public struct GameOverView: View {
 					}
 					.font(.system(size: 24))
 					.padding()
-					if case .outOfImages = viewStore.gameOverReason {
-						Text("Out of pictures ;(")
-							.font(.system(size: 30))
-							.foregroundColor(.adaptiveBlack)
-							.multilineTextAlignment(.center)
-					}
 					Text("🌆 Final Score: \(viewStore.score)! 🌃")
 						.font(.system(size: 30))
 						.foregroundColor(.adaptiveBlack)
