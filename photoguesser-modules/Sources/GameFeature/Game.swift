@@ -94,7 +94,10 @@ public struct Game: ReducerProtocol {
 							except: except
 						)
 						return await .gamePhotosResponse(
-							TaskResult { try await self.apiClient.giveNearestPhotos(request) }
+							TaskResult {
+								let response = try await self.apiClient.giveNearestPhotos(request)
+								return response
+							}
 						)
 					}
 				case let .gamePhotosResponse(.success(gamePhotos)):
@@ -218,6 +221,14 @@ public struct Game: ReducerProtocol {
 	func markAsSeen(id: Int) async {
 		await userDefaultsClient.setInteger(id, seenKey)
 	}
+}
+func containsCyrillicCharacters(_ string: String) -> Bool {
+	let cyrillicPattern = #/\p{script=cyrillic}/#
+	return string.firstMatch(of: cyrillicPattern) != nil
+}
+func containsLeakedYear(_ string: String) -> Bool {
+	let yearPattern = #/\b\d {4}\b/#
+	return string.firstMatch(of: yearPattern) != nil
 }
 let seenKey = "photoSeenKey"
 
@@ -365,13 +376,14 @@ public struct GameView: View {
 							.zIndex(1)
 
 							VStack(alignment: .center) {
-
 								GeometryReader { proxy in
 									VStack {
 										Spacer()
 										LazyImage(url: imageUrl, transaction: .init(animation: .default)) {
 											$0.image?.resizable()
 												.aspectRatio(contentMode: .fit)
+											// hides the watermark, can be used to guess the year
+												.mask(Rectangle().padding(.bottom, 10))
 												.frame(width: proxy.size.width, height: proxy.size.height)
 										}
 										.padding([.top, .bottom], .grid(1))

@@ -20,7 +20,8 @@ public struct Result: Codable, Equatable {
 
 public struct Photo: Codable, Equatable {
 	public let s, cid: Int
-	public let file, title: String
+	public var title: String
+	public let file: String
 	public let direction: String?
 	public let geo: [Double]
 
