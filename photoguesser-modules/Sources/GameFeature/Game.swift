@@ -4,6 +4,7 @@ import SwiftUI
 import Sliders
 import Haptics
 import GameOver
+import Overture
 import Foundation
 import BottomMenu
 import Styleguide
@@ -96,7 +97,22 @@ public struct Game: ReducerProtocol {
 						return await .gamePhotosResponse(
 							TaskResult {
 								let response = try await self.apiClient.giveNearestPhotos(request)
-								return response
+								// swiftlint:disable all
+								let stripe: (String) -> String = { string in
+									// if string has cyrillic in it, drop it
+									if string.firstMatch(of: #/\p{script=cyrillic}/#) != nil {
+										return ""
+									}
+									var copy = string
+									// if string has 4 digits in it, it is probably a year so stripe it
+									copy.replace(#/\b\d {4}\b/#, with: "")
+									return copy
+								}
+								// swiftlint:enable all
+								return PastvuPhotoResponse(
+									result: .init(photos: response.result.photos.map(prop(\Photo.title)(stripe))),
+									rid: response.rid
+								)
 							}
 						)
 					}
@@ -221,14 +237,6 @@ public struct Game: ReducerProtocol {
 	func markAsSeen(id: Int) async {
 		await userDefaultsClient.setInteger(id, seenKey)
 	}
-}
-func containsCyrillicCharacters(_ string: String) -> Bool {
-	let cyrillicPattern = #/\p{script=cyrillic}/#
-	return string.firstMatch(of: cyrillicPattern) != nil
-}
-func containsLeakedYear(_ string: String) -> Bool {
-	let yearPattern = #/\b\d {4}\b/#
-	return string.firstMatch(of: yearPattern) != nil
 }
 let seenKey = "photoSeenKey"
 
