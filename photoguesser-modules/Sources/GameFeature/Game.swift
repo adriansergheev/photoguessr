@@ -68,8 +68,8 @@ public struct Game: ReducerProtocol {
 	}
 
 	@Dependency(\.apiClient) var apiClient
-	@Dependency(\.userDefaults) var userDefaultsClient
-	@Dependency(\.prefetcherClient) var prefetcherClient
+	@Dependency(\.userDefaults) var userDefaults
+	@Dependency(\.prefetcher) var prefetcher
 	@Dependency(\.feedbackGenerator) var feedbackGenerator
 
 	public init() {}
@@ -82,7 +82,7 @@ public struct Game: ReducerProtocol {
 			Reduce { state, action in
 				switch action {
 				case .startGame:
-					let seenKey = userDefaultsClient.integerForKey(seenKey)
+					let seenKey = userDefaults.integerForKey(seenKey)
 					let except = (seenKey == 0) ? nil : seenKey
 					return .task { [location = state.gameLocation.location] in
 						let request = PastvuPhotoRequest(
@@ -128,7 +128,7 @@ public struct Game: ReducerProtocol {
 							rid: gamePhotos.rid
 						)
 						return .fireAndForget { [urls = array.compactMap { $0.imageUrl}] in
-							await prefetcherClient.prefetchImages(urls)
+							await prefetcher.prefetchImages(urls)
 						}
 					}
 				case .gamePhotosResponse(.failure):
@@ -197,7 +197,7 @@ public struct Game: ReducerProtocol {
 					state.gameOver = nil
 					return .merge(
 						.send(.delegate(.close)),
-						.fireAndForget { await prefetcherClient.cancelPrefetching() }
+						.fireAndForget { await prefetcher.cancelPrefetching() }
 					)
 				case .gameOver:
 					return .none
@@ -211,7 +211,7 @@ public struct Game: ReducerProtocol {
 					} else {
 						return .merge(
 							.send(.delegate(.close)),
-							.fireAndForget { await prefetcherClient.cancelPrefetching() }
+							.fireAndForget { await prefetcher.cancelPrefetching() }
 						)
 					}
 				case .delegate:
@@ -230,7 +230,7 @@ public struct Game: ReducerProtocol {
 	}
 	// TODO: Support more
 	func markAsSeen(id: Int) async {
-		await userDefaultsClient.setInteger(id, seenKey)
+		await userDefaults.setInteger(id, seenKey)
 	}
 }
 let seenKey = "photoSeenKey"

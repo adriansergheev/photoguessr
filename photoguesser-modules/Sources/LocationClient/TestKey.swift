@@ -4,7 +4,7 @@ import CoreLocation
 import Dependencies
 
 extension DependencyValues {
-	public var locationClient: LocationClient {
+	public var location: LocationClient {
 		get { self[LocationClient.self] }
 		set { self[LocationClient.self] = newValue }
 	}

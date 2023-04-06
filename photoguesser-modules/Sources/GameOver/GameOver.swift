@@ -101,6 +101,7 @@ public struct GameOverView: View {
 					.ignoresSafeArea()
 			)
 			.sheet(isPresented: self.$isSharePresented) {
+				// TODO: appstore page instead of photoguessr url
 				ActivityView(activityItems: [URL(string: "https://www.photoguessr.com")!])
 					.ignoresSafeArea()
 			}

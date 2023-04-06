@@ -56,9 +56,9 @@ public struct Home: ReducerProtocol {
 		}
 	}
 
-	@Dependency(\.locationClient) var locationClient
-	@Dependency(\.userDefaults) var userDefaultsClient
-	@Dependency(\.storageClient) var storageClient
+	@Dependency(\.location) var location
+	@Dependency(\.userDefaults) var userDefaults
+	@Dependency(\.storage) var storage
 	public init() {}
 
 	func startGame(_ state: inout State, gameLocation: GameLocation) {
@@ -78,20 +78,20 @@ public struct Home: ReducerProtocol {
 					do {
 						self.startGame(&state, gameLocation: (try loadGameLocation()))
 						// figure out if this has to execute even if the try above throws
-						return .fireAndForget { @MainActor  [authorizationStatus = locationClient.authorizationStatus] in
+						return .fireAndForget { @MainActor  [authorizationStatus = location.authorizationStatus] in
 							switch authorizationStatus {
 							case .denied, .restricted:
-								await userDefaultsClient.setNotSharingLocationPreference(true)
+								await userDefaults.setNotSharingLocationPreference(true)
 							case .authorizedAlways, .authorizedWhenInUse:
-								await userDefaultsClient.setNotSharingLocationPreference(false)
+								await userDefaults.setNotSharingLocationPreference(false)
 							case .notDetermined: break
 							@unknown default: break
 							}
 						}
 					} catch {
-						switch locationClient.authorizationStatus {
+						switch location.authorizationStatus {
 						case .notDetermined:
-							if userDefaultsClient.isNotWillingToShareLocation {
+							if userDefaults.isNotWillingToShareLocation {
 								state.cities = .init()
 								return .none
 							}
@@ -152,15 +152,15 @@ public struct Home: ReducerProtocol {
 				case .alert(.deny):
 					state.cities = .init()
 					return .fireAndForget {
-						await userDefaultsClient.setNotSharingLocationPreference(true)
+						await userDefaults.setNotSharingLocationPreference(true)
 					}
 				case .alert(.okToUseLocation):
 					// TODO: perhaps "search bar" in the "cities" list?
-					locationClient.requestWhenInUseAuthorization()
-					locationClient.requestLocation()
+					location.requestWhenInUseAuthorization()
+					location.requestLocation()
 					state._isLoading = true
 					return .run { send in
-						for await delegateEvent in locationClient.delegate {
+						for await delegateEvent in self.location.delegate {
 							switch delegateEvent {
 							case let .didChangeAuthorization(authorization):
 								switch authorization {
@@ -175,7 +175,7 @@ public struct Home: ReducerProtocol {
 									await send(.location(.locationChanged(nil)))
 									return
 								}
-								if case let .success(placemarks) = await locationClient.reverseGeocodeLocation(location) {
+								if case let .success(placemarks) = await self.location.reverseGeocodeLocation(location) {
 									let name = placemarks.first?.name ?? placemarks.first?.locality ?? ""
 									let gameLocation = GameLocation(
 										location: .init(lat: location.coordinate.latitude, long: location.coordinate.longitude),
@@ -228,12 +228,12 @@ extension Home {
 	func loadGameLocation() throws -> GameLocation {
 		try JSONDecoder().decode(
 			GameLocation.self,
-			from: storageClient.load(.gameLocation)
+			from: storage.load(.gameLocation)
 		)
 	}
 
 	func saveGameLocation(_ gameLocation: GameLocation) throws {
-		try storageClient.save(
+		try storage.save(
 			JSONEncoder().encode(gameLocation),
 			.gameLocation
 		)

@@ -7,7 +7,7 @@ public struct StorageClient: Sendable {
 }
 
 extension DependencyValues {
-	public var storageClient: StorageClient {
+	public var storage: StorageClient {
 		get { self[StorageClient.self] }
 		set { self[StorageClient.self] = newValue }
 	}

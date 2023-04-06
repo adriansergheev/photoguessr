@@ -1,7 +1,5 @@
-// import NukeUI
 import SwiftUI
 import Styleguide
-// import ApiClientLive
 import ComposableArchitecture
 
 // let demoImage = Image(uiImage: UIImage(named: "demo", in: Bundle.module, with: nil)!)

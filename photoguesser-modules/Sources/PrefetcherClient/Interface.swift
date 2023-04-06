@@ -8,7 +8,7 @@ public struct PrefetcherClient: Sendable {
 }
 
 extension DependencyValues {
-	public var prefetcherClient: PrefetcherClient {
+	public var prefetcher: PrefetcherClient {
 		get { self[PrefetcherClient.self] }
 		set { self[PrefetcherClient.self] = newValue }
 	}
