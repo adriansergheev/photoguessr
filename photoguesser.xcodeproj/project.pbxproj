@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		040B9E0E29DF0EB4008758C9 /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 040B9E0D29DF0EB4008758C9 /* AppFeature */; };
 		0418D3D129C6134F005496B3 /* CitiesPreviewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0418D3D029C6134F005496B3 /* CitiesPreviewApp.swift */; };
 		0418D3DD29C61388005496B3 /* CitiesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 0418D3DC29C61388005496B3 /* CitiesFeature */; };
-		0431EB0529A3FFD100BCABA4 /* HomeFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 0431EB0429A3FFD100BCABA4 /* HomeFeature */; };
 		043F958029A2387B00C983C7 /* HomePreviewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043F957F29A2387B00C983C7 /* HomePreviewApp.swift */; };
 		043F958C29A2396C00C983C7 /* HomeFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 043F958B29A2396C00C983C7 /* HomeFeature */; };
 		045A189029A924E500D6B55D /* GameOverPreviewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045A188F29A924E500D6B55D /* GameOverPreviewApp.swift */; };
@@ -22,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		040B9E0C29DF03AC008758C9 /* photoguesser.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = photoguesser.entitlements; sourceTree = "<group>"; };
 		0418D3CE29C6134F005496B3 /* CitiesPreview.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CitiesPreview.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0418D3D029C6134F005496B3 /* CitiesPreviewApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CitiesPreviewApp.swift; sourceTree = "<group>"; };
 		043F957D29A2387B00C983C7 /* HomePreview.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HomePreview.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -66,7 +67,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0431EB0529A3FFD100BCABA4 /* HomeFeature in Frameworks */,
+				040B9E0E29DF0EB4008758C9 /* AppFeature in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,6 +142,7 @@
 		04BF02A829980FA000109E06 /* photoguesser */ = {
 			isa = PBXGroup;
 			children = (
+				040B9E0C29DF03AC008758C9 /* photoguesser.entitlements */,
 				04BF02A929980FA000109E06 /* PhotoGuesserApp.swift */,
 				04BF02AD29980FA100109E06 /* Assets.xcassets */,
 				04BF02AF29980FA100109E06 /* Preview Content */,
@@ -241,7 +243,7 @@
 			);
 			name = photoguesser;
 			packageProductDependencies = (
-				0431EB0429A3FFD100BCABA4 /* HomeFeature */,
+				040B9E0D29DF0EB4008758C9 /* AppFeature */,
 			);
 			productName = photoguesser;
 			productReference = 04BF02A629980FA000109E06 /* photoguesser.app */;
@@ -693,6 +695,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = photoguesser/photoguesser.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"photoguesser/Preview Content\"";
@@ -719,7 +722,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -728,6 +731,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = photoguesser/photoguesser.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"photoguesser/Preview Content\"";
@@ -754,7 +758,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -874,13 +878,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		040B9E0D29DF0EB4008758C9 /* AppFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AppFeature;
+		};
 		0418D3DC29C61388005496B3 /* CitiesFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = CitiesFeature;
-		};
-		0431EB0429A3FFD100BCABA4 /* HomeFeature */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = HomeFeature;
 		};
 		043F958B29A2396C00C983C7 /* HomeFeature */ = {
 			isa = XCSwiftPackageProductDependency;
