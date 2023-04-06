@@ -4,7 +4,6 @@ import SwiftUI
 import Sliders
 import Haptics
 import GameOver
-import Overture
 import Foundation
 import BottomMenu
 import Styleguide
@@ -104,8 +103,15 @@ public struct Game: ReducerProtocol {
 									copy.replace(#/\b\d {4}\b/#, with: "")
 									return copy
 								}
+
+								let photos = response.result.photos.map { photo in
+									var copy = photo
+									copy.title = stripe(copy.title)
+									return copy
+								}
+
 								return PastvuPhotoResponse(
-									result: .init(photos: response.result.photos.map(prop(\Photo.title)(stripe))),
+									result: .init(photos: photos),
 									rid: response.rid
 								)
 							}
