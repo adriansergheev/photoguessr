@@ -97,9 +97,9 @@ public struct Game: ReducerProtocol {
 						return await .gamePhotosResponse(
 							TaskResult {
 								let response = try await self.apiClient.giveNearestPhotos(request)
-								// swiftlint:disable all
 								let stripe: (String) -> String = { string in
 									// if string has cyrillic in it, drop it
+									// swiftlint:disable next opening_brace
 									if string.firstMatch(of: #/\p{script=cyrillic}/#) != nil {
 										return ""
 									}
@@ -108,7 +108,6 @@ public struct Game: ReducerProtocol {
 									copy.replace(#/\b\d {4}\b/#, with: "")
 									return copy
 								}
-								// swiftlint:enable all
 								return PastvuPhotoResponse(
 									result: .init(photos: response.result.photos.map(prop(\Photo.title)(stripe))),
 									rid: response.rid
