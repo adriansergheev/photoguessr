@@ -1,6 +1,7 @@
 import SwiftUI
 import Foundation
 import HomeFeature
+import ComposableGameCenter
 import ComposableArchitecture
 
 public struct AppReducer: ReducerProtocol {
@@ -42,6 +43,7 @@ public struct AppReducer: ReducerProtocol {
 				return .none
 			}
 		}
+		GameCenterLogic()
 	}
 }
 
