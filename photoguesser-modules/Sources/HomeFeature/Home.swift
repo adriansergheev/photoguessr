@@ -80,14 +80,14 @@ public struct Home: ReducerProtocol {
 						// figure out if this has to execute even if the try above throws
 						return .fireAndForget { @MainActor  [authorizationStatus = locationClient.authorizationStatus] in
 							switch authorizationStatus {
-							 case .denied, .restricted:
-								 await userDefaultsClient.setNotSharingLocationPreference(true)
-							 case .authorizedAlways, .authorizedWhenInUse:
-								 await userDefaultsClient.setNotSharingLocationPreference(false)
-							 case .notDetermined: break
-							 @unknown default: break
-							 }
-						 }
+							case .denied, .restricted:
+								await userDefaultsClient.setNotSharingLocationPreference(true)
+							case .authorizedAlways, .authorizedWhenInUse:
+								await userDefaultsClient.setNotSharingLocationPreference(false)
+							case .notDetermined: break
+							@unknown default: break
+							}
+						}
 					} catch {
 						switch locationClient.authorizationStatus {
 						case .notDetermined:
@@ -334,7 +334,7 @@ public struct HomeView: View {
 		) { store in
 			Settings(store: store)
 		}
-//		.modifier(DeviceStateModifier())
+		//		.modifier(DeviceStateModifier())
 	}
 }
 
@@ -449,7 +449,12 @@ struct HomeView_Previews: PreviewProvider {
 		Preview {
 			HomeView(
 				store: .init(
-					initialState: .init(gameInstance: .init(mode: .limited(max: 3, current: 0))),
+					initialState: .init(
+						gameInstance: .init(
+							mode: .limited(max: 3, current: 0),
+							gameLocation: .init(location: .init(lat: 55.67594, long: 12.56553), name: "Copenhagen")
+						)
+					),
 					reducer: Home()
 				)
 			)

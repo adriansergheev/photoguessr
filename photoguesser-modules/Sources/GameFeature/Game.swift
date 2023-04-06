@@ -33,7 +33,7 @@ public struct Game: ReducerProtocol {
 		public init(
 			score: Int = 0,
 			mode: GameMode = .limited(max: 10, current: 0),
-			gameLocation: GameLocation = .init(location: .init(lat: 55.67594, long: 12.56553), name: "Copenhagen"),
+			gameLocation: GameLocation,
 			gameNotification: GameNotification.State? = nil,
 			guess: Int = 1950,
 			guessRange: ClosedRange<Int> = 1900...2000
@@ -82,10 +82,6 @@ public struct Game: ReducerProtocol {
 			Reduce { state, action in
 				switch action {
 				case .startGame:
-					state.score = 0
-					// clear out the list before starting
-					state.gameLocation.gamePhotos = nil
-					state.currentInGamePhoto = nil
 					let seenKey = userDefaultsClient.integerForKey(seenKey)
 					let except = (seenKey == 0) ? nil : seenKey
 					return .task { [location = state.gameLocation.location] in
@@ -490,7 +486,11 @@ struct ContentView_Previews: PreviewProvider {
 		Preview {
 			GameView(
 				store: .init(
-					initialState: Game.State(score: 0, gameNotification: .init(text: "You nailed it! \(50) points!")),
+					initialState: Game.State(
+						score: 0,
+						gameLocation: .init(location: .init(lat: 55.67594, long: 12.56553), name: "Copenhagen"),
+						gameNotification: .init(text: "You nailed it! \(50) points!")
+					),
 					reducer: Game()
 				)
 			)

@@ -7,7 +7,9 @@ struct GamePreviewApp: App {
 		WindowGroup {
 			GameView(
 				store: .init(
-					initialState: .init(),
+					initialState: .init(
+						gameLocation: .init(location: .init(lat: 55.67594, long: 12.56553), name: "Copenhagen")
+					),
 					reducer: Game()
 				)
 			)
