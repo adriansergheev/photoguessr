@@ -1,16 +1,18 @@
 import SwiftUI
 import Foundation
 import Styleguide
+import Dependencies
+import ComposableGameCenter
 import ComposableArchitecture
 
 public struct SettingsFeature: Reducer {
 	public struct State: Equatable {
-		public init() {
-
-		}
+		var user: Player?
+		public init() {}
 	}
 
 	public enum Action: Equatable {
+		case onAppear
 		case onCloseButtonTapped
 #if DEBUG
 		case _reset
@@ -22,13 +24,17 @@ public struct SettingsFeature: Reducer {
 		}
 	}
 
+	@Dependency(\.gameCenter) var gameCenter
 	public init() {
 
 	}
 
 	public var body: some ReducerProtocol<State, Action> {
-		Reduce { _, action in
+		Reduce { state, action in
 			switch action {
+			case .onAppear:
+				state.user = gameCenter.localPlayer.localPlayer().player
+				return .none
 			case .onCloseButtonTapped:
 				return .send(.delegate(.close))
 			case .delegate:
@@ -66,11 +72,12 @@ public struct Settings: View {
 			VStack(alignment: .leading, spacing: .grid(4)) {
 				Text("Settings")
 					.font(.title)
-				Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
-					.font(.subheadline)
-//					.foregroundColor(Color.black)
-					.font(.system(size: 16))
-					.multilineTextAlignment(.leading)
+				if let user = viewStore.user {
+					Text("\(user.displayName)")
+						.font(.subheadline)
+						.font(.system(size: 16))
+						.multilineTextAlignment(.leading)
+				}
 				Spacer()
 				ScrollView(.vertical, showsIndicators: false) {
 					VStack(alignment: .leading, spacing: .grid(8)) {
@@ -130,6 +137,7 @@ public struct Settings: View {
 			(self.colorScheme == .dark ? .black : Color.photoGuesserCream)
 				.ignoresSafeArea()
 		)
+		.onAppear { viewStore.send(.onAppear) }
 	}
 	private func onOpenSystemSettings() {
 		guard let stringURL = URL(string: UIApplication.openSettingsURLString) else { return }

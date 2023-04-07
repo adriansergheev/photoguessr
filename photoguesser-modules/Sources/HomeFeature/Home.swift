@@ -8,13 +8,15 @@ import CitiesFeature
 import LocationClient
 import MenuBackground
 import SettingsFeature
+import ComposableGameCenter
 import ComposableArchitecture
 
 public struct Home: ReducerProtocol {
 	public struct State: Equatable {
 		var gameInstance: Game.State?
 		var menuBackground = MenuBackground.State()
-		var _isLoading: Bool = false
+		var _isLoading = false
+		var _isLocationFeatureEnabled = false
 
 		@PresentationState public var cities: CitiesFeature.State?
 		@PresentationState public var settings: SettingsFeature.State?
@@ -59,6 +61,7 @@ public struct Home: ReducerProtocol {
 	@Dependency(\.location) var location
 	@Dependency(\.userDefaults) var userDefaults
 	@Dependency(\.storage) var storage
+	@Dependency(\.gameCenter) var gameCenter
 	public init() {}
 
 	func startGame(_ state: inout State, gameLocation: GameLocation) {
@@ -76,8 +79,9 @@ public struct Home: ReducerProtocol {
 				switch action {
 				case .tap(.onPlay):
 					do {
+						// figure out if this has to execute even if the try throws
 						self.startGame(&state, gameLocation: (try loadGameLocation()))
-						// figure out if this has to execute even if the try above throws
+						if !state._isLocationFeatureEnabled { return .none }
 						return .fireAndForget { @MainActor  [authorizationStatus = location.authorizationStatus] in
 							switch authorizationStatus {
 							case .denied, .restricted:
@@ -89,6 +93,11 @@ public struct Home: ReducerProtocol {
 							}
 						}
 					} catch {
+						if !state._isLocationFeatureEnabled {
+							state.cities = .init()
+							return .none
+						}
+
 						switch location.authorizationStatus {
 						case .notDetermined:
 							if userDefaults.isNotWillingToShareLocation {
@@ -123,8 +132,10 @@ public struct Home: ReducerProtocol {
 					}
 					return .none
 				case .tap(.onLeaderboards):
-					print("Present cities")
-					return .none
+					return .fireAndForget {
+						await gameCenter.gameCenterViewController.present()
+						await gameCenter.gameCenterViewController.dismiss()
+					}
 				case .tap(.onSettings):
 					state.settings = .init()
 					return .none
@@ -268,8 +279,8 @@ public struct HomeView: View {
 							viewStore.send(.tap(.onPlay))
 						} content: {
 							HomeButtonContent(
-								image: Image(systemName: "photo.stack.fill"),
-								imagePadding: .grid(12),
+								image: Image(systemName: "gamecontroller"),
+								imagePadding: .grid(14),
 								text: Text("Play")
 							)
 						}
@@ -290,8 +301,6 @@ public struct HomeView: View {
 									image: Image(systemName: "star.leadinghalf.filled"),
 									text: Text("Leaderboards")
 								)
-								.opacity(0.5)
-								.disabled(true)
 							}
 							HomeButton {
 								viewStore.send(.tap(.onSettings))

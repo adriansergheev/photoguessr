@@ -4,7 +4,6 @@ import SwiftUI
 import Sliders
 import Haptics
 import GameOver
-import Overture
 import Foundation
 import BottomMenu
 import Styleguide
@@ -25,7 +24,7 @@ public struct Game: ReducerProtocol {
 		var guess: Int
 		var guessRange: ClosedRange<Int>
 
-		var navigationBar = GameNavigationBar.State()
+		var navigationBar: GameNavigationBar.State
 		var gameNotification: GameNotification.State?
 		var gameOver: GameOver.State?
 		var bottomMenu: BottomMenuState<Action>?
@@ -35,8 +34,8 @@ public struct Game: ReducerProtocol {
 			mode: GameMode = .limited(max: 10, current: 0),
 			gameLocation: GameLocation,
 			gameNotification: GameNotification.State? = nil,
-			guess: Int = 1950,
-			guessRange: ClosedRange<Int> = 1900...2000
+			guess: Int = 1925,
+			guessRange: ClosedRange<Int> = 1850...2000
 		) {
 			self.score = score
 			self.mode = mode
@@ -44,6 +43,7 @@ public struct Game: ReducerProtocol {
 			self.gameNotification = gameNotification
 			self.guess = guess
 			self.guessRange = guessRange
+			self.navigationBar = .init(title: gameLocation.name)
 		}
 	}
 
@@ -104,8 +104,15 @@ public struct Game: ReducerProtocol {
 									copy.replace(#/\b\d {4}\b/#, with: "")
 									return copy
 								}
+
+								let photos = response.result.photos.map { photo in
+									var copy = photo
+									copy.title = stripe(copy.title)
+									return copy
+								}
+
 								return PastvuPhotoResponse(
-									result: .init(photos: response.result.photos.map(prop(\Photo.title)(stripe))),
+									result: .init(photos: photos),
 									rid: response.rid
 								)
 							}
@@ -140,30 +147,6 @@ public struct Game: ReducerProtocol {
 					guard let photoInPlay = state.currentInGamePhoto else {
 						return .none
 					}
-					defer {
-						if var gamePhotos = state.gameLocation.gamePhotos?.result.photos,
-							 let rid = state.gameLocation.gamePhotos?.rid,
-							 !gamePhotos.isEmpty {
-
-							if let index = gamePhotos.indices.randomElement() {
-								let value = gamePhotos.remove(at: index)
-								state.currentInGamePhoto = value
-								state.gameLocation.gamePhotos = PastvuPhotoResponse(result: .init(photos: gamePhotos), rid: rid)
-							}
-
-							if case let .limited(max, current) = state.mode {
-								if current + 1 >= max {
-									state.gameOver = .init(score: state.score)
-								} else {
-									state.mode = .limited(max: max, current: current + 1)
-								}
-							}
-
-						} else {
-							state.gameOver = .init(score: state.score, reason: .finishedGame)
-						}
-					}
-
 					let score = State.Scoring.score(target: photoInPlay.year, guess: state.guess)
 
 					switch score {
@@ -179,6 +162,28 @@ public struct Game: ReducerProtocol {
 					case let .calculatedInRange(score, lowerBound, upperBound):
 						state.score += score
 						state.gameNotification = .init(text: "Photo was taken between \(lowerBound) and \(upperBound)\n\(score) points!")
+					}
+
+					if var gamePhotos = state.gameLocation.gamePhotos?.result.photos,
+						 let rid = state.gameLocation.gamePhotos?.rid,
+						 !gamePhotos.isEmpty {
+
+						if let index = gamePhotos.indices.randomElement() {
+							let value = gamePhotos.remove(at: index)
+							state.currentInGamePhoto = value
+							state.gameLocation.gamePhotos = PastvuPhotoResponse(result: .init(photos: gamePhotos), rid: rid)
+						}
+
+						if case let .limited(max, current) = state.mode {
+							if current + 1 >= max {
+								state.gameOver = .init(score: state.score)
+							} else {
+								state.mode = .limited(max: max, current: current + 1)
+							}
+						}
+
+					} else {
+						state.gameOver = .init(score: state.score)
 					}
 
 					return .fireAndForget { [photoInPlay] in

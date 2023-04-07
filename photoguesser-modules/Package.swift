@@ -12,8 +12,10 @@ let package = Package(
 	products: [
 		.library(name: "ApiClient", targets: ["ApiClient"]),
 		.library(name: "ApiClientLive", targets: ["ApiClientLive"]),
+		.library(name: "AppFeature", targets: ["AppFeature"]),
 		.library(name: "BottomMenu", targets: ["BottomMenu"]),
 		.library(name: "CitiesFeature", targets: ["CitiesFeature"]),
+		.library(name: "ComposableGameCenter", targets: ["ComposableGameCenter"]),
 		.library(name: "GameFeature", targets: ["GameFeature"]),
 		.library(name: "GameNotification", targets: ["GameNotification"]),
 		.library(name: "GameOver", targets: ["GameOver"]),
@@ -34,7 +36,7 @@ let package = Package(
 		.package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "0.8.2"),
 		.package(url: "https://github.com/kean/Nuke", from: "12.0.0"),
 		.package(url: "https://github.com/spacenation/swiftui-sliders", from: "2.1.0"),
-		.package(url: "https://github.com/pointfreeco/swift-overture", from: "0.5.0")
+		.package(url: "https://github.com/pointfreeco/swift-tagged", from: "0.10.0")
 	],
 	targets: [
 		.target(
@@ -51,6 +53,13 @@ let package = Package(
 				"ApiClient",
 				"SharedModels",
 				.product(name: "Dependencies", package: "swift-dependencies")
+			]
+		),
+		.target(
+			name: "AppFeature",
+			dependencies: [
+				"HomeFeature",
+				"ComposableGameCenter"
 			]
 		),
 		.target(
@@ -71,11 +80,11 @@ let package = Package(
 			]
 		),
 		.target(
-			name: "Haptics",
+			name: "ComposableGameCenter",
 			dependencies: [
-				.product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
 				.product(name: "Dependencies", package: "swift-dependencies"),
-				.product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay")
+				.product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+				.product(name: "Tagged", package: "swift-tagged")
 			]
 		),
 		.target(
@@ -92,8 +101,7 @@ let package = Package(
 				"UserDefaultsClient",
 				.product(name: "Sliders", package: "swiftui-sliders"),
 				.product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-				.product(name: "NukeUI", package: "Nuke"),
-				.product(name: "Overture", package: "swift-overture")
+				.product(name: "NukeUI", package: "Nuke")
 			]
 		),
 		.testTarget(
@@ -110,14 +118,25 @@ let package = Package(
 		.target(
 			name: "GameOver",
 			dependencies: [
+				"ComposableGameCenter",
 				"Styleguide",
+				.product(name: "Dependencies", package: "swift-dependencies"),
 				.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+			]
+		),
+		.target(
+			name: "Haptics",
+			dependencies: [
+				.product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+				.product(name: "Dependencies", package: "swift-dependencies"),
+				.product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay")
 			]
 		),
 		.target(
 			name: "HomeFeature",
 			dependencies: [
 				"CitiesFeature",
+				"ComposableGameCenter",
 				"GameFeature",
 				"LocationClient",
 				"MenuBackground",
@@ -152,7 +171,9 @@ let package = Package(
 		.target(
 			name: "SettingsFeature",
 			dependencies: [
+				"ComposableGameCenter",
 				"Styleguide",
+				.product(name: "Dependencies", package: "swift-dependencies"),
 				.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
 			]
 		),
