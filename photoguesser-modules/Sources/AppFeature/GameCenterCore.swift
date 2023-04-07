@@ -9,8 +9,10 @@ public struct GameCenterLogic: ReducerProtocol {
 	) -> Effect<AppReducer.Action> {
 		switch action {
 		case .appDelegate(.didFinishLaunching):
-			return .run { _ in
-				try await self.gameCenter.localPlayer.authenticate()
+			return .fireAndForget {
+				do {
+					try await self.gameCenter.localPlayer.authenticate()
+				} catch {}
 			}
 		case .didChangeScenePhase:
 			return .none

@@ -24,7 +24,7 @@ public struct Game: ReducerProtocol {
 		var guess: Int
 		var guessRange: ClosedRange<Int>
 
-		var navigationBar = GameNavigationBar.State()
+		var navigationBar: GameNavigationBar.State
 		var gameNotification: GameNotification.State?
 		var gameOver: GameOver.State?
 		var bottomMenu: BottomMenuState<Action>?
@@ -43,6 +43,7 @@ public struct Game: ReducerProtocol {
 			self.gameNotification = gameNotification
 			self.guess = guess
 			self.guessRange = guessRange
+			self.navigationBar = .init(title: gameLocation.name)
 		}
 	}
 

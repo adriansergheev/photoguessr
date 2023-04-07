@@ -29,6 +29,8 @@ public struct CitiesFeature: Reducer {
 			.city(.defaults[0]),
 			.city(.defaults[1]),
 			.city(.defaults[2]),
+			.city(.defaults[3]),
+			.city(.defaults[4]),
 			.upgradeBanner
 		]) {
 			self.sections = sections

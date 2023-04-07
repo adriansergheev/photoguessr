@@ -14,7 +14,8 @@ public struct Home: ReducerProtocol {
 	public struct State: Equatable {
 		var gameInstance: Game.State?
 		var menuBackground = MenuBackground.State()
-		var _isLoading: Bool = false
+		var _isLoading = false
+		var _isLocationFeatureEnabled = false
 
 		@PresentationState public var cities: CitiesFeature.State?
 		@PresentationState public var settings: SettingsFeature.State?
@@ -76,8 +77,9 @@ public struct Home: ReducerProtocol {
 				switch action {
 				case .tap(.onPlay):
 					do {
+						// figure out if this has to execute even if the try throws
 						self.startGame(&state, gameLocation: (try loadGameLocation()))
-						// figure out if this has to execute even if the try above throws
+						if !state._isLocationFeatureEnabled { return .none }
 						return .fireAndForget { @MainActor  [authorizationStatus = location.authorizationStatus] in
 							switch authorizationStatus {
 							case .denied, .restricted:
@@ -89,6 +91,11 @@ public struct Home: ReducerProtocol {
 							}
 						}
 					} catch {
+						if !state._isLocationFeatureEnabled {
+							state.cities = .init()
+							return .none
+						}
+
 						switch location.authorizationStatus {
 						case .notDetermined:
 							if userDefaults.isNotWillingToShareLocation {
