@@ -14,6 +14,7 @@
 		043F958C29A2396C00C983C7 /* HomeFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 043F958B29A2396C00C983C7 /* HomeFeature */; };
 		045A189029A924E500D6B55D /* GameOverPreviewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045A188F29A924E500D6B55D /* GameOverPreviewApp.swift */; };
 		045A189C29A9252700D6B55D /* GameOver in Frameworks */ = {isa = PBXBuildFile; productRef = 045A189B29A9252700D6B55D /* GameOver */; };
+		0492402A29E0D8A700CE234C /* Launchscreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0492402929E0D8A700CE234C /* Launchscreen.storyboard */; };
 		04AB9CF22999734B00B6C43E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04BF02AD29980FA100109E06 /* Assets.xcassets */; };
 		04BF02AA29980FA000109E06 /* PhotoGuesserApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BF02A929980FA000109E06 /* PhotoGuesserApp.swift */; };
 		04BF02B129980FA100109E06 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04BF02B029980FA100109E06 /* Preview Assets.xcassets */; };
@@ -29,6 +30,8 @@
 		043F957F29A2387B00C983C7 /* HomePreviewApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomePreviewApp.swift; sourceTree = "<group>"; };
 		045A188D29A924E500D6B55D /* GameOverPreview.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GameOverPreview.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		045A188F29A924E500D6B55D /* GameOverPreviewApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverPreviewApp.swift; sourceTree = "<group>"; };
+		0492402829E0A55A00CE234C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		0492402929E0D8A700CE234C /* Launchscreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Launchscreen.storyboard; sourceTree = "<group>"; };
 		04AB9CEE2999683900B6C43E /* photoguesser-modules */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = "photoguesser-modules"; sourceTree = "<group>"; };
 		04BF02A629980FA000109E06 /* photoguesser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = photoguesser.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		04BF02A929980FA000109E06 /* PhotoGuesserApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoGuesserApp.swift; sourceTree = "<group>"; };
@@ -142,10 +145,12 @@
 		04BF02A829980FA000109E06 /* photoguesser */ = {
 			isa = PBXGroup;
 			children = (
+				0492402829E0A55A00CE234C /* Info.plist */,
 				040B9E0C29DF03AC008758C9 /* photoguesser.entitlements */,
 				04BF02A929980FA000109E06 /* PhotoGuesserApp.swift */,
 				04BF02AD29980FA100109E06 /* Assets.xcassets */,
 				04BF02AF29980FA100109E06 /* Preview Content */,
+				0492402929E0D8A700CE234C /* Launchscreen.storyboard */,
 			);
 			path = photoguesser;
 			sourceTree = "<group>";
@@ -344,6 +349,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0492402A29E0D8A700CE234C /* Launchscreen.storyboard in Resources */,
 				04AB9CF22999734B00B6C43E /* Assets.xcassets in Resources */,
 				04BF02B129980FA100109E06 /* Preview Assets.xcassets in Resources */,
 			);
@@ -702,10 +708,11 @@
 				DEVELOPMENT_TEAM = SZ6SDPY725;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = photoguesser/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Find photos near you.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = Launchscreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -738,10 +745,11 @@
 				DEVELOPMENT_TEAM = SZ6SDPY725;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = photoguesser/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Find photos near you.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = Launchscreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
