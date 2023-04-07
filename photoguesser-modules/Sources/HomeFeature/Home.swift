@@ -8,6 +8,7 @@ import CitiesFeature
 import LocationClient
 import MenuBackground
 import SettingsFeature
+import ComposableGameCenter
 import ComposableArchitecture
 
 public struct Home: ReducerProtocol {
@@ -60,6 +61,7 @@ public struct Home: ReducerProtocol {
 	@Dependency(\.location) var location
 	@Dependency(\.userDefaults) var userDefaults
 	@Dependency(\.storage) var storage
+	@Dependency(\.gameCenter) var gameCenter
 	public init() {}
 
 	func startGame(_ state: inout State, gameLocation: GameLocation) {
@@ -130,8 +132,10 @@ public struct Home: ReducerProtocol {
 					}
 					return .none
 				case .tap(.onLeaderboards):
-					print("Present cities")
-					return .none
+					return .fireAndForget {
+						await gameCenter.gameCenterViewController.present()
+						await gameCenter.gameCenterViewController.dismiss()
+					}
 				case .tap(.onSettings):
 					state.settings = .init()
 					return .none
@@ -275,8 +279,8 @@ public struct HomeView: View {
 							viewStore.send(.tap(.onPlay))
 						} content: {
 							HomeButtonContent(
-								image: Image(systemName: "photo.stack.fill"),
-								imagePadding: .grid(12),
+								image: Image(systemName: "gamecontroller"),
+								imagePadding: .grid(14),
 								text: Text("Play")
 							)
 						}
@@ -297,8 +301,6 @@ public struct HomeView: View {
 									image: Image(systemName: "star.leadinghalf.filled"),
 									text: Text("Leaderboards")
 								)
-								.opacity(0.5)
-								.disabled(true)
 							}
 							HomeButton {
 								viewStore.send(.tap(.onSettings))

@@ -118,7 +118,9 @@ let package = Package(
 		.target(
 			name: "GameOver",
 			dependencies: [
+				"ComposableGameCenter",
 				"Styleguide",
+				.product(name: "Dependencies", package: "swift-dependencies"),
 				.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
 			]
 		),
@@ -134,6 +136,7 @@ let package = Package(
 			name: "HomeFeature",
 			dependencies: [
 				"CitiesFeature",
+				"ComposableGameCenter",
 				"GameFeature",
 				"LocationClient",
 				"MenuBackground",

@@ -1,24 +1,20 @@
 import SwiftUI
 import Styleguide
+import Dependencies
+import ComposableGameCenter
 import ComposableArchitecture
 
 public struct GameOver: ReducerProtocol {
 	public struct State: Equatable {
-		public enum Reason {
-			case finishedGame
-		}
-		var gameOverReason: Reason
-		var score: Int
-		public init(
-			score: Int = 0,
-			reason: Reason = .finishedGame
-		) {
+		public var score: Int
+		var didReportScore = false
+		public init(score: Int = 0) {
 			self.score = score
-			self.gameOverReason = reason
 		}
 	}
 
 	public enum Action: Equatable {
+		case onAppear
 		case onCloseButtonTapped
 		case delegate(Delegate)
 
@@ -29,9 +25,20 @@ public struct GameOver: ReducerProtocol {
 
 	public init() {}
 
+	@Dependency(\.gameCenter.localPlayer.submitScore) var submitScore
+
 	public var body: some ReducerProtocol<State, Action> {
-		Reduce { _, action in
+		Reduce { state, action in
 			switch action {
+			case .onAppear:
+				defer { state.didReportScore = true }
+				return .fireAndForget { [score = state.score, didReport = state.didReportScore] in
+					if !didReport {
+						do {
+							try await submitScore(score)
+						} catch {}
+					}
+				}
 			case .onCloseButtonTapped:
 				return .send(.delegate(.close))
 			case .delegate(.close):
@@ -95,6 +102,7 @@ public struct GameOverView: View {
 				}
 				.padding(.vertical, .grid(12))
 			}
+			.onAppear { viewStore.send(.onAppear) }
 			.foregroundColor(self.colorScheme == .dark ? .photoGuesserCream : .black)
 			.background(
 				(self.colorScheme == .dark ? .black : Color.photoGuesserCream)
