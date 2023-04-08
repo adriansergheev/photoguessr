@@ -108,7 +108,6 @@ extension ApiClient {
 	}
 }
 
-#if DEBUG
 extension ApiClient {
 	public static func mock() -> Self {
 		Self(
@@ -140,4 +139,3 @@ extension ApiClient {
 		)
 	}
 }
-#endif
