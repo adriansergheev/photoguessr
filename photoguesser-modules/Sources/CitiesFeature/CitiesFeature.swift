@@ -32,7 +32,6 @@ public struct CitiesFeature: Reducer {
 			.city(.defaults[3]),
 			.city(.defaults[4]),
 			.city(.defaults[5]),
-			.city(.defaults[6]),
 			.upgradeBanner
 		]) {
 			self.sections = sections
@@ -67,8 +66,8 @@ public struct CitiesFeature: Reducer {
 							group.addTask {
 								if case var .city(city, _) = section {
 									let location = city.location
-									let req = PastvuPhotoRequest(geo: [location.lat, location.long], limit: 10)
-									let result = try? await apiClient.giveNearestPhotos(req)
+									let request = PastvuPhotoRequest(geo: [location.lat, location.long], limit: 5)
+									let result = try? await apiClient.giveNearestPhotos(request)
 									city.gamePhotos = result
 									await send(.updateSection(.city(city, isLoading: false)))
 								}

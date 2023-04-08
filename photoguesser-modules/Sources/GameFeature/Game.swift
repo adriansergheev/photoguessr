@@ -34,8 +34,8 @@ public struct Game: ReducerProtocol {
 			mode: GameMode = .limited(max: 10, current: 0),
 			gameLocation: GameLocation,
 			gameNotification: GameNotification.State? = nil,
-			guess: Int = 1925,
-			guessRange: ClosedRange<Int> = 1850...2000
+			guess: Int = 1950,
+			guessRange: ClosedRange<Int> = 1900...2000
 		) {
 			self.score = score
 			self.mode = mode
@@ -87,7 +87,6 @@ public struct Game: ReducerProtocol {
 					return .task { [location = state.gameLocation.location] in
 						let request = PastvuPhotoRequest(
 							geo: [location.lat, location.long],
-							limit: 100,
 							except: except
 						)
 						return await .gamePhotosResponse(
@@ -433,7 +432,7 @@ public struct GameView: View {
 										viewStore.send(.submitTapped)
 									} label: {
 										Text("Submit")
-											.padding(.grid(2))
+											.padding(.grid(3))
 											.padding([.leading, .trailing], .grid(1))
 											.foregroundColor(self.colorScheme == .dark ? .black : .photoGuesserCream)
 											.background(self.colorScheme == .dark ? Color.photoGuesserCream : .black)
@@ -441,7 +440,7 @@ public struct GameView: View {
 											.padding(.bottom, .grid(10))
 									}
 								}
-								.frame(height: UIScreen.height / 4)
+								.frame(height: UIScreen.height / 3.8)
 								.background(
 									.ultraThinMaterial.opacity(1),
 									in: RoundedRectangle(cornerRadius: 0, style: .continuous)
