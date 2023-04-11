@@ -105,21 +105,7 @@ public struct Home: ReducerProtocol {
 								return .none
 							}
 
-							state.alert = AlertState {
-								TextState("Play with nearby photos?")
-							} actions: {
-								ButtonState(action: .okToUseLocation) {
-									TextState("Sure!")
-								}
-								ButtonState(action: .deny) {
-									TextState("Let me select the location")
-								}
-								ButtonState(role: .cancel, action: .dismiss) {
-									TextState("Disimss")
-								}
-							} message: {
-								TextState("View nearby historical photos")
-							}
+							state.alert = .accessLocation()
 						default: break
 						}
 						return .none
@@ -248,6 +234,26 @@ extension Home {
 			JSONEncoder().encode(gameLocation),
 			.gameLocation
 		)
+	}
+}
+
+extension AlertState where Action == Home.Action.Alert {
+	static func accessLocation() -> Self {
+		AlertState {
+			TextState("Play with nearby photos?")
+		} actions: {
+			ButtonState(action: .okToUseLocation) {
+				TextState("Sure!")
+			}
+			ButtonState(action: .deny) {
+				TextState("Let me select the location")
+			}
+			ButtonState(role: .cancel, action: .dismiss) {
+				TextState("Disimss")
+			}
+		} message: {
+			TextState("View nearby historical photos")
+		}
 	}
 }
 
