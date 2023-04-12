@@ -10,7 +10,7 @@ import ComposableArchitecture
 public struct UserSettings: Equatable {
 	public var colorScheme: ColorScheme
 
-	public init(colorScheme: ColorScheme) {
+	public init(colorScheme: ColorScheme = .system) {
 		self.colorScheme = colorScheme
 	}
 
@@ -39,7 +39,7 @@ public struct SettingsFeature: Reducer {
 		@BindingState var userSettings: UserSettings
 		public init(
 			user: Player? = nil,
-			userSettings: UserSettings = .init(colorScheme: .light)
+			userSettings: UserSettings = .init()
 		) {
 			self.user = user
 			self.userSettings = userSettings
@@ -67,6 +67,7 @@ public struct SettingsFeature: Reducer {
 	public init() {}
 
 	public var body: some ReducerProtocol<State, Action> {
+		BindingReducer()
 		Reduce { state, action in
 			switch action {
 			case .task:
@@ -114,7 +115,6 @@ public struct SettingsFeature: Reducer {
 				return .none
 			}
 		}
-		BindingReducer()
 	}
 }
 
