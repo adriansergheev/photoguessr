@@ -14,6 +14,7 @@ let package = Package(
 		.library(name: "ApiClientLive", targets: ["ApiClientLive"]),
 		.library(name: "AppFeature", targets: ["AppFeature"]),
 		.library(name: "BottomMenu", targets: ["BottomMenu"]),
+		.library(name: "Build", targets: ["Build"]),
 		.library(name: "CitiesFeature", targets: ["CitiesFeature"]),
 		.library(name: "ComposableGameCenter", targets: ["ComposableGameCenter"]),
 		.library(name: "GameFeature", targets: ["GameFeature"]),
@@ -28,6 +29,7 @@ let package = Package(
 		.library(name: "SharedModels", targets: ["SharedModels"]),
 		.library(name: "StorageClient", targets: ["StorageClient"]),
 		.library(name: "Styleguide", targets: ["Styleguide"]),
+		.library(name: "UIApplicationClient", targets: ["UIApplicationClient"]),
 		.library(name: "UserDefaultsClient", targets: ["UserDefaultsClient"])
 	],
 	dependencies: [
@@ -67,6 +69,14 @@ let package = Package(
 			dependencies: [
 				"Styleguide",
 				.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+			]
+		),
+		.target(
+			name: "Build",
+			dependencies: [
+				.product(name: "Dependencies", package: "swift-composable-architecture"),
+				.product(name: "Tagged", package: "swift-tagged"),
+				.product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay")
 			]
 		),
 		.target(
@@ -171,8 +181,10 @@ let package = Package(
 		.target(
 			name: "SettingsFeature",
 			dependencies: [
+				"Build",
 				"ComposableGameCenter",
 				"Styleguide",
+				"UIApplicationClient",
 				.product(name: "Dependencies", package: "swift-dependencies"),
 				.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
 			]
@@ -189,6 +201,13 @@ let package = Package(
 		),
 		.target(
 			name: "Styleguide"
+		),
+		.target(
+			name: "UIApplicationClient",
+			dependencies: [
+				.product(name: "Dependencies", package: "swift-dependencies"),
+				.product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay")
+			]
 		),
 		.target(
 			name: "UserDefaultsClient",

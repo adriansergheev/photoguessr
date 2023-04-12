@@ -278,7 +278,7 @@ public struct HomeView: View {
 							.zIndex(1)
 					}
 					VStack {
-						Text("Photoguesser")
+						Text("photoguessr")
 							.font(.system(.largeTitle))
 							.bold()
 						HomeButton {

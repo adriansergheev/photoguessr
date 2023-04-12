@@ -1,22 +1,58 @@
 import SwiftUI
+import Build
 import Foundation
 import Styleguide
 import Dependencies
+import UIApplicationClient
 import ComposableGameCenter
 import ComposableArchitecture
+
+public struct UserSettings: Equatable {
+	public var colorScheme: ColorScheme
+
+	public init(colorScheme: ColorScheme) {
+		self.colorScheme = colorScheme
+	}
+
+	public enum ColorScheme: String, CaseIterable {
+		case dark
+		case light
+		case system
+
+		public var userInterfaceStyle: UIUserInterfaceStyle {
+			switch self {
+			case .dark:
+				return .dark
+			case .light:
+				return .light
+			case .system:
+				return .unspecified
+			}
+		}
+	}
+}
 
 public struct SettingsFeature: Reducer {
 	public struct State: Equatable {
 		var user: Player?
-		public init() {}
+		var buildNumber: Build.Number?
+		@BindingState var userSettings: UserSettings
+		public init(
+			user: Player? = nil,
+			userSettings: UserSettings = .init(colorScheme: .light)
+		) {
+			self.user = user
+			self.userSettings = userSettings
+		}
 	}
 
-	public enum Action: Equatable {
-		case onAppear
+	public enum Action: BindableAction, Equatable {
+		case binding(BindingAction<State>)
+		case task
 		case onCloseButtonTapped
-#if DEBUG
-		case _reset
-#endif
+		case reportABugButtonTapped
+		case termsAndPrivacyButtonTapped
+		case leaveReviewButtonTapped
 		case delegate(Delegate)
 
 		public enum Delegate: Equatable {
@@ -25,26 +61,60 @@ public struct SettingsFeature: Reducer {
 	}
 
 	@Dependency(\.gameCenter) var gameCenter
-	public init() {
+	@Dependency(\.build) var build
+	@Dependency(\.applicationClient) var applicationClient
 
-	}
+	public init() {}
 
 	public var body: some ReducerProtocol<State, Action> {
 		Reduce { state, action in
 			switch action {
-			case .onAppear:
+			case .task:
+				state.buildNumber = self.build.number()
 				state.user = gameCenter.localPlayer.localPlayer().player
 				return .none
 			case .onCloseButtonTapped:
 				return .send(.delegate(.close))
+			case .reportABugButtonTapped:
+				return .fireAndForget { [currentPlayer = state.user] in
+					var components = URLComponents()
+					components.scheme = "mailto"
+					components.path = "sergheevdev@icloud.com"
+					components.queryItems = [
+						URLQueryItem(name: "subject", value: "I found a bug in photoguessr"),
+						URLQueryItem(
+							name: "body",
+							value: """
+ ---
+ Build: \(self.build.number())
+ \(currentPlayer?.gamePlayerId ?? "")
+ """
+						)
+					]
+
+					_ = await self.applicationClient.open(components.url!, [:])
+				}
+			case .termsAndPrivacyButtonTapped:
+				return .fireAndForget {
+					_ = await self.applicationClient
+						.open(URL(string: "http://www.photoguessr.com/terms-privacy")!, [:])
+				}
+			case .leaveReviewButtonTapped:
+				return .fireAndForget {
+					_ = await self.applicationClient
+						.open(URL(string: "https://apps.apple.com/app/photoguessr/id6447366892?action=write-review")!, [:])
+				}
+			case .binding(\.$userSettings.colorScheme):
+				return .fireAndForget { [style = state.userSettings.colorScheme.userInterfaceStyle] in
+					await self.applicationClient.setUserInterfaceStyle(style)
+				}
+			case .binding:
+				return .none
 			case .delegate:
 				return .none
-#if DEBUG
-			case ._reset:
-				return .none
-#endif
 			}
 		}
+		BindingReducer()
 	}
 }
 
@@ -71,7 +141,7 @@ public struct Settings: View {
 
 			VStack(alignment: .leading, spacing: .grid(4)) {
 				Text("Settings")
-					.font(.title)
+					.font(.system(size: 46))
 				if let user = viewStore.user {
 					Text("\(user.displayName)")
 						.font(.subheadline)
@@ -83,78 +153,69 @@ public struct Settings: View {
 					VStack(alignment: .leading, spacing: .grid(8)) {
 						VStack(spacing: .grid(8)) {
 							SettingCell {
-								Button(action: {
-									self.onReachOutViaEmail()
-								}, label: {
-									Text("Reach out")
+								VStack {
+									HStack {
+										Text("Appearance")
+										Spacer()
+									}
+									ColorSchemePicker(
+										colorScheme: self.viewStore.binding(\.$userSettings.colorScheme)
+									)
+								}
+							}
+							SettingCell {
+								Button {
+									viewStore.send(.leaveReviewButtonTapped)
+								} label: {
+									Text("Leave a review ✨")
 									Spacer()
 									Image(systemName: "arrow.right")
 										.padding(.trailing, .grid(1))
-								})
+								}
 							}
-#if DEBUG
 							SettingCell {
-								Button(action: {
-									viewStore.send(._reset)
-								}, label: {
-									Text("RESET")
-										.foregroundColor(.red)
+								Button {
+									viewStore.send(.termsAndPrivacyButtonTapped)
+								} label: {
+									Text("Terms / Privacy")
 									Spacer()
-								})
+									Image(systemName: "arrow.right")
+										.padding(.trailing, .grid(1))
+								}
 							}
-#endif
-							//							SettingCell {
-							//								Button(action: {
-							//									self.onCredits()
-							//								}, label: {
-							//									Text("GitHub")
-							//									Spacer()
-							//									Image(systemName: "arrow.right")
-							//										.padding(.trailing, .grid(1))
-							//								})
-							//							}
 						}
-						.padding(16)
+						.padding(.grid(4))
+
 						VStack(alignment: .leading, spacing: .grid(1)) {
-							Text("Terms / Privacy")
-								.fontWeight(.semibold)
-								.font(.footnote)
-							Text("Version: \(UIApplication.appVersion)")
-								.fontWeight(.thin)
-								.multilineTextAlignment(.leading)
-								.font(.footnote)
+							if let buildNumber = self.viewStore.buildNumber {
+								Text("Build \(buildNumber.rawValue)")
+									.fontWeight(.thin)
+									.multilineTextAlignment(.leading)
+									.font(.footnote)
+							}
+							Button {
+								viewStore.send(.reportABugButtonTapped)
+							} label: {
+								Text("Report a bug")
+									.fontWeight(.thin)
+									.underline()
+									.font(.footnote)
+								Spacer()
+							}
 						}
 						.padding()
 						Spacer()
 					}
 				}
 			}
-			.padding(EdgeInsets(top: .grid(12), leading: .grid(4), bottom: .grid(4), trailing: .grid(4)))
-
+			.padding(.grid(4))
 		}
 		.foregroundColor(self.colorScheme == .dark ? .photoGuesserCream : .black)
 		.background(
 			(self.colorScheme == .dark ? .black : Color.photoGuesserCream)
 				.ignoresSafeArea()
 		)
-		.onAppear { viewStore.send(.onAppear) }
-	}
-	private func onOpenSystemSettings() {
-		guard let stringURL = URL(string: UIApplication.openSettingsURLString) else { return }
-		UIApplication.shared.open(stringURL)
-	}
-
-	private func onReachOutViaEmail() {
-		let mail = "sergheevdev@icloud.com"
-		if let emailUrl = URL(string: "mailto:\(mail)") {
-			UIApplication.shared.open(emailUrl, options: [:], completionHandler: nil)
-		}
-	}
-
-	private func onCredits() {
-		if let supportUrl = URL(string: "https://www.photoguessr.com") {
-			UIApplication.shared.open(supportUrl)
-		}
+		.task { await self.viewStore.send(.task).finish() }
 	}
 }
 
@@ -172,26 +233,6 @@ struct SettingCell<Content: View>: View {
 					.frame(height: 2)
 			}
 		}
-	}
-}
-
-public extension UIApplication {
-	static var appVersion: String {
-		let versionNumber = Bundle.main.infoDictionary?[IdentifierConstants.InfoPlist.versionNumber] as? String
-		let buildNumber = Bundle.main.infoDictionary?[IdentifierConstants.InfoPlist.buildNumber] as? String
-
-		let formattedBuildNumber = buildNumber.map {
-			return "(\($0))"
-		}
-
-		return [versionNumber, formattedBuildNumber].compactMap { $0 }.joined(separator: " ")
-	}
-}
-
-struct IdentifierConstants {
-	struct InfoPlist {
-		static let versionNumber = "CFBundleShortVersionString"
-		static let buildNumber = "CFBundleVersion"
 	}
 }
 
