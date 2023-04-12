@@ -1,6 +1,7 @@
 import SwiftUI
 import Foundation
 import HomeFeature
+import SettingsFeature
 import ComposableGameCenter
 import ComposableArchitecture
 

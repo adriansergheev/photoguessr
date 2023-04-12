@@ -183,6 +183,7 @@ let package = Package(
 			dependencies: [
 				"Build",
 				"ComposableGameCenter",
+				"StorageClient",
 				"Styleguide",
 				"UIApplicationClient",
 				.product(name: "Dependencies", package: "swift-dependencies"),

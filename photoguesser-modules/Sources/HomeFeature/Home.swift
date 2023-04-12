@@ -18,9 +18,9 @@ public struct Home: ReducerProtocol {
 		var _isLoading = false
 		var _isLocationFeatureEnabled = false
 
-		@PresentationState public var cities: CitiesFeature.State?
-		@PresentationState public var settings: SettingsFeature.State?
 		var alert: AlertState<Action.Alert>?
+		@PresentationState var cities: CitiesFeature.State?
+		@PresentationState var settings: SettingsFeature.State?
 
 		public init(
 			gameInstance: Game.State? = nil,
@@ -67,7 +67,7 @@ public struct Home: ReducerProtocol {
 	func startGame(_ state: inout State, gameLocation: GameLocation) {
 		state.gameInstance = .init(gameLocation: gameLocation)
 		state._isLoading = false
-		try? saveGameLocation(gameLocation)
+		try? self.storage.saveGame(gameLocation)
 	}
 
 	public var body: some ReducerProtocol<State, Action> {
@@ -80,7 +80,7 @@ public struct Home: ReducerProtocol {
 				case .tap(.onPlay):
 					do {
 						// figure out if this has to execute even if the try throws
-						self.startGame(&state, gameLocation: (try loadGameLocation()))
+						self.startGame(&state, gameLocation: (try self.storage.loadGame()))
 						if !state._isLocationFeatureEnabled { return .none }
 						return .fireAndForget { @MainActor  [authorizationStatus = location.authorizationStatus] in
 							switch authorizationStatus {
@@ -212,31 +212,6 @@ public struct Home: ReducerProtocol {
 	}
 }
 
-extension Home {
-	func hasSavedGameLocation() -> Bool {
-		do {
-			_ = try loadGameLocation()
-			return true
-		} catch {
-			return false
-		}
-	}
-
-	func loadGameLocation() throws -> GameLocation {
-		try JSONDecoder().decode(
-			GameLocation.self,
-			from: storage.load(.gameLocation)
-		)
-	}
-
-	func saveGameLocation(_ gameLocation: GameLocation) throws {
-		try storage.save(
-			JSONEncoder().encode(gameLocation),
-			.gameLocation
-		)
-	}
-}
-
 extension AlertState where Action == Home.Action.Alert {
 	static func accessLocation() -> Self {
 		AlertState {
@@ -351,11 +326,6 @@ public struct HomeView: View {
 		}
 		//		.modifier(DeviceStateModifier())
 	}
-}
-
-extension URL {
-	fileprivate static let gameLocation = Self.documentsDirectory
-		.appending(component: "gameLocation.json")
 }
 
 struct HomeButtonContent: View {

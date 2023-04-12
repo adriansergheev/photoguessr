@@ -14,6 +14,8 @@ public struct GameCenterLogic: ReducerProtocol {
 					try await self.gameCenter.localPlayer.authenticate()
 				} catch {}
 			}
+		case .appDelegate(.userSettingsLoaded):
+			return .none
 		case .didChangeScenePhase:
 			return .none
 		case .home:

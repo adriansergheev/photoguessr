@@ -3,45 +3,25 @@ import Build
 import Foundation
 import Styleguide
 import Dependencies
+import StorageClient
 import UIApplicationClient
 import ComposableGameCenter
 import ComposableArchitecture
 
-public struct UserSettings: Equatable {
-	public var colorScheme: ColorScheme
-
-	public init(colorScheme: ColorScheme = .system) {
-		self.colorScheme = colorScheme
-	}
-
-	public enum ColorScheme: String, CaseIterable {
-		case dark
-		case light
-		case system
-
-		public var userInterfaceStyle: UIUserInterfaceStyle {
-			switch self {
-			case .dark:
-				return .dark
-			case .light:
-				return .light
-			case .system:
-				return .unspecified
-			}
-		}
-	}
-}
-
 public struct SettingsFeature: Reducer {
 	public struct State: Equatable {
+
 		var user: Player?
 		var buildNumber: Build.Number?
 		@BindingState var userSettings: UserSettings
+
 		public init(
 			user: Player? = nil,
+			buildNumber: Build.Number? = nil,
 			userSettings: UserSettings = .init()
 		) {
 			self.user = user
+			self.buildNumber = buildNumber
 			self.userSettings = userSettings
 		}
 	}
@@ -63,6 +43,7 @@ public struct SettingsFeature: Reducer {
 	@Dependency(\.gameCenter) var gameCenter
 	@Dependency(\.build) var build
 	@Dependency(\.applicationClient) var applicationClient
+	@Dependency(\.storage) var storage
 
 	public init() {}
 
@@ -72,7 +53,7 @@ public struct SettingsFeature: Reducer {
 			switch action {
 			case .task:
 				state.buildNumber = self.build.number()
-				state.user = gameCenter.localPlayer.localPlayer().player
+				state.user = self.gameCenter.localPlayer.localPlayer().player
 				return .none
 			case .onCloseButtonTapped:
 				return .send(.delegate(.close))
@@ -106,8 +87,10 @@ public struct SettingsFeature: Reducer {
 						.open(URL(string: "https://apps.apple.com/app/photoguessr/id6447366892?action=write-review")!, [:])
 				}
 			case .binding(\.$userSettings.colorScheme):
-				return .fireAndForget { [style = state.userSettings.colorScheme.userInterfaceStyle] in
-					await self.applicationClient.setUserInterfaceStyle(style)
+				return .fireAndForget { [userSettings = state.userSettings] in
+					await self.applicationClient.setUserInterfaceStyle(userSettings.colorScheme.userInterfaceStyle)
+					// TODO: Debounce
+					try await self.storage.save(userSettings: userSettings)
 				}
 			case .binding:
 				return .none
@@ -242,7 +225,7 @@ struct Settings_Previews: PreviewProvider {
 		Preview {
 			Settings(
 				store: .init(
-					initialState: .init(),
+					initialState: .init(userSettings: .init()),
 					reducer: SettingsFeature()
 				)
 			)

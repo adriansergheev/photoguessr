@@ -1,14 +1,16 @@
 import Foundation
 import Dependencies
 
-public struct StorageClient: Sendable {
-	public var load: @Sendable (URL) throws -> Data
-	public var save: @Sendable (Data, URL) throws -> Void
-}
+public struct StorageClient {
+	public var delete: @Sendable (_ fileName: String) throws -> Void
+	public var load: @Sendable (_ fileName: String) throws -> Data
+	public var save: @Sendable (_ fileName: String, Data) throws -> Void
 
-extension DependencyValues {
-	public var storage: StorageClient {
-		get { self[StorageClient.self] }
-		set { self[StorageClient.self] = newValue }
+	public func load<A: Decodable>(_ type: A.Type, from fileName: String) throws -> A {
+		try JSONDecoder().decode(A.self, from: self.load(fileName))
+	}
+
+	public func save<A: Encodable>(_ data: A, to fileName: String) throws {
+		try self.save(fileName, JSONEncoder().encode(data))
 	}
 }
