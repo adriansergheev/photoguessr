@@ -21,13 +21,16 @@ public struct Home: ReducerProtocol {
 		var alert: AlertState<Action.Alert>?
 		@PresentationState var cities: CitiesFeature.State?
 		@PresentationState var settings: SettingsFeature.State?
+		var userSettings: UserSettings
 
 		public init(
 			gameInstance: Game.State? = nil,
-			menuBackground: MenuBackground.State = MenuBackground.State()
+			menuBackground: MenuBackground.State = MenuBackground.State(),
+			userSettings: UserSettings = .init()
 		) {
 			self.gameInstance = gameInstance
 			self.menuBackground = menuBackground
+			self.userSettings = userSettings
 		}
 	}
 
@@ -123,7 +126,7 @@ public struct Home: ReducerProtocol {
 						await gameCenter.gameCenterViewController.dismiss()
 					}
 				case .tap(.onSettings):
-					state.settings = .init()
+					state.settings = .init(userSettings: state.userSettings)
 					return .none
 				case .game(.gameNavigationBar):
 					return .none
