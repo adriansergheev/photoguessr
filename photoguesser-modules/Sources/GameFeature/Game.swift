@@ -23,6 +23,7 @@ public struct Game: ReducerProtocol {
 
 		var guess: Int
 		var guessRange: ClosedRange<Int>
+		var isSubmitButtonEnabled: Bool
 
 		var navigationBar: GameNavigationBar.State
 		var gameNotification: GameNotification.State?
@@ -35,7 +36,8 @@ public struct Game: ReducerProtocol {
 			gameLocation: GameLocation,
 			gameNotification: GameNotification.State? = nil,
 			guess: Int = 1950,
-			guessRange: ClosedRange<Int> = 1900...2000
+			guessRange: ClosedRange<Int> = 1900...2000,
+			isSubmitButtonEnabled: Bool = true
 		) {
 			self.score = score
 			self.mode = mode
@@ -44,6 +46,7 @@ public struct Game: ReducerProtocol {
 			self.guess = guess
 			self.guessRange = guessRange
 			self.navigationBar = .init(title: gameLocation.name)
+			self.isSubmitButtonEnabled = isSubmitButtonEnabled
 		}
 	}
 
@@ -57,6 +60,7 @@ public struct Game: ReducerProtocol {
 
 		case sliderValueChanged(Int)
 		case submitTapped
+		case submitDelayElapsed
 
 		case dismissBottomMenu
 		case endGame
@@ -67,6 +71,7 @@ public struct Game: ReducerProtocol {
 		}
 	}
 
+	@Dependency(\.mainQueue) var mainQueue
 	@Dependency(\.apiClient) var apiClient
 	@Dependency(\.userDefaults) var userDefaults
 	@Dependency(\.prefetcher) var prefetcher
@@ -143,6 +148,13 @@ public struct Game: ReducerProtocol {
 					state.guess = value
 					return .none
 				case .submitTapped:
+					state.isSubmitButtonEnabled = false
+					return .task {
+						try? await self.mainQueue.sleep(for: .seconds(.random(in: 0.5...1)))
+						return .submitDelayElapsed
+					}
+				case .submitDelayElapsed:
+					defer { state.isSubmitButtonEnabled = true }
 					guard let photoInPlay = state.currentInGamePhoto else {
 						return .none
 					}
@@ -310,6 +322,7 @@ public struct GameView: View {
 	struct ViewState: Equatable {
 		let guess: Int
 		let guessRange: ClosedRange<Int>
+		let isSubmitButtonEnabled: Bool
 		let score: Int
 		let mode: Game.State.GameMode
 		let gameLocation: GameLocation
@@ -319,6 +332,7 @@ public struct GameView: View {
 		init(state: Game.State) {
 			self.guess = state.guess
 			self.guessRange = state.guessRange
+			self.isSubmitButtonEnabled = state.isSubmitButtonEnabled
 			self.score = state.score
 			self.mode = state.mode
 			self.gameLocation = state.gameLocation
@@ -431,14 +445,25 @@ public struct GameView: View {
 									Button {
 										viewStore.send(.submitTapped)
 									} label: {
-										Text("Submit")
-											.padding(.grid(3))
-											.padding([.leading, .trailing], .grid(1))
-											.foregroundColor(self.colorScheme == .dark ? .black : .photoGuesserCream)
-											.background(self.colorScheme == .dark ? Color.photoGuesserCream : .black)
-											.cornerRadius(36)
-											.padding(.bottom, .grid(10))
+										HStack {
+											Group {
+												if viewStore.isSubmitButtonEnabled {
+													Text("Submit")
+												} else {
+													ProgressView()
+														.tint(.adaptiveWhite)
+												}
+											}
+										}
+										.frame(width: .grid(20))
+										.padding(.grid(3))
+										.padding([.leading, .trailing], .grid(1))
+										.foregroundColor(self.colorScheme == .dark ? .black : .photoGuesserCream)
+										.background(self.colorScheme == .dark ? Color.photoGuesserCream : .black)
+										.cornerRadius(36)
+										.padding(.bottom, .grid(10))
 									}
+									.disabled(!viewStore.isSubmitButtonEnabled )
 								}
 								.frame(height: UIScreen.height / 3.8)
 								.background(
