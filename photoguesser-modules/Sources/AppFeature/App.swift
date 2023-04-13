@@ -34,12 +34,8 @@ public struct AppReducer: ReducerProtocol {
 		Scope(state: \.home, action: /Action.home) {
 			Home()
 		}
-		Reduce { state, action in
+		Reduce { _, action in
 			switch action {
-			case .appDelegate(.userSettingsLoaded):
-				let userSettings = state.appDelegate
-				state.home = .init(userSettings: userSettings)
-				return .none
 			case .appDelegate:
 				return .none
 			case .home:
