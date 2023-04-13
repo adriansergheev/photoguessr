@@ -29,6 +29,7 @@ public struct SettingsFeature: Reducer {
 	public enum Action: BindableAction, Equatable {
 		case binding(BindingAction<State>)
 		case task
+		case userSettingsLoaded(TaskResult<UserSettings>)
 		case onCloseButtonTapped
 		case reportABugButtonTapped
 		case termsAndPrivacyButtonTapped
@@ -54,6 +55,15 @@ public struct SettingsFeature: Reducer {
 			case .task:
 				state.buildNumber = self.build.number()
 				state.user = self.gameCenter.localPlayer.localPlayer().player
+				return .task {
+					await .userSettingsLoaded(
+						TaskResult { try await self.storage.loadUserSettings() }
+					)
+				}
+			case let .userSettingsLoaded(.success(result)):
+				state.userSettings = result
+				return .none
+			case .userSettingsLoaded(.failure):
 				return .none
 			case .onCloseButtonTapped:
 				return .send(.delegate(.close))
