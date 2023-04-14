@@ -441,14 +441,14 @@ public struct GameView: View {
 											Group {
 												if viewStore.isSubmitButtonEnabled {
 													Text("Submit")
-														.adaptiveFont(.cormorantMedium, size: 17)
+														.adaptiveFont(.cormorantBold, size: 17)
 												} else {
 													ProgressView()
 														.tint(.adaptiveWhite)
 												}
 											}
 										}
-										.frame(width: .grid(20))
+										.frame(width: 80, height: 28)
 										.padding(.grid(3))
 										.padding([.leading, .trailing], .grid(1))
 										.foregroundColor(self.colorScheme == .dark ? .black : .photoGuesserCream)
