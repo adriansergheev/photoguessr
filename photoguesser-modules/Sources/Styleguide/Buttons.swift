@@ -31,7 +31,7 @@ public struct ActionButtonStyle: ButtonStyle {
 					)
 			)
 			.scaleEffect(configuration.isPressed ? 0.95 : 1.0)
-			.font(.system(size: 16, weight: .medium))
+			.adaptiveFont(.cormorantMedium, size: 16)
 	}
 }
 

@@ -121,7 +121,7 @@ public struct Cities: View {
 					Image(systemName: "xmark")
 				}
 			}
-			.font(.system(size: 24))
+			.adaptiveFont(.cormorantMedium, size: 24)
 			.padding()
 
 			GeometryReader { proxy in
@@ -149,6 +149,7 @@ public struct Cities: View {
 													//
 												} else {
 													Text("Could not fetch images for this location ;(")
+														.adaptiveFont(.cormorantMedium, size: 17)
 												}
 											}
 

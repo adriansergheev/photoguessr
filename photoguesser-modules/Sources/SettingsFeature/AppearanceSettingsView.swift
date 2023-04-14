@@ -41,6 +41,7 @@ struct ColorSchemePicker: View {
 						}
 					) {
 						Text(colorScheme.title)
+							.adaptiveFont(.cormorantMedium, size: 14)
 							.foregroundColor(Color.white)
 							.colorMultiply(
 								self.titleColor(
@@ -49,7 +50,6 @@ struct ColorSchemePicker: View {
 								)
 							)
 							.frame(maxWidth: .infinity)
-							.font(.system(size: 14))
 					}
 					.buttonStyle(PlainButtonStyle())
 				}

@@ -68,10 +68,10 @@ public struct GameOverView: View {
 							Image(systemName: "xmark")
 						}
 					}
-					.font(.system(size: 24))
+					.adaptiveFont(.cormorantMedium, size: 24)
 					.padding()
 					Text("🌆 Final Score: \(viewStore.score)! 🌃")
-						.font(.system(size: 30))
+						.adaptiveFont(.cormorantMedium, size: 30)
 						.foregroundColor(.adaptiveBlack)
 						.multilineTextAlignment(.center)
 				}
@@ -83,7 +83,7 @@ public struct GameOverView: View {
 					Divider()
 
 					Text("Enjoying\nthe game?")
-						.font(.system(size: 30))
+						.adaptiveFont(.cormorantMedium, size: 30)
 						.foregroundColor(.adaptiveBlack)
 						.multilineTextAlignment(.center)
 
@@ -91,6 +91,7 @@ public struct GameOverView: View {
 						self.isSharePresented.toggle()
 					}) {
 						Text("Share with a friend")
+							.adaptiveFont(.cormorantMedium, size: 17)
 					}
 					.buttonStyle(
 						ActionButtonStyle(

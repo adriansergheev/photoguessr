@@ -129,16 +129,15 @@ public struct Settings: View {
 					Image(systemName: "xmark")
 				}
 			}
-			.font(.system(size: 24))
+			.adaptiveFont(.cormorantMedium, size: 24)
 			.padding([.top, .leading, .trailing])
 
 			VStack(alignment: .leading, spacing: .grid(4)) {
 				Text("Settings")
-					.font(.system(size: 46))
+					.adaptiveFont(.cormorantBold, size: 34)
 				if let user = viewStore.user {
 					Text("\(user.displayName)")
-						.font(.subheadline)
-						.font(.system(size: 16))
+						.adaptiveFont(.cormorantMedium, size: 16)
 						.multilineTextAlignment(.leading)
 				}
 				Spacer()
@@ -149,6 +148,7 @@ public struct Settings: View {
 								VStack {
 									HStack {
 										Text("Appearance")
+											.adaptiveFont(.cormorantMedium, size: 17)
 										Spacer()
 									}
 									ColorSchemePicker(
@@ -161,6 +161,7 @@ public struct Settings: View {
 									viewStore.send(.leaveReviewButtonTapped)
 								} label: {
 									Text("Leave a review ✨")
+										.adaptiveFont(.cormorantMedium, size: 17)
 									Spacer()
 									Image(systemName: "arrow.right")
 										.padding(.trailing, .grid(1))
@@ -171,6 +172,7 @@ public struct Settings: View {
 									viewStore.send(.termsAndPrivacyButtonTapped)
 								} label: {
 									Text("Terms / Privacy")
+										.adaptiveFont(.cormorantMedium, size: 17)
 									Spacer()
 									Image(systemName: "arrow.right")
 										.padding(.trailing, .grid(1))

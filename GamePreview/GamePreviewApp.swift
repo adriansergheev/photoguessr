@@ -1,8 +1,13 @@
-import GameFeature
 import SwiftUI
+import GameFeature
+import Styleguide
 
 @main
 struct GamePreviewApp: App {
+
+	init() {
+		Styleguide.registerFonts()
+	}
 	var body: some Scene {
 		WindowGroup {
 			GameView(
