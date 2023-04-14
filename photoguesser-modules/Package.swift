@@ -201,7 +201,13 @@ let package = Package(
 			]
 		),
 		.target(
-			name: "Styleguide"
+			name: "Styleguide",
+			dependencies: [
+				.product(name: "Tagged", package: "swift-tagged")
+			],
+			resources: [
+				.process("Fonts")
+			]
 		),
 		.target(
 			name: "UIApplicationClient",
