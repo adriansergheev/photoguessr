@@ -359,20 +359,13 @@ public struct GameView: View {
 					HStack {
 						Text("\(viewStore.score)")
 							.foregroundColor(.adaptiveBlack)
-							.font(.system(size: 24))
-							.bold()
+							.adaptiveFont(.cormorantBold, size: 24)
 							.padding(.leading, .grid(4))
 						Spacer()
 						switch viewStore.mode {
-							//						case .unlimited:
-							//							Text("♾️")
-							//								.bold()
-							//								.frame(width: 40)
-							//								.padding(.trailing, .grid(4))
 						case let .limited(max: limit, current: current):
 							Text("\(current)/\(limit)")
-								.bold()
-								.font(.system(size: 24))
+								.adaptiveFont(.cormorantBold, size: 24)
 								.foregroundColor((limit - current == 1) ? .red : .adaptiveBlack)
 								.padding(.trailing, .grid(4))
 						}
@@ -416,13 +409,12 @@ public struct GameView: View {
 									HStack {
 										Text(photo.title)
 											.lineLimit(2)
-											.bold()
+											.adaptiveFont(.cormorantBold, size: 17)
 											.foregroundColor(Color.adaptiveBlack)
 										Spacer()
 										Text(verbatim: "\(viewStore.guess)")
 											.foregroundColor(.adaptiveBlack)
-											.font(.system(size: 24))
-											.bold()
+											.adaptiveFont(.cormorantBold, size: 24)
 									}
 									.padding([.top, .leading, .trailing], .grid(2))
 
@@ -449,6 +441,7 @@ public struct GameView: View {
 											Group {
 												if viewStore.isSubmitButtonEnabled {
 													Text("Submit")
+														.adaptiveFont(.cormorantMedium, size: 17)
 												} else {
 													ProgressView()
 														.tint(.adaptiveWhite)
@@ -477,6 +470,7 @@ public struct GameView: View {
 						Spacer()
 						if viewStore.isEmptyState {
 							Text("Could not find any pics for this location ;(")
+								.adaptiveFont(.cormorantMedium, size: 17)
 								.foregroundColor(.adaptiveBlack)
 						} else {
 							ProgressView()

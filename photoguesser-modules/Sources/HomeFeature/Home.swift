@@ -254,8 +254,7 @@ public struct HomeView: View {
 					}
 					VStack {
 						Text("photoguessr")
-							.font(.system(.largeTitle))
-							.bold()
+							.adaptiveFont(.cormorantBold, size: 34)
 						HomeButton {
 							viewStore.send(.tap(.onPlay))
 						} content: {
@@ -355,8 +354,7 @@ struct HomeButtonContent: View {
 			VStack {
 				Spacer()
 				text
-					.font(.callout)
-					.bold()
+					.adaptiveFont(.cormorantBold, size: 16)
 					.padding([.top, .bottom], .grid(1))
 					.frame(maxWidth: .infinity)
 					.foregroundColor(self.colorScheme == .dark ? .black : .photoGuesserCream)
@@ -416,7 +414,7 @@ struct HomeButtonStyle: ButtonStyle {
 					.opacity(configuration.isPressed ? 0.9 : 1)
 			)
 			.frame(maxWidth: .infinity, maxHeight: .infinity)
-			.font(.system(size: 20))
+			.adaptiveFont(.cormorantMedium, size: 20)
 			.background(
 				RoundedRectangle(cornerRadius: 13)
 					.fill(

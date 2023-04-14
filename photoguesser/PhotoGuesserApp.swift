@@ -1,5 +1,6 @@
 import SwiftUI
 import AppFeature
+import Styleguide
 import ComposableArchitecture
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
@@ -25,7 +26,9 @@ struct PhotoGuesser: App {
 	@UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 	@Environment(\.scenePhase) private var scenePhase
 
-	init() {}
+	init() {
+		Styleguide.registerFonts()
+	}
 
 	var body: some Scene {
 		WindowGroup {

@@ -1,8 +1,14 @@
-import HomeFeature
 import SwiftUI
+import Styleguide
+import HomeFeature
 
 @main
 struct HomePreviewApp: App {
+
+	init() {
+		Styleguide.registerFonts()
+	}
+
 	var body: some Scene {
 		WindowGroup {
 			HomeView(

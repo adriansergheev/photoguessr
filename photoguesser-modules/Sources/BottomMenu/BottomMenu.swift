@@ -92,14 +92,14 @@ private struct BottomMenuWrapper<Content: View>: View {
 						Group {
 							HStack {
 								menu.title
-									.font(.system(size: 18))
+									.adaptiveFont(.cormorantMedium, size: 18)
 									.foregroundColor(colorScheme == .light ? .photoGuesserBlack : .photoGuesserCream)
 								Spacer()
 							}
 
 							if let message = menu.message {
 								message
-									.font(.system(size: 24))
+									.adaptiveFont(.cormorantMedium, size: 24)
 									.foregroundColor(colorScheme == .light ? .photoGuesserBlack : .photoGuesserCream)
 							}
 						}
@@ -122,7 +122,7 @@ private struct BottomMenuWrapper<Content: View>: View {
 						) {
 							HStack {
 								menu.footerButton.title
-									.font(.system(size: 18))
+									.adaptiveFont(.cormorantMedium, size: 18)
 								Spacer()
 								menu.footerButton.icon
 							}
@@ -159,7 +159,7 @@ private struct MenuButton: View {
 
 				self.button.title
 					.foregroundColor(self.colorScheme == .light ? .photoGuesserCream : .photoGuesserBlack)
-					.font(.system(size: 18))
+					.adaptiveFont(.cormorantMedium, size: 18)
 			}
 			.foregroundColor(self.colorScheme == .light ? .photoGuesserBlack : .photoGuesserCream)
 			.frame(maxWidth: .infinity)

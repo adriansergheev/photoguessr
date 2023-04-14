@@ -1,9 +1,15 @@
 import SwiftUI
 import SharedModels
+import Styleguide
 import CitiesFeature
 
 @main
 struct CitiesPreviewApp: App {
+
+	init() {
+		Styleguide.registerFonts()
+	}
+
 	var body: some Scene {
 		WindowGroup {
 			Cities(

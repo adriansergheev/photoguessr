@@ -13,7 +13,7 @@ public struct TextStyle: View {
 
 	public var body: some View {
 		Text(text)
-			.bold()
+			.adaptiveFont(.cormorantBold, size: 17)
 			.padding(self.padding)
 			.padding([.leading, .trailing], .grid(2))
 			.foregroundColor(self.colorScheme == .dark ? .black : .photoGuesserCream)

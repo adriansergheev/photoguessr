@@ -55,9 +55,8 @@ public struct GameNotificationView: View {
 					Image(systemName: "crown")
 						.foregroundColor(.black)
 					Text(viewStore.text)
-						.font(.system(size: 17))
+						.adaptiveFont(.cormorantBold, size: 18)
 						.foregroundColor(.black)
-						.bold()
 					Image(systemName: "crown")
 						.foregroundColor(.black)
 				}

@@ -5,7 +5,6 @@ import SwiftUI
 public typealias FontName = Tagged<Font, String>
 
 extension FontName {
-	public static let cormorant: Self = "Cormorant-Regular"
 	public static let cormorantMedium: Self = "Cormorant-Medium"
 	public static let cormorantBold: Self = "Cormorant-Bold"
 }
@@ -28,11 +27,11 @@ extension View {
 
 private struct AdaptiveFont: ViewModifier {
 	@Environment(\.adaptiveSize) var adaptiveSize
-	
+
 	let name: String
 	let size: CGFloat
 	let configure: (Font) -> Font
-	
+
 	func body(content: Content) -> some View {
 		content.font(self.configure(.custom(self.name, size: self.size + self.adaptiveSize.padding)))
 	}
@@ -42,8 +41,7 @@ private struct AdaptiveFont: ViewModifier {
 public func registerFonts() -> Bool {
 	[
 		UIFont.registerFont(bundle: .module, fontName: "Cormorant-Medium", fontExtension: "ttf"),
-		UIFont.registerFont(bundle: .module, fontName: "Cormorant-Regular", fontExtension: "ttf"),
-		UIFont.registerFont(bundle: .module, fontName: "Cormorant-Bold", fontExtension: "ttf"),
+		UIFont.registerFont(bundle: .module, fontName: "Cormorant-Bold", fontExtension: "ttf")
 	]
 		.allSatisfy { $0 }
 }
@@ -62,7 +60,7 @@ extension UIFont {
 			print("Couldn't create font from data")
 			return false
 		}
-		
+
 		var error: Unmanaged<CFError>?
 		let success = CTFontManagerRegisterGraphicsFont(font, &error)
 		guard success else {
@@ -74,7 +72,7 @@ extension UIFont {
 			)
 			return true
 		}
-		
+
 		return true
 	}
 }
@@ -83,7 +81,7 @@ extension UIFont {
 struct Font_Previews: PreviewProvider {
 	static var previews: some View {
 		registerFonts()
-		
+
 		return VStack(alignment: .leading, spacing: 12) {
 			ForEach(
 				[10, 12, 14, 16, 18, 20, 24, 32, 60].reversed(),
