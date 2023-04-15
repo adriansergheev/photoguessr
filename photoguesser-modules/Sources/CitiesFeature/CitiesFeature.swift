@@ -39,7 +39,7 @@ public struct CitiesFeature: Reducer {
 	}
 
 	public enum Action: Equatable {
-		case onAppear
+		case task
 		case onSectionTap(Section.ID)
 		case updateSection(Section)
 		case onCloseButtonTapped
@@ -59,7 +59,7 @@ public struct CitiesFeature: Reducer {
 	public var body: some ReducerProtocol<State, Action> {
 		Reduce { state, action in
 			switch action {
-			case .onAppear:
+			case .task:
 				return .run { [sections = state.sections] send in
 					await withTaskGroup(of: Void.self) { group in
 						for section in sections {
@@ -180,7 +180,7 @@ public struct Cities: View {
 					}
 				}
 			}
-			.onAppear { self.viewStore.send(.onAppear) }
+			.task { await self.viewStore.send(.task).finish() }
 		}
 		.foregroundColor(self.colorScheme == .dark ? .photoGuesserCream : .black)
 		.background(
