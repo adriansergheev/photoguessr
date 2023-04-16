@@ -12,6 +12,7 @@ import ApiClientLive
 import PrefetcherClient
 import GameNotification
 import UserDefaultsClient
+import XCTestDynamicOverlay
 import ComposableArchitecture
 
 public struct Game: ReducerProtocol {
@@ -156,6 +157,7 @@ public struct Game: ReducerProtocol {
 				case .submitDelayElapsed:
 					defer { state.isSubmitButtonEnabled = true }
 					guard let photoInPlay = state.currentInGamePhoto else {
+						XCTFail("Can't submit picture when currentInGamePhoto is nil")
 						return .none
 					}
 					let score = State.Scoring.score(target: photoInPlay.year, guess: state.guess)

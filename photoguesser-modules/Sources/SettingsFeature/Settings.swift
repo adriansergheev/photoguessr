@@ -68,7 +68,7 @@ public struct SettingsFeature: Reducer {
 			case .onCloseButtonTapped:
 				return .send(.delegate(.close))
 			case .reportABugButtonTapped:
-				return .fireAndForget { [currentPlayer = state.user] in
+				return .fireAndForget {
 					var components = URLComponents()
 					components.scheme = "mailto"
 					components.path = "sergheevdev@icloud.com"
@@ -79,7 +79,6 @@ public struct SettingsFeature: Reducer {
 							value: """
  ---
  Build: \(self.build.number())
- \(currentPlayer?.gamePlayerId ?? "")
  """
 						)
 					]
