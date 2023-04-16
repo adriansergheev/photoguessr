@@ -14,7 +14,7 @@ public struct GameOver: ReducerProtocol {
 	}
 
 	public enum Action: Equatable {
-		case task
+		case onAppear
 		case onCloseButtonTapped
 		case delegate(Delegate)
 
@@ -30,7 +30,7 @@ public struct GameOver: ReducerProtocol {
 	public var body: some ReducerProtocol<State, Action> {
 		Reduce { state, action in
 			switch action {
-			case .task:
+			case .onAppear:
 				defer { state.didReportScore = true }
 				return .fireAndForget { [score = state.score, didReport = state.didReportScore] in
 					if !didReport {
@@ -103,7 +103,7 @@ public struct GameOverView: View {
 				}
 				.padding(.vertical, .grid(12))
 			}
-			.task { await viewStore.send(.task).finish() }
+			.onAppear { viewStore.send(.onAppear) }
 			.foregroundColor(self.colorScheme == .dark ? .photoGuesserCream : .black)
 			.background(
 				(self.colorScheme == .dark ? .black : Color.photoGuesserCream)
