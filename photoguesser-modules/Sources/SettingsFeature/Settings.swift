@@ -88,7 +88,7 @@ public struct SettingsFeature: Reducer {
 			case .termsAndPrivacyButtonTapped:
 				return .fireAndForget {
 					_ = await self.applicationClient
-						.open(URL(string: "http://www.photoguessr.com/privacy-policy")!, [:])
+						.open(URL(string: "https://raw.githubusercontent.com/adriansergheev/photoguessr-terms/main/policy.txt")!, [:])
 				}
 			case .leaveReviewButtonTapped:
 				return .fireAndForget {
