@@ -6,6 +6,32 @@ import ApiClientLive
 import IdentifiedCollections
 import ComposableArchitecture
 
+public func defaults() -> IdentifiedArrayOf<CitiesFeature.Section> {
+	var defaults = [
+		GameLocation.init(location: CanonicalLocation.init(lat: 59.32, long: 18.06), name: "Stockholm"),
+		.init(location: .init(lat: 47.49, long: 19.04), name: "Budapest"),
+		.init(location: .init(lat: 60.16, long: 24.93), name: "Helsinki"),
+		.init(location: .init(lat: 59.91, long: 10.75), name: "Oslo"),
+		.init(location: .init(lat: 37.77, long: -122.41), name: "San-Francisco"),
+		.init(location: .init(lat: 41.90, long: 12.49), name: "Rome"),
+		.init(location: .init(lat: 35.68, long: 139.69), name: "Tokyo"),
+		.init(location: .init(lat: 44.43, long: 26.09), name: "Bucharest"),
+		.init(location: .init(lat: 47.01, long: 28.86), name: "Chișinău"),
+		.init(location: .init(lat: 48.86, long: 2.34), name: "Paris"),
+		.init(location: .init(lat: 40.73, long: -73.93), name: "New-York")
+	]
+		.map { gameLocation in
+			let randomisedLocation = CanonicalLocation(
+				lat: gameLocation.location.lat + Double.random(in: 0.00...0.09),
+				long: gameLocation.location.long + Double.random(in: 0.00...0.09)
+			)
+			return GameLocation(location: randomisedLocation, name: gameLocation.name)
+		}
+		.map { CitiesFeature.Section.city($0, isLoading: true) }
+	defaults.append(.upgradeBanner)
+	return IdentifiedArray(uniqueElements: defaults)
+}
+
 public struct CitiesFeature: Reducer {
 	public enum Section: Equatable, Identifiable {
 		case city(GameLocation, isLoading: Bool = true)
@@ -24,16 +50,7 @@ public struct CitiesFeature: Reducer {
 
 	public struct State: Equatable {
 		public var sections: IdentifiedArrayOf<Section>
-
-		public init(sections: IdentifiedArrayOf<Section> = [
-			.city(.defaults[0]),
-			.city(.defaults[1]),
-			.city(.defaults[2]),
-			.city(.defaults[3]),
-			.city(.defaults[4]),
-			.city(.defaults[5]),
-			.upgradeBanner
-		]) {
+		public init(sections: IdentifiedArrayOf<Section> = defaults()) {
 			self.sections = sections
 		}
 	}
