@@ -4,9 +4,9 @@ public struct GameLocation: Codable, Equatable {
 	public typealias GamePhotos = PastvuPhotoResponse
 	public let location: CanonicalLocation
 	public let name: String
-	
+
 	public var gamePhotos: GamePhotos?
-	
+
 	public init(location: CanonicalLocation, name: String) {
 		self.location = location
 		self.name = name
@@ -30,10 +30,10 @@ extension GameLocation {
 
 public struct CanonicalLocation: Codable, Equatable {
 	public typealias Coordinate = Double
-	
+
 	public let lat: Coordinate
 	public let long: Coordinate
-	
+
 	public init(lat: Coordinate, long: Coordinate) {
 		self.lat = lat
 		self.long = long

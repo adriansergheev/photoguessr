@@ -7,29 +7,38 @@ import IdentifiedCollections
 import ComposableArchitecture
 
 public func defaults() -> IdentifiedArrayOf<CitiesFeature.Section> {
-	var defaults = [
-		GameLocation.init(location: CanonicalLocation.init(lat: 59.32, long: 18.06), name: "Stockholm"),
-		.init(location: .init(lat: 47.49, long: 19.04), name: "Budapest"),
-		.init(location: .init(lat: 60.16, long: 24.93), name: "Helsinki"),
-		.init(location: .init(lat: 59.91, long: 10.75), name: "Oslo"),
-		.init(location: .init(lat: 37.77, long: -122.41), name: "San-Francisco"),
-		.init(location: .init(lat: 41.90, long: 12.49), name: "Rome"),
-		.init(location: .init(lat: 35.68, long: 139.69), name: "Tokyo"),
-		.init(location: .init(lat: 44.43, long: 26.09), name: "Bucharest"),
-		.init(location: .init(lat: 47.01, long: 28.86), name: "Chișinău"),
-		.init(location: .init(lat: 48.86, long: 2.34), name: "Paris"),
-		.init(location: .init(lat: 40.73, long: -73.93), name: "New-York")
+	func randomLocationWithinBoundingBox(
+		minLat: Double,
+		maxLat: Double,
+		minLong: Double,
+		maxLong: Double
+	) -> CanonicalLocation {
+		let latitude = Double.random(in: minLat...maxLat)
+		let longitude = Double.random(in: minLong...maxLong)
+		return CanonicalLocation(lat: latitude, long: longitude)
+	}
+
+	let citiesWithBoundingBox = [
+		("Stockholm", 59.25, 59.38, 18.00, 18.18),
+		("Budapest", 47.3400, 47.6000, 18.9400, 19.3000),
+		("Helsinki", 60.10, 60.22, 24.83, 25.04),
+		("Oslo", 59.83, 59.98, 10.63, 10.83),
+		("San-Francisco", 37.68, 37.81, -122.51, -122.35),
+		("Rome", 41.80, 42.02, 12.39, 12.60),
+		("Tokyo", 35.52, 35.83, 139.57, 139.87),
+		("Bucharest", 44.33, 44.49, 25.95, 26.19),
+		("Chișinău", 46.96, 47.07, 28.78, 28.93),
+		("Paris", 48.78, 48.92, 2.22, 2.47),
+		("New-York", 40.58, 40.85, -74.04, -73.90)
 	]
-		.map { gameLocation in
-			let randomisedLocation = CanonicalLocation(
-				lat: gameLocation.location.lat + Double.random(in: 0.00...0.09),
-				long: gameLocation.location.long + Double.random(in: 0.00...0.09)
-			)
-			return GameLocation(location: randomisedLocation, name: gameLocation.name)
-		}
+
+	var gameLocations = citiesWithBoundingBox.map { cityName, minLat, maxLat, minLong, maxLong -> GameLocation in
+		let randomLocation = randomLocationWithinBoundingBox(minLat: minLat, maxLat: maxLat, minLong: minLong, maxLong: maxLong)
+		return GameLocation(location: randomLocation, name: cityName)
+	}
 		.map { CitiesFeature.Section.city($0, isLoading: true) }
-	defaults.append(.upgradeBanner)
-	return IdentifiedArray(uniqueElements: defaults)
+	gameLocations.append(.upgradeBanner)
+	return IdentifiedArray(uniqueElements: gameLocations)
 }
 
 public struct CitiesFeature: Reducer {
