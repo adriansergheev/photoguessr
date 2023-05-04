@@ -6,6 +6,41 @@ import ApiClientLive
 import IdentifiedCollections
 import ComposableArchitecture
 
+public func defaults() -> IdentifiedArrayOf<CitiesFeature.Section> {
+	func randomLocationWithinBoundingBox(
+		minLat: Double,
+		maxLat: Double,
+		minLong: Double,
+		maxLong: Double
+	) -> CanonicalLocation {
+		let latitude = Double.random(in: minLat...maxLat)
+		let longitude = Double.random(in: minLong...maxLong)
+		return CanonicalLocation(lat: latitude, long: longitude)
+	}
+
+	let citiesWithBoundingBox = [
+		("Stockholm", 59.25, 59.38, 18.00, 18.18),
+		("Budapest", 47.3400, 47.6000, 18.9400, 19.3000),
+		("Helsinki", 60.10, 60.22, 24.83, 25.04),
+		("Oslo", 59.83, 59.98, 10.63, 10.83),
+		("San-Francisco", 37.68, 37.81, -122.51, -122.35),
+		("Rome", 41.80, 42.02, 12.39, 12.60),
+		("Tokyo", 35.52, 35.83, 139.57, 139.87),
+		("Bucharest", 44.33, 44.49, 25.95, 26.19),
+		("Chișinău", 46.96, 47.07, 28.78, 28.93),
+		("Paris", 48.78, 48.92, 2.22, 2.47),
+		("New-York", 40.58, 40.85, -74.04, -73.90)
+	]
+
+	var gameLocations = citiesWithBoundingBox.map { cityName, minLat, maxLat, minLong, maxLong -> GameLocation in
+		let randomLocation = randomLocationWithinBoundingBox(minLat: minLat, maxLat: maxLat, minLong: minLong, maxLong: maxLong)
+		return GameLocation(location: randomLocation, name: cityName)
+	}
+		.map { CitiesFeature.Section.city($0, isLoading: true) }
+	gameLocations.append(.upgradeBanner)
+	return IdentifiedArray(uniqueElements: gameLocations)
+}
+
 public struct CitiesFeature: Reducer {
 	public enum Section: Equatable, Identifiable {
 		case city(GameLocation, isLoading: Bool = true)
@@ -24,16 +59,7 @@ public struct CitiesFeature: Reducer {
 
 	public struct State: Equatable {
 		public var sections: IdentifiedArrayOf<Section>
-
-		public init(sections: IdentifiedArrayOf<Section> = [
-			.city(.defaults[0]),
-			.city(.defaults[1]),
-			.city(.defaults[2]),
-			.city(.defaults[3]),
-			.city(.defaults[4]),
-			.city(.defaults[5]),
-			.upgradeBanner
-		]) {
+		public init(sections: IdentifiedArrayOf<Section> = defaults()) {
 			self.sections = sections
 		}
 	}
