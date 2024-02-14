@@ -413,6 +413,10 @@ public struct GameView: View {
 														.onEnded { value in
 															totalZoom += currentZoom
 															currentZoom = 0
+
+															if (totalZoom <= 0.5) {
+																totalZoom = 0.5
+															}
 														}
 												)
 												.accessibilityZoomAction { action in
