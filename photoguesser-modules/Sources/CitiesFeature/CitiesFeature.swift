@@ -29,7 +29,8 @@ public func defaults() -> IdentifiedArrayOf<CitiesFeature.Section> {
 		("Bucharest", 44.33, 44.49, 25.95, 26.19),
 		("Chișinău", 46.96, 47.07, 28.78, 28.93),
 		("Paris", 48.78, 48.92, 2.22, 2.47),
-		("New-York", 40.58, 40.85, -74.04, -73.90)
+		("New-York", 40.58, 40.85, -74.04, -73.90),
+		("Washington D.C.", 38.87, 38.91, -77.045, -77.01)
 	]
 
 	var gameLocations = citiesWithBoundingBox.map { cityName, minLat, maxLat, minLong, maxLong -> GameLocation in

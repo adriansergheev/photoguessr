@@ -33,7 +33,9 @@ public struct MenuBackground: ReducerProtocol {
 	}
 
 	@Dependency(\.continuousClock) var clock
-	private enum TimerID {}
+	private enum TimerID: Hashable {
+		case timer
+	}
 	public init() { }
 
 	public var body: some ReducerProtocol<State, Action> {
@@ -47,7 +49,7 @@ public struct MenuBackground: ReducerProtocol {
 						await send(.timerTicked, animation: .interpolatingSpring(stiffness: 3000, damping: 40))
 					}
 				}
-				.cancellable(id: TimerID.self, cancelInFlight: true)
+				.cancellable(id: TimerID.timer, cancelInFlight: true)
 			case .onDisappear:
 				state.isTimerActive = false
 				return .cancel(id: TimerID.self)

@@ -18,7 +18,9 @@ public struct GameNotification: ReducerProtocol {
 	}
 
 	@Dependency(\.continuousClock) var clock
-	private enum TimerID {}
+	private enum TimerID: Hashable {
+		case timer
+	}
 
 	public init() {}
 
@@ -32,7 +34,7 @@ public struct GameNotification: ReducerProtocol {
 						await send(.didExpire, animation: .default)
 					}
 				}
-				.cancellable(id: TimerID.self, cancelInFlight: true)
+				.cancellable(id: TimerID.timer, cancelInFlight: true)
 			case .didExpire:
 				state.timerIsActive = false
 				return .cancel(id: TimerID.self)
