@@ -356,6 +356,7 @@ struct HomeButtonContent: View {
 			image
 				.resizable()
 				.aspectRatio(contentMode: .fit)
+				.frame(maxWidth: 104, maxHeight: 104)
 				.padding(.all, self.imagePadding)
 				.foregroundColor(.adaptiveBlack)
 			VStack {

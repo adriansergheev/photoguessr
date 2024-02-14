@@ -397,7 +397,7 @@ public struct GameView: View {
 										Spacer()
 										LazyImage(url: imageUrl, transaction: .init(animation: .default)) {
 											$0.image?.resizable()
-												.aspectRatio(contentMode: .fit)
+												.aspectRatio(contentMode: .fill)
 											// hides the watermark, can be used to guess the year
 												.mask(Rectangle().padding(.bottom, 10))
 												.frame(width: proxy.size.width, height: proxy.size.height)
