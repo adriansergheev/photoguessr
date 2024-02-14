@@ -343,6 +343,9 @@ public struct GameView: View {
 		}
 	}
 
+	@State private var currentZoom = 0.0
+	@State private var totalZoom = 1.0
+
 	public init(store: StoreOf<Game>) {
 		self.store = store
 		self.viewStore = ViewStore(self.store, observe: ViewState.init)
@@ -399,8 +402,26 @@ public struct GameView: View {
 											$0.image?.resizable()
 												.aspectRatio(contentMode: .fill)
 											// hides the watermark, can be used to guess the year
-												.mask(Rectangle().padding(.bottom, 10))
+												.mask(Rectangle().padding(.bottom, 20))
 												.frame(width: proxy.size.width, height: proxy.size.height)
+												.scaleEffect(currentZoom + totalZoom)
+												.gesture(
+													MagnifyGesture()
+														.onChanged { value in
+															currentZoom = value.magnification - 1
+														}
+														.onEnded { value in
+															totalZoom += currentZoom
+															currentZoom = 0
+														}
+												)
+												.accessibilityZoomAction { action in
+													if action.direction == .zoomIn {
+														totalZoom += 1
+													} else {
+														totalZoom -= 1
+													}
+												}
 										}
 										.padding([.top, .bottom], .grid(1))
 										Spacer()

@@ -1,4 +1,4 @@
-// swift-tools-version: 5.7
+// swift-tools-version: 5.9
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -6,8 +6,8 @@ import PackageDescription
 let package = Package(
 	name: "photoguesser-modules",
 	platforms: [
-		.iOS(.v16),
-		.macOS(.v13)
+		.iOS(.v17),
+		.macOS(.v14)
 	],
 	products: [
 		.library(name: "ApiClient", targets: ["ApiClient"]),
@@ -34,7 +34,7 @@ let package = Package(
 	],
 	dependencies: [
 		.package(url: "https://github.com/pointfreeco/swift-composable-architecture", branch: "prerelease/1.0"),
-		.package(url: "https://github.com/pointfreeco/swift-dependencies", from: "0.1.4"),
+		.package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "0.6.0"),
 		.package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "0.8.2"),
 		.package(url: "https://github.com/kean/Nuke", from: "12.0.0"),
 		.package(url: "https://github.com/spacenation/swiftui-sliders", from: "2.1.0"),
@@ -74,7 +74,7 @@ let package = Package(
 		.target(
 			name: "Build",
 			dependencies: [
-				.product(name: "Dependencies", package: "swift-composable-architecture"),
+				.product(name: "Dependencies", package: "swift-dependencies"),
 				.product(name: "Tagged", package: "swift-tagged"),
 				.product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay")
 			]
