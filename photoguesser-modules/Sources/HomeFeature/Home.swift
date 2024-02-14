@@ -234,6 +234,7 @@ extension AlertState where Action == Home.Action.Alert {
 
 public struct HomeView: View {
 	@Environment(\.colorScheme) var colorScheme
+	@Environment(\.deviceState) var deviceState
 	let store: StoreOf<Home>
 	@ObservedObject var viewStore: ViewStore<Bool, Home.Action>
 
@@ -293,23 +294,29 @@ public struct HomeView: View {
 						}
 					}
 					.padding(.grid(16))
-					.foregroundColor(self.colorScheme == .light ? .photoGuesserCream : .black)
-					.background(
-						(self.colorScheme == .light ? .black.opacity(0.5) : Color.black.opacity(0.1))
-							.ignoresSafeArea()
-							.background(
-								MenuBackgroundView(
-									store: self.store.scope(
-										state: \.menuBackground,
-										action: Home.Action.menuBackground
-									)
-								)
-							)
+					.frame(
+						maxWidth: self.deviceState.idiom == .pad ? UIScreen.width / 1.5 : .infinity,
+						maxHeight:  self.deviceState.idiom == .pad ? UIScreen.width / 1 : .infinity
 					)
+					.foregroundColor(self.colorScheme == .light ? .photoGuesserCream : .black)
 					.alert(
 						self.store.scope(state: \.alert, action: Home.Action.alert),
 						dismiss: Home.Action.Alert.dismiss
 					)
+					Color.clear
+						.background(
+							(self.colorScheme == .light ? .black.opacity(0.5) : Color.black.opacity(0.1))
+								.ignoresSafeArea()
+								.background(
+									MenuBackgroundView(
+										store: self.store.scope(
+											state: \.menuBackground,
+											action: Home.Action.menuBackground
+										)
+									)
+								)
+						)
+						.zIndex(-1)
 				}
 			}
 		}
@@ -323,7 +330,7 @@ public struct HomeView: View {
 		) { store in
 			Settings(store: store)
 		}
-		//		.modifier(DeviceStateModifier())
+		.modifier(DeviceStateModifier())
 	}
 }
 
@@ -432,15 +439,21 @@ struct HomeView_Previews: PreviewProvider {
 		Preview {
 			HomeView(
 				store: .init(
-					initialState: .init(
-						gameInstance: .init(
-							mode: .limited(max: 3, current: 0),
-							gameLocation: .init(location: .init(lat: 55.67594, long: 12.56553), name: "Copenhagen")
-						)
-					),
+					initialState: .init(),
 					reducer: Home()
 				)
 			)
+			//			HomeView(
+			//				store: .init(
+			//					initialState: .init(
+			//						gameInstance: .init(
+			//							mode: .limited(max: 3, current: 0),
+			//							gameLocation: .init(location: .init(lat: 55.67594, long: 12.56553), name: "Copenhagen")
+			//						)
+			//					),
+			//					reducer: Home()
+			//				)
+			//			)
 		}
 	}
 }
