@@ -343,9 +343,6 @@ public struct GameView: View {
 		}
 	}
 
-	@State private var currentZoom = 0.0
-	@State private var totalZoom = 1.0
-
 	public init(store: StoreOf<Game>) {
 		self.store = store
 		self.viewStore = ViewStore(self.store, observe: ViewState.init)
@@ -395,43 +392,7 @@ public struct GameView: View {
 							.zIndex(1)
 
 							VStack(alignment: .center) {
-								GeometryReader { proxy in
-									VStack {
-										Spacer()
-										LazyImage(url: imageUrl, transaction: .init(animation: .default)) {
-											$0.image?.resizable()
-												.aspectRatio(contentMode: .fill)
-											// hides the watermark, can be used to guess the year
-												.mask(Rectangle().padding(.bottom, 20))
-												.frame(width: proxy.size.width, height: proxy.size.height)
-												.scaleEffect(currentZoom + totalZoom)
-												.gesture(
-													MagnifyGesture()
-														.onChanged { value in
-															currentZoom = value.magnification - 1
-														}
-														.onEnded { value in
-															totalZoom += currentZoom
-															currentZoom = 0
-
-															if (totalZoom <= 0.5) {
-																totalZoom = 0.5
-															}
-														}
-												)
-												.accessibilityZoomAction { action in
-													if action.direction == .zoomIn {
-														totalZoom += 1
-													} else {
-														totalZoom -= 1
-													}
-												}
-										}
-										.padding([.top, .bottom], .grid(1))
-										Spacer()
-									}
-								}
-
+								GameImageView(imageUrl)
 								VStack {
 									HStack {
 										Text(photo.title)
@@ -526,6 +487,98 @@ public struct GameView: View {
 		.background(colorScheme == .dark ? .black : .photoGuesserCream)
 	}
 }
+
+public struct GameImageView: View {
+
+	init(_ imageUrl: URL, reset: Bool = true) {
+		self.imageUrl = imageUrl
+	}
+
+	let imageUrl: URL
+
+	@State private var previousMagnification = 0.0
+	@State private var currentMagnification = 0.0
+	@State private var totalMagnification = 1.0
+
+	@State private var offset = CGSize.zero
+	@State private var lastOffset = CGSize.zero
+
+	public var body: some View {
+		GeometryReader { proxy in
+			VStack {
+				Spacer()
+				LazyImage(url: imageUrl, transaction: .init(animation: .default)) {
+					$0.image?.resizable()
+						.aspectRatio(contentMode: .fill)
+					// hides the watermark, can be used to guess the year
+						.mask(Rectangle().padding(.bottom, 20))
+						.frame(width: proxy.size.width, height: proxy.size.height)
+						.scaleEffect(self.currentMagnification + self.totalMagnification)
+						.offset(self.offset)
+						.gesture(
+							DragGesture()
+								.onChanged { gesture in
+									let calculatedOffset = CGSize(
+										width: lastOffset.width + gesture.translation.width,
+										height: lastOffset.height + gesture.translation.height
+									)
+
+									// do not let the image escape the view
+									if (abs(calculatedOffset.width) * 1.5 < proxy.size.width),
+										 (abs(calculatedOffset.height) * 1.5 < proxy.size.height) {
+										self.offset = calculatedOffset
+									}
+								}
+								.onEnded { _ in
+									withAnimation {
+										self.lastOffset = self.offset
+									}
+								}
+						)
+						.gesture(
+							MagnifyGesture()
+								.onChanged { value in
+									let delta = value.magnification / self.previousMagnification
+									self.previousMagnification = value.magnification
+
+									if abs(1 - delta) > 0.01 {
+										self.currentMagnification = value.magnification - 1
+									}
+								}
+								.onEnded { _ in
+									self.totalMagnification += self.currentMagnification
+									self.currentMagnification = 0
+
+									if (self.totalMagnification <= 0.8) {
+										withAnimation {
+											self.totalMagnification = 0.8
+										}
+									}
+								}
+						)
+						.accessibilityZoomAction { action in
+							switch action.direction {
+							case .zoomIn:
+								self.totalMagnification += 0.5
+							case .zoomOut:
+								self.totalMagnification -= 1
+							}
+						}
+				}
+				.onCompletion { _ in
+					self.previousMagnification = 0.0
+					self.currentMagnification = 0.0
+					self.totalMagnification = 1.0
+					self.offset = CGSize.zero
+					self.lastOffset = CGSize.zero
+				}
+				.padding([.top, .bottom], .grid(1))
+				Spacer()
+			}
+		}
+	}
+}
+
 extension AnyTransition {
 	public static let game = move(edge: .bottom)
 }
