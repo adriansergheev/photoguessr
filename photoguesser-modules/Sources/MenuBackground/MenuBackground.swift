@@ -46,7 +46,7 @@ public struct MenuBackground: ReducerProtocol {
 				return .run { [isTimerActive = state.isTimerActive] send in
 					guard isTimerActive else { return }
 					for await _ in self.clock.timer(interval: .seconds(5)) {
-						await send(.timerTicked, animation: .interpolatingSpring(stiffness: 3000, damping: 40))
+						await send(.timerTicked, animation: .easeIn(duration: 3))
 					}
 				}
 				.cancellable(id: TimerID.timer, cancelInFlight: true)
@@ -77,7 +77,6 @@ public struct MenuBackgroundView: View {
 				.resizable()
 				.aspectRatio(contentMode: .fill)
 				.ignoresSafeArea()
-				.animation(.easeIn(duration: 3), value: viewStore.state)
 				.onAppear { viewStore.send(.onAppear) }
 				.onDisappear { viewStore.send(.onDisappear) }
 		}
