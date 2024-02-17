@@ -261,7 +261,6 @@ public struct HomeView: View {
 						} content: {
 							HomeButtonContent(
 								image: Image(systemName: "gamecontroller"),
-								imagePadding: .grid(14),
 								text: Text("Play")
 							)
 						}
@@ -270,30 +269,28 @@ public struct HomeView: View {
 						} content: {
 							HomeButtonContent(
 								image: Image(systemName: "building.columns"),
-								imagePadding: .grid(12),
 								text: Text("Cities")
 							)
 						}
-						HStack {
-							HomeButton {
-								viewStore.send(.tap(.onLeaderboards))
-							} content: {
-								HomeButtonContent(
-									image: Image(systemName: "star.leadinghalf.filled"),
-									text: Text("Leaderboards")
-								)
-							}
-							HomeButton {
-								viewStore.send(.tap(.onSettings))
-							} content: {
-								HomeButtonContent(
-									image: Image(systemName: "gearshape"),
-									text: Text("Settings")
-								)
-							}
+						HomeButton {
+							viewStore.send(.tap(.onLeaderboards))
+						} content: {
+							HomeButtonContent(
+								image: Image(systemName: "star.leadinghalf.filled"),
+								text: Text("Leaderboards")
+							)
+						}
+						HomeButton {
+							viewStore.send(.tap(.onSettings))
+						} content: {
+							HomeButtonContent(
+								image: Image(systemName: "gearshape"),
+								text: Text("Settings")
+							)
 						}
 					}
-					.padding(.grid(16))
+					.padding([.leading, .trailing], .grid(16))
+					.padding([.top, .bottom], .grid(54))
 					.frame(
 						maxWidth: self.deviceState.idiom == .pad ? UIScreen.width / 1.5 : .infinity,
 						maxHeight:  self.deviceState.idiom == .pad ? UIScreen.width / 1 : .infinity
@@ -338,37 +335,22 @@ struct HomeButtonContent: View {
 	@Environment(\.colorScheme) var colorScheme
 
 	let image: Image
-	let imagePadding: CGFloat
 	let text: Text
 
-	init(
-		image: Image,
-		imagePadding: CGFloat = .grid(9),
-		text: Text
-	) {
-		self.image = image
-		self.imagePadding = imagePadding
-		self.text = text
-	}
-
 	var body: some View {
-		ZStack {
+		HStack {
 			image
-				.resizable()
 				.aspectRatio(contentMode: .fit)
-				.frame(maxWidth: 104, maxHeight: 104)
-				.padding(.all, self.imagePadding)
-				.foregroundColor(.adaptiveBlack)
-			VStack {
-				Spacer()
-				text
-					.adaptiveFont(.cormorantBold, size: 16)
-					.padding([.top, .bottom], .grid(1))
-					.frame(maxWidth: .infinity)
-					.foregroundColor(self.colorScheme == .dark ? .black : .photoGuesserCream)
-					.background(self.colorScheme == .dark ? Color.photoGuesserCream : .black)
-					.adaptiveCornerRadius([.bottomLeft, .bottomRight], 13)
-			}
+				.frame(width: 48, height: 48)
+				.padding([.leading, .top, .bottom], .grid(2))
+				.foregroundColor(self.colorScheme == .dark ? .photoGuesserCream : .photoGuesserBlack)
+			text
+				.adaptiveFont(.cormorantBold, size: 16)
+				.frame(maxWidth: .infinity, maxHeight: .infinity)
+				.foregroundColor(self.colorScheme == .dark ? .black : .photoGuesserCream)
+				.background(self.colorScheme == .dark ? Color.photoGuesserCream : .black)
+				.adaptiveCornerRadius([.bottomRight, .topRight], 13)
+
 		}
 	}
 }
