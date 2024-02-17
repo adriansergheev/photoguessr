@@ -489,11 +489,6 @@ public struct GameView: View {
 }
 
 public struct GameImageView: View {
-
-	init(_ imageUrl: URL, reset: Bool = true) {
-		self.imageUrl = imageUrl
-	}
-
 	let imageUrl: URL
 
 	@State private var previousMagnification = 0.0
@@ -502,6 +497,10 @@ public struct GameImageView: View {
 
 	@State private var offset = CGSize.zero
 	@State private var lastOffset = CGSize.zero
+
+	init(_ imageUrl: URL) {
+		self.imageUrl = imageUrl
+	}
 
 	public var body: some View {
 		GeometryReader { proxy in

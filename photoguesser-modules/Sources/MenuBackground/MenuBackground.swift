@@ -2,11 +2,9 @@ import SwiftUI
 import Styleguide
 import ComposableArchitecture
 
-// let demoImage = Image(uiImage: UIImage(named: "demo", in: Bundle.module, with: nil)!)
+let demoImage = Image(uiImage: UIImage(named: "demo", in: Bundle.module, with: nil)!)
 let demoImage2 = Image(uiImage: UIImage(named: "demo2", in: Bundle.module, with: nil)!)
 let demoImage3 = Image(uiImage: UIImage(named: "demo3", in: Bundle.module, with: nil)!)
-let demoImage4 = Image(uiImage: UIImage(named: "demo4", in: Bundle.module, with: nil)!)
-let demoImage5 = Image(uiImage: UIImage(named: "demo5", in: Bundle.module, with: nil)!)
 
 public struct MenuBackground: ReducerProtocol {
 	public struct State: Equatable {
@@ -17,11 +15,9 @@ public struct MenuBackground: ReducerProtocol {
 
 		public init() {
 			demoImages = [
-				//				demoImage,
+				demoImage,
 				demoImage2,
 				demoImage3,
-				demoImage4,
-				demoImage5
 			]
 			backgroundImage = demoImages.randomElement()!
 		}
@@ -45,14 +41,14 @@ public struct MenuBackground: ReducerProtocol {
 				state.isTimerActive = true
 				return .run { [isTimerActive = state.isTimerActive] send in
 					guard isTimerActive else { return }
-					for await _ in self.clock.timer(interval: .seconds(5)) {
+					for await _ in self.clock.timer(interval: .seconds(10)) {
 						await send(.timerTicked, animation: .easeIn(duration: 3))
 					}
 				}
 				.cancellable(id: TimerID.timer, cancelInFlight: true)
 			case .onDisappear:
 				state.isTimerActive = false
-				return .cancel(id: TimerID.self)
+				return .cancel(id: TimerID.timer)
 			case .timerTicked:
 				state.timerTicks += 1
 				// FIXME: if no connection, show demo images.

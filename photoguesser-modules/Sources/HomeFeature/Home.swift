@@ -261,7 +261,6 @@ public struct HomeView: View {
 						} content: {
 							HomeButtonContent(
 								image: Image(systemName: "gamecontroller"),
-								imagePadding: .grid(14),
 								text: Text("Play")
 							)
 						}
@@ -270,7 +269,6 @@ public struct HomeView: View {
 						} content: {
 							HomeButtonContent(
 								image: Image(systemName: "building.columns"),
-								imagePadding: .grid(12),
 								text: Text("Cities")
 							)
 						}
@@ -337,27 +335,15 @@ struct HomeButtonContent: View {
 	@Environment(\.colorScheme) var colorScheme
 
 	let image: Image
-	let imagePadding: CGFloat
 	let text: Text
-
-	init(
-		image: Image,
-		imagePadding: CGFloat = .grid(9),
-		text: Text
-	) {
-		self.image = image
-		self.imagePadding = imagePadding
-		self.text = text
-	}
 
 	var body: some View {
 		HStack {
 			image
-				.resizable()
 				.aspectRatio(contentMode: .fit)
 				.frame(width: 48, height: 48)
-				.padding(.leading, .grid(2))
-				.foregroundColor(.adaptiveBlack)
+				.padding([.leading, .top, .bottom], .grid(2))
+				.foregroundColor(self.colorScheme == .dark ? .photoGuesserCream : .photoGuesserBlack)
 			text
 				.adaptiveFont(.cormorantBold, size: 16)
 				.frame(maxWidth: .infinity, maxHeight: .infinity)
