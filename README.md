@@ -9,8 +9,7 @@ This repo contains the full source code for Photoguessr, an iOS game played by g
 ---
 
 ## Related Projects
-- The game is highly inspired by [isowords](https://www.isowords.xyz) and [geoguessr](https://www.geoguessr.com). Images are provided by [pastvu](https://github.com/PastVu/pastvu) api.
-- The app uses [TCA](https://github.com/pointfreeco/swift-composable-architecture), it is built in a [hyper-modularized](https://github.com/pointfreeco/isowords#hyper-modularization) style and has [preview apps](https://github.com/pointfreeco/isowords?tab=readme-ov-file#preview-apps) for most features.
+- The game is highly inspired by [isowords](https://www.isowords.xyz) and [geoguessr](https://www.geoguessr.com). Images are provided by [pastvu](https://github.com/PastVu/pastvu) api. As architecture it uses [TCA](https://github.com/pointfreeco/swift-composable-architecture), it is built in a [hyper-modularized](https://github.com/pointfreeco/isowords#hyper-modularization) style and has [preview apps](https://github.com/pointfreeco/isowords?tab=readme-ov-file#preview-apps) for most features.
 
 ## License
 
